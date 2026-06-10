@@ -206,6 +206,171 @@ ok(W.pyCheck({ codeIncludes: ['def '] }, '', 'x=1').ok === false, 'pyCheck codeI
 ok(W.pyCheck({ codeIncludes: ['def '] }, '', 'def f(): pass').ok === true, 'pyCheck codeIncludes pass');
 ok(W.pyCheck({}, 'anything', 'anything').ok === true, 'pyCheck empty check passes');
 
+/* ================= 5. Stage-1 exercise types (mocked API) ================= */
+(async () => {
+section('5. New exercise types (mocked)');
+/* --- pure validators --- */
+ok(W.extractJson('```json\n{"a":1}\n```') === '{"a":1}', 'extractJson strips fences');
+ok(W.extractJson('Sure! {"a":1} hope that helps') === '{"a":1}', 'extractJson strips prose around object');
+ok(W.liveCheck({mustParse:'json',schemaKeys:['name','age']}, '{"name":"Bo","age":4}').ok === true, 'liveCheck json+schema pass');
+ok(W.liveCheck({mustParse:'json',schemaKeys:['name','age']}, '{"name":"Bo"}').why.includes('age'), 'liveCheck missing schema key named');
+ok(W.liveCheck({mustParse:'json'}, 'not json at all').ok === false, 'liveCheck invalid json fails');
+ok(W.liveCheck({mustInclude:['Paris']}, 'the answer is paris').ok === true, 'liveCheck mustInclude case-insensitive');
+ok(W.liveCheck({notInclude:['sorry']}, 'I am SORRY').ok === false, 'liveCheck notInclude fails on banned text');
+ok(W.liveCheck({mustRegex:'^\\d+$'}, 'abc\n42').ok === true, 'liveCheck mustRegex multiline');
+ok(W.liveCheck({maxChars:5}, 'too long here').ok === false, 'liveCheck maxChars');
+ok(W.judgeParse('{"pass": true, "reason": "good"}').pass === true, 'judgeParse pass');
+ok(W.judgeParse('garbage').pass === false, 'judgeParse tolerates garbage');
+const jm = W.judgeMessages('Must rhyme', 'roses are red');
+ok(jm.length === 2 && jm[1].content.includes('Must rhyme') && jm[1].content.includes('roses are red'), 'judgeMessages embeds rubric+response');
+ok(W.applyTemplate('Classify: {{input}} now', 'hello') === 'Classify: hello now', 'applyTemplate substitutes');
+ok(W.applyTemplate('A {{ input }} B', 'x') === 'A x B', 'applyTemplate tolerates spaces');
+ok(W.evalMatch('Positive', ' positive. ', 'exact') === true, 'evalMatch exact normalizes case/punct');
+ok(W.evalMatch('cat', 'the CAT sat', 'includes') === true, 'evalMatch includes');
+ok(W.evalMatch('^yes', 'Yes indeed', 'regex') === true, 'evalMatch regex');
+ok(W.evalMatch('positive', 'negative', 'exact') === false, 'evalMatch exact fails on mismatch');
+ok(W.normalizeBaseUrl('my-app.onrender.com/') === 'https://my-app.onrender.com', 'normalizeBaseUrl adds scheme, strips slash');
+ok(W.normalizeBaseUrl('http://x.io//') === 'http://x.io', 'normalizeBaseUrl keeps explicit http');
+ok(W.deployCheckHealth({status:'ok'}) === true && W.deployCheckHealth({status:'dead'}) === false, 'deployCheckHealth');
+ok(W.deployCheckAsk({answer:'hi',sources:[]}) === true && W.deployCheckAsk({answer:''}) === false, 'deployCheckAsk');
+ok(W.looksLikeFinetuneId('ft:gpt-4o-mini-2024-07-18:personal::abc') === true && W.looksLikeFinetuneId('gpt-4o') === false, 'looksLikeFinetuneId');
+{
+  const spec = {jsonKeys:['base_accuracy','tuned_accuracy'], plausible:{base_accuracy:[0,1], tuned_accuracy:[0,1]}};
+  ok(W.colabParseScores('{"base_accuracy":0.5,"tuned_accuracy":0.8}', spec).ok === true, 'colabParseScores accepts plausible');
+  ok(W.colabParseScores('{"base_accuracy":0.5}', spec).why.includes('tuned_accuracy'), 'colabParseScores names missing key');
+  ok(W.colabParseScores('{"base_accuracy":7,"tuned_accuracy":0.8}', spec).ok === false, 'colabParseScores rejects implausible');
+  ok(W.colabParseScores('not json', spec).ok === false, 'colabParseScores rejects non-json');
+}
+ok(JSON.stringify(W.parseSSE('data: {"a":1}\ndata: [DONE]\ndata: {"b"')) === JSON.stringify({events:['{"a":1}'],rest:'data: {"b"'}), 'parseSSE splits events, keeps partial');
+
+/* --- live: exercise UI flow with mocked llmStream --- */
+const fakeLive = { id:'__t_live', t:'fake', body:'<p>x</p>', live:{ goal:'Get JSON', system:'sys', starter:'user prompt', check:{mustParse:'json', schemaKeys:['city']}, hint:'ask for JSON' } };
+W.localStorage.setItem('z2ai_key','sk-test'); // unlock live UIs (no network in tests)
+doc.getElementById('content').innerHTML = W.renderLiveEx(fakeLive);
+ok(!!doc.getElementById('lvusr'), 'live exercise renders prompt editor');
+W.initLiveEx(fakeLive);
+const realLlmStream = W.llmStream, realLlm = W.llm;
+W.eval('llmStream = async (m,o,onTok) => { const t=\'{"city":"Paris"}\'; if(onTok)onTok(t,t); return {text:t, usage:{prompt_tokens:10, completion_tokens:5}}; }');
+await W.runLive();
+ok(doc.getElementById('lvverdict').innerHTML.includes('✓'), 'live exercise passes with valid mocked JSON');
+ok(W.eval('P["__t_live_ex"]') === true, 'live exercise completion recorded');
+W.eval('delete P["__t_live"]; delete P["__t_live_ex"];');
+// failing response path
+W.eval('llmStream = async (m,o,onTok) => ({text:"no json here", usage:null})');
+await W.runLive();
+ok(doc.getElementById('lvverdict').innerHTML.includes('Not yet'), 'live exercise fails with bad response');
+ok(doc.getElementById('lvverdict').innerHTML.includes('hint'), 'live exercise failure shows hint');
+// judge path: first check passes, judge rejects
+const fakeJudge = { id:'__t_judge', t:'fake', body:'<p>x</p>', live:{ goal:'g', check:{mustInclude:['ok'], judge:{rubric:'be polite'}}, hint:'h' } };
+doc.getElementById('content').innerHTML = W.renderLiveEx(fakeJudge);
+W.initLiveEx(fakeJudge);
+W.eval('llmStream = async () => ({text:"ok then", usage:null})');
+W.eval('llm = async () => ({text:\'{"pass": false, "reason": "rude"}\', usage:null})');
+await W.runLive();
+ok(doc.getElementById('lvverdict').innerHTML.includes('rude'), 'LLM judge rejection surfaces reason');
+ok(W.eval('P["__t_judge_ex"]') !== true, 'judge rejection blocks completion');
+
+/* --- evalrun: exercise with mocked llm --- */
+const fakeEval = { id:'__t_eval', t:'fake', body:'<p>x</p>', evalrun:{ goal:'Classify sentiment', template:'Classify {{input}} as positive or negative. One word.', threshold:0.75, match:'exact', cases:[ {input:'I love it', expected:'positive'}, {input:'I hate it', expected:'negative'}, {input:'Best ever', expected:'positive'}, {input:'Terrible', expected:'negative'} ] } };
+doc.getElementById('content').innerHTML = W.renderEvalEx(fakeEval);
+ok(!!doc.getElementById('evtpl'), 'evalrun renders template editor');
+W.initEvalEx(fakeEval);
+W.eval(`llm = async (messages) => {
+  const m = messages[0].content.toLowerCase();
+  const pos = /love|best/.test(m);
+  return {text: pos ? 'Positive' : 'negative.', usage:{prompt_tokens:8, completion_tokens:1}};
+}`);
+await W.runEval();
+ok(doc.getElementById('evsum').innerHTML.includes('✓'), 'evalrun passes at 4/4 with mocked model');
+ok(W.eval('P["__t_eval_ex"]') === true, 'evalrun completion recorded');
+W.eval('delete P["__t_eval"]; delete P["__t_eval_ex"];');
+// template without {{input}} is rejected before any call
+doc.getElementById('evtpl').value = 'no placeholder';
+await W.runEval();
+ok(doc.getElementById('evsum').innerHTML.includes('{{input}}'), 'evalrun rejects template missing {{input}}');
+// failing accuracy path
+doc.getElementById('content').innerHTML = W.renderEvalEx(fakeEval);
+W.initEvalEx(fakeEval);
+W.eval('llm = async () => ({text:"banana", usage:null})');
+await W.runEval();
+ok(doc.getElementById('evsum').innerHTML.includes('below'), 'evalrun reports below-threshold accuracy');
+ok(W.eval('P["__t_eval_ex"]') !== true, 'failed evalrun does not complete');
+
+/* --- colab: exercise --- */
+const fakeColabModel = { id:'__t_cb1', t:'fake', body:'<p>x</p>', colab:{ goal:'Fine-tune', notebook:'notebooks/sft.ipynb', verify:'model', tests:[{prompt:'Say hi', check:{mustInclude:['hi']}}] } };
+doc.getElementById('content').innerHTML = W.renderColabEx(fakeColabModel);
+ok(!!doc.getElementById('cbin'), 'colab renders input');
+W.initColabEx(fakeColabModel);
+doc.getElementById('cbin').value = 'not-a-model-id';
+await W.runColab();
+ok(doc.getElementById('cbout').innerHTML.includes('ft:'), 'colab rejects malformed model id');
+doc.getElementById('cbin').value = 'ft:gpt-4o-mini-2024-07-18:personal::abc123';
+W.eval('llm = async () => ({text:"hi there!", usage:null})');
+await W.runColab();
+ok(doc.getElementById('cbout').innerHTML.includes('verified'), 'colab model verification passes with mocked behavior check');
+ok(W.eval('P["__t_cb1_ex"]') === true, 'colab completion recorded');
+ok(W.eval('P["__t_cb1_proof"]') && W.eval('P["__t_cb1_proof"].summary').startsWith('ft:'), 'colab proof stored');
+W.eval('delete P["__t_cb1"]; delete P["__t_cb1_ex"]; delete P["__t_cb1_proof"];');
+const fakeColabJson = { id:'__t_cb2', t:'fake', body:'<p>x</p>', colab:{ goal:'Eval', notebook:'notebooks/eval.ipynb', verify:'json', jsonKeys:['base_accuracy','tuned_accuracy'], plausible:{base_accuracy:[0,1],tuned_accuracy:[0,1]} } };
+doc.getElementById('content').innerHTML = W.renderColabEx(fakeColabJson);
+W.initColabEx(fakeColabJson);
+doc.getElementById('cbin').value = '{"base_accuracy":0.52,"tuned_accuracy":0.81}';
+await W.runColab();
+ok(doc.getElementById('cbout').innerHTML.includes('accepted'), 'colab json verification accepts plausible scores');
+ok(W.eval('P["__t_cb2_ex"]') === true, 'colab json completion recorded');
+W.eval('delete P["__t_cb2"]; delete P["__t_cb2_ex"]; delete P["__t_cb2_proof"];');
+
+/* --- deploy: exercise with mocked fetch --- */
+const fakeDeploy = { id:'__t_dep', t:'fake', body:'<p>x</p>', deploy:{ goal:'Deploy it', askQuestion:'What is RAG?' } };
+doc.getElementById('content').innerHTML = W.renderDeployEx(fakeDeploy);
+ok(!!doc.getElementById('dpin'), 'deploy renders url input');
+W.initDeployEx(fakeDeploy);
+doc.getElementById('dpin').value = 'my-app.onrender.com';
+W.eval(`fetch = async (url, opts) => {
+  if(url.endsWith('/health')) return {ok:true, status:200, json: async()=>({status:'ok'})};
+  if(url.endsWith('/ask')) return {ok:true, status:200, json: async()=>({answer:'RAG is retrieval-augmented generation', sources:['doc1']})};
+  return {ok:false, status:404, json: async()=>null};
+}`);
+await W.runDeploy();
+ok(doc.getElementById('dpout').innerHTML.includes('live on the public internet'), 'deploy verification passes with mocked endpoints');
+ok(W.eval('P["__t_dep_ex"]') === true, 'deploy completion recorded');
+ok(String(W.eval('P["__t_dep_proof"].summary')).includes('my-app.onrender.com'), 'deploy proof stores url');
+W.eval('delete P["__t_dep"]; delete P["__t_dep_ex"]; delete P["__t_dep_proof"];');
+// bad health path
+doc.getElementById('content').innerHTML = W.renderDeployEx(fakeDeploy);
+W.initDeployEx(fakeDeploy);
+doc.getElementById('dpin').value = 'https://dead.example.com';
+W.eval('fetch = async () => ({ok:false, status:503, json: async()=>({status:'+JSON.stringify('error')+'})})');
+await W.runDeploy();
+ok(doc.getElementById('dpout').innerHTML.includes('CORS'), 'deploy failure explains sleep/CORS causes');
+ok(W.eval('P["__t_dep_ex"]') !== true, 'failed deploy does not complete');
+
+/* --- multi-sim, notes, search --- */
+ok(JSON.stringify(W.simList(['a','b'])) === '["a","b"]' && JSON.stringify(W.simList('a')) === '["a"]', 'simList normalizes');
+ok(W.hasExercise({term:{}}) && W.hasExercise({live:{}}) && W.hasExercise({deploy:{}}) && !W.hasExercise({}), 'hasExercise covers all types');
+W.location.hash = 'lesson/' + firstLesson.id; W.render();
+const noteBox = doc.getElementById('notebox');
+ok(!!noteBox, 'notes box renders on lessons');
+W.saveNote(firstLesson.id, 'my note');
+ok(W.eval(`P[${JSON.stringify(firstLesson.id + '_note')}]`) === 'my note', 'note persists to progress');
+W.location.hash = 'lesson/' + firstLesson.id; W.render();
+ok(doc.getElementById('notebox').value === 'my note', 'note re-renders with saved text');
+W.saveNote(firstLesson.id, '');
+ok(W.eval(`P[${JSON.stringify(firstLesson.id + '_note')}]`) === undefined, 'empty note removes key');
+ok(!!doc.getElementById('sbsearch'), 'sidebar search input renders');
+W.setSearch('token');
+ok(doc.getElementById('searchresults').innerHTML.includes('lessonlink'), 'search shows matching lessons');
+ok(doc.getElementById('sblist').style.display === 'none', 'search hides level list');
+W.setSearch('');
+ok(doc.getElementById('sblist').style.display === '', 'clearing search restores level list');
+
+/* --- import/export validation --- */
+ok(W.importValidate({app:'zero-to-ai-engineer', progress:{}}).ok === true, 'importValidate accepts valid file');
+ok(W.importValidate({app:'other'}).ok === false, 'importValidate rejects foreign file');
+ok(W.importValidate(null).ok === false, 'importValidate rejects null');
+ok(typeof W.exportProgress === 'function', 'exportProgress exists');
+W.localStorage.removeItem('z2ai_key');
+
 /* ================= 6. progress save/load round-trip ================= */
 section('6. Progress persistence');
 W.eval("P['__test_marker']=true; save();");
@@ -258,3 +423,4 @@ console.log('\n========================================');
 console.log(`${passed} passed, ${failed} failed`);
 if (failed) { console.log('Failures:\n  - ' + failures.join('\n  - ')); process.exit(1); }
 console.log('ALL GREEN ✓');
+})().catch(e => { console.error('SUITE CRASH:', e); process.exit(1); });

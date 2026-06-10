@@ -263,7 +263,9 @@ function renderSidebar(){
   const all=allLessons(); const total=all.length; const done=all.filter(l=>isDone(l.id)).length;
   const cur=(location.hash.match(/lesson\/([^/]+)/)||[])[1];
   let html=`<div class="logo" onclick="go('home')"><div class="mark">AI</div><div class="nm">Zero to AI Engineer<small>beginner → expert</small></div></div>
-  <div class="overall">${done} / ${total} complete<div class="bar"><i style="width:${total?Math.round(done/total*100):0}%"></i></div></div>`;
+  <div class="overall">${done} / ${total} complete<div class="bar"><i style="width:${total?Math.round(done/total*100):0}%"></i></div></div>
+  <input id="sbsearch" placeholder="🔍 Search lessons…" value="${searchTerm.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:13px;outline:none;margin:0 0 10px">
+  <div id="searchresults" style="display:none"></div><div id="sblist">`;
   LEVELS.forEach((lv,li)=>{
     const st=levelStats(lv,li); const open=openLevels.has(li); const col=COLORS[li%COLORS.length];
     html+=`<button class="lvlhead" onclick="toggleLevel(${li})"><span class="dot" style="background:${col}22;color:${col};border:1px solid ${col}55">${li+1}</span> ${lv.title}<span class="pc">${st.d}/${st.t}</span></button>`;
@@ -284,7 +286,9 @@ function renderSidebar(){
   });
   html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
+  html+='</div>';
   sb.innerHTML=html;
+  if(searchTerm) renderSearchResults();
 }
 function toggleLevel(i){ openLevels.has(i)?openLevels.delete(i):openLevels.add(i); renderSidebar(); }
 
@@ -327,17 +331,28 @@ function renderLesson(id,c){
   let html=`<div class="crumb"><b>Level ${l._lv+1}: ${lv.title}</b> · ${l._ch}</div>
   <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
   <div class="body">${gloss(l.body)}</div>`;
-  if(l.sim) html+=renderSim(l.sim);
+  if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
   if(l.term) html+=renderTermEx(l);
   if(l.py) html+=renderPyEx(l);
+  if(l.live) html+=renderLiveEx(l);
+  if(l.evalrun) html+=renderEvalEx(l);
+  if(l.colab) html+=renderColabEx(l);
+  if(l.deploy) html+=renderDeployEx(l);
   if(l.quiz&&l.quiz.length) html+=renderQuiz(l);
-  else if(!l.term&&!l.py) html+=`<div style="margin-top:30px"><button class="simbtn" onclick="markDone('${l.id}')">${isDone(l.id)?'✓ Completed':'Mark as complete'}</button></div>`;
+  else if(!hasExercise(l)) html+=`<div style="margin-top:30px"><button class="simbtn" onclick="markDone('${l.id}')">${isDone(l.id)?'✓ Completed':'Mark as complete'}</button></div>`;
+  html+=renderNotes(l);
   html+=navBtns(prev,next);
   c.innerHTML=html;
-  if(l.sim) initSim(l.sim);
+  if(l.sim) simList(l.sim).forEach(initSim);
   if(l.term) initTermEx(l);
   if(l.py) initPyEx(l);
+  if(l.live) initLiveEx(l);
+  if(l.evalrun) initEvalEx(l);
+  if(l.colab) initColabEx(l);
+  if(l.deploy) initDeployEx(l);
 }
+function simList(s){ return Array.isArray(s)?s:[s]; }
+function hasExercise(l){ return !!(l.term||l.py||l.live||l.evalrun||l.colab||l.deploy); }
 function exDone(id){ return !!P[id+'_ex']; }
 function navBtns(prev,next){
   return `<div class="lessonnav">
@@ -382,7 +397,7 @@ function grade(id){
   });
   const msg=document.getElementById('qmsg');
   if(allRight){
-    if((l.term||l.py)&&!exDone(id)){ msg.textContent='Quiz correct — now finish the hands-on exercise above to complete the lesson'; msg.className='qmsg no'; P[id+'_quiz']=true; save(); return; }
+    if(hasExercise(l)&&!exDone(id)){ msg.textContent='Quiz correct — now finish the hands-on exercise above to complete the lesson'; msg.className='qmsg no'; P[id+'_quiz']=true; save(); return; }
     msg.textContent='✓ Passed — lesson complete'; msg.className='qmsg ok'; P[id]=true; save(); renderSidebar();
   }
   else { msg.textContent='Not quite — review the explanations and try again'; msg.className='qmsg no'; }
@@ -731,6 +746,14 @@ function renderSettings(c){
   </div>
   <div class="simout" id="keyout" style="margin-top:14px">${k?'Key saved. Click "Save & test" to verify it works.':'No key yet. Get one at platform.openai.com → API keys (the Level 2 lab walks you through it).'}</div>
   <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>Set a monthly spending cap in your OpenAI billing settings. Course labs use gpt-4o-mini and cost cents, but caps protect you from mistakes — that's an engineering habit, not paranoia.</div>
+  <h2 style="font-size:20px;margin:34px 0 10px">💾 Backup your progress</h2>
+  <p>Progress (including your notes) lives only in this browser. A cleared cache wipes months of work — export a backup regularly.</p>
+  <div class="row" style="display:flex;gap:10px">
+    <button class="simbtn" onclick="exportProgress()">Export progress (.json)</button>
+    <button class="simbtn ghost" onclick="document.getElementById('impfile').click()">Import progress…</button>
+    <input type="file" id="impfile" accept="application/json,.json" style="display:none" onchange="if(this.files[0])importProgress(this.files[0])">
+  </div>
+  <div class="simout" id="impout" style="margin-top:12px">Export downloads a file; import restores from one (it replaces current progress).</div>
   </div>`;
 }
 async function saveKey(){
@@ -913,14 +936,362 @@ SIMS.playground=function(b){
     const btn=document.getElementById('pgbtn'),out=document.getElementById('pgout'),meta=document.getElementById('pgmeta');
     btn.disabled=true;out.textContent='…calling api.openai.com…';
     try{
-      const t0=performance.now();
-      const r=await llm([{role:'system',content:document.getElementById('pgsys').value},{role:'user',content:document.getElementById('pgusr').value}],{temperature:+document.getElementById('pgtemp').value/100});
+      const t0=performance.now(); let t1=null;
+      const r=await llmStream([{role:'system',content:document.getElementById('pgsys').value},{role:'user',content:document.getElementById('pgusr').value}],{temperature:+document.getElementById('pgtemp').value/100},(d,full)=>{ if(t1===null)t1=performance.now(); out.textContent=full+'▌'; });
       out.textContent=r.text;
-      meta.textContent=`${r.usage.prompt_tokens} in + ${r.usage.completion_tokens} out tokens · ~$${costOf(r.usage).toFixed(6)} · ${Math.round(performance.now()-t0)}ms — this is a real, billed API call.`;
+      const ttft=t1?Math.round(t1-t0):'—';
+      meta.textContent=`${r.usage?r.usage.prompt_tokens+' in + '+r.usage.completion_tokens+' out tokens · ~$'+costOf(r.usage).toFixed(6):''} · time-to-first-token ${ttft}ms · total ${Math.round(performance.now()-t0)}ms — streamed live, token by token, exactly like ChatGPT does it.`;
     }catch(e){out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>';}
     btn.disabled=false;
   };
 };
+
+/* ================= streaming LLM call ================= */
+function parseSSE(buf){
+  // pure: split an SSE text buffer into complete data events + leftover
+  const lines=buf.split('\n'); const rest=lines.pop();
+  const events=[];
+  for(const line of lines){
+    const m=line.match(/^data: ?(.*)$/);
+    if(m && m[1]!=='[DONE]') events.push(m[1]);
+  }
+  return {events, rest};
+}
+async function llmStream(messages,opts={},onToken){
+  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const body={model:opts.model||'gpt-4o-mini',messages,temperature:opts.temperature??0.7,stream:true,stream_options:{include_usage:true}};
+  if(opts.max_tokens)body.max_tokens=opts.max_tokens;
+  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+    body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
+  const reader=res.body.getReader(); const dec=new TextDecoder();
+  let buf='', full='', usage=null;
+  while(true){
+    const {done,value}=await reader.read(); if(done)break;
+    buf+=dec.decode(value,{stream:true});
+    const {events,rest}=parseSSE(buf); buf=rest;
+    for(const ev of events){
+      try{
+        const j=JSON.parse(ev);
+        const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;
+        if(d){ full+=d; if(onToken)onToken(d,full); }
+        if(j.usage)usage=j.usage;
+      }catch(e){}
+    }
+  }
+  return {text:full,usage};
+}
+
+/* ================= pure validation helpers (unit-tested) ================= */
+function extractJson(text){
+  const m=text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  let t=(m?m[1]:text).trim();
+  // tolerate prose around a single JSON object/array
+  if(!/^[\[{]/.test(t)){ const s=t.search(/[\[{]/); if(s>=0){ const e=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']')); if(e>s) t=t.slice(s,e+1); } }
+  return t;
+}
+function liveCheck(chk,text){
+  let parsed=null;
+  if(chk.mustParse==='json'){
+    try{ parsed=JSON.parse(extractJson(text)); }
+    catch(e){ return {ok:false,why:'The response is not valid JSON. ('+e.message+')',parsed:null}; }
+    if(chk.schemaKeys){ for(const key of chk.schemaKeys){ if(parsed===null||typeof parsed!=='object'||!(key in parsed)) return {ok:false,why:'The JSON is missing the required key "'+key+'".',parsed}; } }
+  }
+  if(chk.mustInclude){ for(const s of chk.mustInclude){ if(!text.toLowerCase().includes(String(s).toLowerCase())) return {ok:false,why:'The response must include: "'+s+'"',parsed}; } }
+  if(chk.notInclude){ for(const s of chk.notInclude){ if(text.toLowerCase().includes(String(s).toLowerCase())) return {ok:false,why:'The response must NOT include: "'+s+'"',parsed}; } }
+  if(chk.mustRegex&&!new RegExp(chk.mustRegex,'im').test(text)) return {ok:false,why:chk.failMsg||'The response does not match the required pattern yet.',parsed};
+  if(chk.maxChars&&text.length>chk.maxChars) return {ok:false,why:'The response is too long ('+text.length+' chars, max '+chk.maxChars+'). Tighten your prompt.',parsed};
+  return {ok:true,why:'',parsed};
+}
+function judgeMessages(rubric,response){
+  return [
+    {role:'system',content:'You are a strict grader. Grade the RESPONSE against the RUBRIC. Reply with ONLY a JSON object: {"pass": true|false, "reason": "one short sentence"}.'},
+    {role:'user',content:'RUBRIC:\n'+rubric+'\n\nRESPONSE:\n'+response}
+  ];
+}
+function judgeParse(text){
+  try{ const j=JSON.parse(extractJson(text)); return {pass:j.pass===true,reason:String(j.reason||'')}; }
+  catch(e){ return {pass:false,reason:'Judge reply was not valid JSON: '+text.slice(0,120)}; }
+}
+function applyTemplate(tpl,input){ return tpl.replace(/\{\{\s*input\s*\}\}/g,input); }
+function evalMatch(expected,output,mode){
+  const norm=s=>String(s).trim().toLowerCase().replace(/[.!?\s]+$/,'');
+  if(mode==='includes') return norm(output).includes(norm(expected));
+  if(mode==='regex') return new RegExp(expected,'i').test(output);
+  return norm(output)===norm(expected);
+}
+function normalizeBaseUrl(u){
+  u=String(u).trim().replace(/\/+$/,'');
+  if(u&&!/^https?:\/\//i.test(u)) u='https://'+u;
+  return u;
+}
+function deployCheckHealth(j){ return !!(j&&String(j.status).toLowerCase()==='ok'); }
+function deployCheckAsk(j){ return !!(j&&typeof j.answer==='string'&&j.answer.length>0&&('sources' in j)); }
+function colabParseScores(text,spec){
+  let j;
+  try{ j=JSON.parse(extractJson(text)); }
+  catch(e){ return {ok:false,why:'That is not valid JSON. Copy the eval cell output exactly.',scores:null}; }
+  for(const key of (spec.jsonKeys||[])){ if(!(key in j)) return {ok:false,why:'Missing key "'+key+'" — paste the full eval output.',scores:j}; }
+  for(const key in (spec.plausible||{})){
+    const v=Number(j[key]), [lo,hi]=spec.plausible[key];
+    if(!(v>=lo&&v<=hi)) return {ok:false,why:'Value for "'+key+'" ('+j[key]+') is outside the plausible range ['+lo+', '+hi+']. Re-run the eval cell and paste its real output.',scores:j};
+  }
+  return {ok:true,why:'',scores:j};
+}
+function looksLikeFinetuneId(id){ return /^ft:[\w.-]+:/.test(String(id).trim()); }
+
+/* shared exercise completion */
+function exComplete(l,headId,label){
+  P[l.id+'_ex']=true; maybeComplete(l);
+  const h=document.getElementById(headId);
+  if(h){ h.className='exhead done'; h.textContent='✓ '+(label||'exercise complete'); }
+}
+function keyGate(kind){
+  return `<div class="keywarn">🔑 This is a <b>live</b> ${kind} — it calls the real OpenAI API with your key. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+}
+
+/* ================= live: exercise ================= */
+let curLive=null;
+function renderLiveEx(l){
+  const done=exDone(l.id);
+  return `<div class="exo"><div class="exhead ${done?'done':''}" id="livehead">${done?'✓ exercise complete':'⚡ live lab: make the real model do it'}</div>
+  <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${l.live.goal}</div>
+  <div id="livebody" style="padding:14px 16px">
+  ${getKey()?`
+  <div class="row"><span class="lbl">System prompt</span></div>
+  <textarea id="lvsys" class="keyinput" style="font-family:var(--mono);min-height:44px">${escapeHtml(l.live.system||'You are a helpful assistant.')}</textarea>
+  <div class="row"><span class="lbl">Your prompt</span></div>
+  <textarea id="lvusr" class="keyinput" style="font-family:var(--mono);min-height:60px">${escapeHtml(l.live.starter||'')}</textarea>
+  <div class="row"><button class="simbtn" id="lvbtn" onclick="runLive()">Send & check</button><span class="pgmeta" id="lvmeta"></span></div>
+  <div class="pgout" id="lvout">The model's response appears here, then gets checked against the goal.</div>
+  <div class="simout" id="lvverdict" style="display:none"></div>`:keyGate('exercise')}
+  </div></div>`;
+}
+function initLiveEx(l){ curLive=l; }
+async function runLive(){
+  const l=curLive, out=document.getElementById('lvout'), verdict=document.getElementById('lvverdict'), btn=document.getElementById('lvbtn'), meta=document.getElementById('lvmeta');
+  btn.disabled=true; out.textContent=''; verdict.style.display='none';
+  try{
+    const t0=performance.now();
+    const r=await llmStream([{role:'system',content:document.getElementById('lvsys').value},{role:'user',content:document.getElementById('lvusr').value}],{temperature:l.live.temperature??0.2},(d,full)=>{out.textContent=full;});
+    if(r.usage)meta.textContent=`${r.usage.prompt_tokens} in + ${r.usage.completion_tokens} out tokens · ~$${costOf(r.usage).toFixed(6)} · ${Math.round(performance.now()-t0)}ms`;
+    let res=liveCheck(l.live.check,r.text);
+    if(res.ok&&l.live.check.judge){
+      verdict.style.display='block'; verdict.innerHTML='⚖️ Asking a second model to judge the response against the rubric…';
+      const jr=await llm(judgeMessages(l.live.check.judge.rubric,r.text),{temperature:0});
+      const jv=judgeParse(jr.text);
+      if(!jv.pass) res={ok:false,why:'LLM judge: '+jv.reason};
+      else res={ok:true,why:'LLM judge: '+jv.reason};
+    }
+    verdict.style.display='block';
+    if(res.ok){
+      verdict.innerHTML='<span style="color:var(--green)">✓ Goal achieved! '+escapeHtml(res.why||'')+'</span>';
+      exComplete(l,'livehead');
+    }else{
+      verdict.innerHTML='<span style="color:var(--red)">✗ Not yet: '+escapeHtml(res.why)+'</span>'+(l.live.hint?'<br><span style="color:var(--amber)">hint: '+escapeHtml(l.live.hint)+'</span>':'');
+    }
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>'; }
+  btn.disabled=false;
+}
+
+/* ================= evalrun: exercise ================= */
+let curEval=null;
+function renderEvalEx(l){
+  const done=exDone(l.id);
+  const ev=l.evalrun;
+  return `<div class="exo"><div class="exhead ${done?'done':''}" id="evalhead">${done?'✓ exercise complete':'📊 eval lab: beat the accuracy threshold'}</div>
+  <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${ev.goal} <b>Pass mark: ${Math.round(ev.threshold*100)}% on ${ev.cases.length} test cases.</b></div>
+  <div style="padding:14px 16px">
+  ${getKey()?`
+  <div class="row"><span class="lbl">Prompt template <span style="color:var(--dim)">({{input}} = test case)</span></span></div>
+  <textarea id="evtpl" class="keyinput" style="font-family:var(--mono);min-height:70px">${escapeHtml(ev.template)}</textarea>
+  <div class="row"><button class="simbtn" id="evbtn" onclick="runEval()">▶ Run eval (${ev.cases.length} live calls)</button><span class="pgmeta" id="evmeta"></span></div>
+  <div id="evcases"></div>
+  <div class="simout" id="evsum" style="display:none"></div>`:keyGate('eval harness')}
+  </div></div>`;
+}
+function initEvalEx(l){ curEval=l; }
+async function runEval(){
+  const l=curEval, ev=l.evalrun, btn=document.getElementById('evbtn'), casesEl=document.getElementById('evcases'), sum=document.getElementById('evsum'), meta=document.getElementById('evmeta');
+  const tpl=document.getElementById('evtpl').value;
+  if(!/\{\{\s*input\s*\}\}/.test(tpl)){ sum.style.display='block'; sum.innerHTML='<span style="color:var(--red)">Your template must contain {{input}} — that is where each test case gets inserted.</span>'; return; }
+  btn.disabled=true; sum.style.display='none'; casesEl.innerHTML='';
+  let right=0, cost=0;
+  const rows=[];
+  for(let i=0;i<ev.cases.length;i++){
+    const c=ev.cases[i];
+    casesEl.innerHTML=rows.join('')+`<div class="barrow"><span class="bn">case ${i+1}/${ev.cases.length} running…</span></div>`;
+    try{
+      const r=await llm([{role:'user',content:applyTemplate(tpl,c.input)}],{temperature:0,max_tokens:ev.maxTokens||60});
+      if(r.usage)cost+=costOf(r.usage);
+      const hit=evalMatch(c.expected,r.text,ev.match||'exact');
+      if(hit)right++;
+      rows.push(`<div class="barrow" style="align-items:flex-start"><span style="color:${hit?'var(--green)':'var(--red)'};width:18px;flex-shrink:0">${hit?'✓':'✗'}</span><span style="font-size:12.5px;color:var(--muted)"><b>${escapeHtml(c.input.slice(0,70))}</b> → got <code>${escapeHtml(r.text.trim().slice(0,60))}</code>${hit?'':' · wanted <code>'+escapeHtml(String(c.expected))+'</code>'}</span></div>`);
+    }catch(e){
+      rows.push(`<div class="barrow"><span style="color:var(--red)">✗ API error: ${escapeHtml(e.message)}</span></div>`);
+      break;
+    }
+  }
+  casesEl.innerHTML=rows.join('');
+  const acc=right/ev.cases.length;
+  meta.textContent=`total cost ~$${cost.toFixed(5)}`;
+  sum.style.display='block';
+  if(acc>=ev.threshold){
+    sum.innerHTML=`<span style="color:var(--green)">✓ Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% — threshold beaten!</span>`;
+    exComplete(l,'evalhead');
+  }else{
+    sum.innerHTML=`<span style="color:var(--red)">Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% — below the ${Math.round(ev.threshold*100)}% bar.</span> <span style="color:var(--amber)">Improve the prompt template and run again — that loop IS prompt engineering.</span>`;
+  }
+  btn.disabled=false;
+}
+
+/* ================= colab: exercise ================= */
+let curColab=null;
+function renderColabEx(l){
+  const done=exDone(l.id);
+  const cb=l.colab;
+  const proof=P[l.id+'_proof'];
+  return `<div class="exo"><div class="exhead ${done?'done':''}" id="cbhead">${done?'✓ verified':'🚀 GPU lab: run the notebook, paste your proof'}</div>
+  <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${cb.goal}<br><a href="${cb.notebook}" target="_blank" rel="noopener">↗ Open the notebook</a>${proof?`<br><span style="color:var(--green);font-size:12px">verified: ${escapeHtml(String(proof.summary||''))} (${proof.at||''})</span>`:''}</div>
+  <div style="padding:14px 16px">
+  <div class="row"><span class="lbl">${cb.verify==='model'?'Your fine-tuned model ID (ft:…)':'Paste the JSON output of the eval cell'}</span></div>
+  ${cb.verify==='model'?`<input class="keyinput" id="cbin" placeholder="ft:gpt-4o-mini-2024-07-18:personal::xxxx">`:`<textarea id="cbin" class="keyinput" style="font-family:var(--mono);min-height:90px" placeholder='{"base_accuracy": 0.55, "tuned_accuracy": 0.80, ...}'></textarea>`}
+  <div class="row"><button class="simbtn" id="cbbtn" onclick="runColab()">Verify</button></div>
+  <div class="simout" id="cbout" style="display:none"></div>
+  </div></div>`;
+}
+function initColabEx(l){ curColab=l; }
+async function runColab(){
+  const l=curColab, cb=l.colab, out=document.getElementById('cbout'), btn=document.getElementById('cbbtn');
+  const input=document.getElementById('cbin').value.trim();
+  out.style.display='block';
+  if(!input){ out.textContent='Paste something first.'; return; }
+  btn.disabled=true;
+  try{
+    if(cb.verify==='model'){
+      if(!looksLikeFinetuneId(input)){ out.innerHTML='<span style="color:var(--red)">That does not look like a fine-tuned model ID — it should start with <code>ft:</code>. Find it on the fine-tuning job page.</span>'; btn.disabled=false; return; }
+      if(!getKey()){ out.innerHTML=keyGate('verification'); btn.disabled=false; return; }
+      let allOk=true, lines=[];
+      for(const t of cb.tests){
+        out.innerHTML='Calling <code>'+escapeHtml(input)+'</code> live…<br>'+lines.join('<br>');
+        const r=await llm([{role:'user',content:t.prompt}],{model:input,temperature:0,max_tokens:t.maxTokens||80});
+        const res=liveCheck(t.check,r.text);
+        if(!res.ok)allOk=false;
+        lines.push(`${res.ok?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>'} <b>${escapeHtml(t.prompt.slice(0,60))}</b> → ${escapeHtml(r.text.trim().slice(0,80))}${res.ok?'':' <span style="color:var(--red)">('+escapeHtml(res.why)+')</span>'}`);
+      }
+      out.innerHTML=lines.join('<br>');
+      if(allOk){
+        out.innerHTML+='<br><span style="color:var(--green)">✓ Your fine-tuned model passes the behavior check — verified!</span>';
+        P[l.id+'_proof']={summary:input,at:new Date().toISOString().slice(0,10)};
+        exComplete(l,'cbhead','verified');
+      }else out.innerHTML+='<br><span style="color:var(--amber)">The model answered, but not with the trained behavior. Check the right model ID, or train longer / check your dataset.</span>';
+    }else{
+      const res=colabParseScores(input,cb);
+      if(res.ok){
+        out.innerHTML='<span style="color:var(--green)">✓ Scores accepted: <code>'+escapeHtml(JSON.stringify(res.scores))+'</code></span>';
+        P[l.id+'_proof']={summary:JSON.stringify(res.scores),at:new Date().toISOString().slice(0,10)};
+        exComplete(l,'cbhead','verified');
+      }else out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(res.why)+'</span>';
+    }
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>'; }
+  btn.disabled=false;
+}
+
+/* ================= deploy: exercise ================= */
+let curDeploy=null;
+function renderDeployEx(l){
+  const done=exDone(l.id);
+  const proof=P[l.id+'_proof'];
+  return `<div class="exo"><div class="exhead ${done?'done':''}" id="dphead">${done?'✓ deployment verified live':'🌐 deployment check: paste your live URL'}</div>
+  <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${l.deploy.goal}${proof?`<br><span style="color:var(--green);font-size:12px">verified: ${escapeHtml(String(proof.summary||''))} (${proof.at||''})</span>`:''}</div>
+  <div style="padding:14px 16px">
+  <div class="row"><span class="lbl">Your service base URL</span></div>
+  <input class="keyinput" id="dpin" placeholder="https://your-app.onrender.com" value="${escapeHtml((proof&&proof.summary)||'')}">
+  <div class="row"><button class="simbtn" id="dpbtn" onclick="runDeploy()">Verify deployment</button></div>
+  <div class="simout" id="dpout" style="display:none"></div>
+  </div></div>`;
+}
+function initDeployEx(l){ curDeploy=l; }
+async function runDeploy(){
+  const l=curDeploy, out=document.getElementById('dpout'), btn=document.getElementById('dpbtn');
+  const base=normalizeBaseUrl(document.getElementById('dpin').value);
+  out.style.display='block';
+  if(!base){ out.textContent='Paste your deployed URL first.'; return; }
+  btn.disabled=true;
+  try{
+    out.innerHTML='1/2 — GET <code>'+escapeHtml(base)+'/health</code> …';
+    const hr=await fetch(base+'/health');
+    const hj=await hr.json().catch(()=>null);
+    if(!hr.ok||!deployCheckHealth(hj)){
+      out.innerHTML='<span style="color:var(--red)">✗ /health did not return {"status":"ok"} — got HTTP '+hr.status+': <code>'+escapeHtml(JSON.stringify(hj).slice(0,200))+'</code></span><br><span style="color:var(--amber)">Is the service awake? Free tiers sleep — open the URL in a tab first. And check CORS: the browser blocks responses without the right headers (that is the CORS lesson in action).</span>';
+      btn.disabled=false; return;
+    }
+    out.innerHTML='<span style="color:var(--green)">✓ /health ok</span><br>2/2 — POST <code>'+escapeHtml(base)+'/ask</code> …';
+    const ar=await fetch(base+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:l.deploy.askQuestion||'What is this service?'})});
+    const aj=await ar.json().catch(()=>null);
+    if(!ar.ok||!deployCheckAsk(aj)){
+      out.innerHTML+='<br><span style="color:var(--red)">✗ /ask must return JSON with a non-empty "answer" and a "sources" field — got HTTP '+ar.status+': <code>'+escapeHtml(JSON.stringify(aj).slice(0,300))+'</code></span>';
+      btn.disabled=false; return;
+    }
+    out.innerHTML='<span style="color:var(--green)">✓ /health ok</span><br><span style="color:var(--green)">✓ /ask ok</span><br><b>answer:</b> '+escapeHtml(String(aj.answer).slice(0,300))+'<br><b>sources:</b> <code>'+escapeHtml(JSON.stringify(aj.sources).slice(0,200))+'</code><br><span style="color:var(--green)">✓ Your API is live on the public internet. That is a real deployed AI service.</span>';
+    P[l.id+'_proof']={summary:base,at:new Date().toISOString().slice(0,10)};
+    exComplete(l,'dphead','deployment verified live');
+  }catch(e){
+    out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber)">Common causes: service asleep (open it in a tab, wait, retry), wrong URL, or missing CORS middleware — the browser refuses to read responses without <code>Access-Control-Allow-Origin</code>.</span>';
+  }
+  btn.disabled=false;
+}
+
+/* ================= notes ================= */
+function renderNotes(l){
+  const note=P[l.id+'_note']||'';
+  return `<div class="sim" style="margin-top:26px"><div class="simtitle" style="color:var(--accent2)">📝 Your notes on this lesson</div>
+  <textarea id="notebox" placeholder="Write what clicked, what confused you, what you want to try — writing is how it sticks." style="min-height:64px;resize:vertical" oninput="saveNote('${l.id}',this.value)">${escapeHtml(note)}</textarea></div>`;
+}
+function saveNote(id,v){ if(v)P[id+'_note']=v; else delete P[id+'_note']; save(); }
+
+/* ================= progress export / import ================= */
+function exportProgress(){
+  const data={app:'zero-to-ai-engineer',version:1,exportedAt:new Date().toISOString(),progress:P};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='z2ai-progress-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importValidate(data){
+  if(!data||typeof data!=='object') return {ok:false,why:'Not a JSON object.'};
+  if(data.app!=='zero-to-ai-engineer'||!data.progress||typeof data.progress!=='object') return {ok:false,why:'This is not a Zero-to-AI-Engineer progress file.'};
+  return {ok:true,why:''};
+}
+function importProgress(file){
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const out=document.getElementById('impout');
+    try{
+      const data=JSON.parse(rd.result);
+      const v=importValidate(data);
+      if(!v.ok){ out.innerHTML='<span style="color:var(--red)">✗ '+v.why+'</span>'; return; }
+      P=data.progress; save(); renderSidebar();
+      out.innerHTML='<span style="color:var(--green)">✓ Progress imported — '+Object.keys(P).filter(k=>P[k]===true).length+' completed items restored.</span>';
+    }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ Could not read that file: '+escapeHtml(e.message)+'</span>'; }
+  };
+  rd.readAsText(file);
+}
+
+/* ================= sidebar search ================= */
+let searchTerm='';
+function setSearch(v){ searchTerm=v.toLowerCase(); renderSearchResults(); }
+function renderSearchResults(){
+  const box=document.getElementById('searchresults');
+  if(!box) return;
+  if(!searchTerm){ box.innerHTML=''; box.style.display='none'; document.getElementById('sblist').style.display=''; return; }
+  const hits=allLessons().filter(l=>(l.t+' '+(l._ch||'')).toLowerCase().includes(searchTerm)).slice(0,30);
+  document.getElementById('sblist').style.display='none';
+  box.style.display='';
+  box.innerHTML=hits.length?hits.map(l=>`<button class="lessonlink ${isDone(l.id)?'done':''}" onclick="openLevels.add(${l._lv});go('${l._gate?'gate':'lesson'}','${l.id}')"><span class="st">${isDone(l.id)?'✓':''}</span><span>${l.t} <span style="color:var(--dim);font-size:11px">· L${l._lv+1}</span></span></button>`).join(''):'<div style="padding:8px;font-size:12.5px;color:var(--dim)">No lessons match.</div>';
+}
 
 /* boot */
 if(!LEVELS.length){
