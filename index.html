@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero to AI Engineer — An Interactive Course</title>
+<style>
+:root{
+  --bg:#09090b; --bg2:#101014; --bg3:#18181d; --border:#26262c; --border2:#34343c;
+  --text:#e7e7ea; --muted:#9b9ba4; --dim:#6b6b75;
+  --accent:#7c6cf6; --accent2:#a78bfa; --green:#34d399; --amber:#fbbf24; --red:#f87171; --cyan:#22d3ee;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--accent2)}
+code{font-family:var(--mono);font-size:.86em;background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:5px;color:#c8c2ff}
+pre{background:#0d0d11;border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:14px 0;font-size:13.5px;line-height:1.55}
+pre code{background:none;border:none;padding:0;color:#d6d3f0}
+.app{display:flex;min-height:100vh}
+
+/* ---------- sidebar ---------- */
+.sidebar{width:300px;min-width:300px;background:var(--bg2);border-right:1px solid var(--border);height:100vh;overflow-y:auto;position:sticky;top:0;padding:18px 14px 40px;scrollbar-width:thin}
+.logo{display:flex;align-items:center;gap:10px;padding:6px 8px 16px;cursor:pointer}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#4f46e5);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+.logo .nm{font-weight:700;font-size:15px;line-height:1.25}
+.logo .nm small{display:block;color:var(--dim);font-weight:500;font-size:11px}
+.overall{margin:0 8px 14px;font-size:12px;color:var(--muted)}
+.bar{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s}
+.lvlhead{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:9px 8px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--text)}
+.lvlhead:hover{background:var(--bg3)}
+.lvlhead .dot{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.lvlhead .pc{margin-left:auto;font-size:11px;color:var(--dim);font-weight:500}
+.chap{margin:2px 0 6px 14px;border-left:1px solid var(--border);padding-left:8px}
+.chapname{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);padding:7px 8px 3px;font-weight:700}
+.lessonlink{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:5px 8px;border-radius:7px;font-size:13px;color:var(--muted)}
+.lessonlink:hover{background:var(--bg3);color:var(--text)}
+.lessonlink.active{background:rgba(124,108,246,.14);color:var(--accent2)}
+.lessonlink .st{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px}
+.lessonlink.done .st{background:var(--green);border-color:var(--green);color:#052e1d}
+.lessonlink.gate{color:var(--amber)}
+.lessonlink.gate .st{border-color:var(--amber)}
+.lessonlink.gate.done .st{background:var(--amber);border-color:var(--amber);color:#3b2503}
+
+/* ---------- main ---------- */
+.main{flex:1;min-width:0}
+.topbar{display:none;position:sticky;top:0;z-index:30;background:rgba(9,9,11,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 16px;align-items:center;gap:12px}
+.content{max-width:780px;margin:0 auto;padding:42px 28px 110px}
+
+/* home */
+.hero{text-align:center;padding:30px 0 14px}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.12;letter-spacing:-.02em;background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);max-width:560px;margin:16px auto 0;font-size:17px}
+.statrow{display:flex;gap:12px;justify-content:center;margin:26px 0 8px;flex-wrap:wrap}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;text-align:center;min-width:110px}
+.stat b{font-size:22px;display:block;color:var(--accent2)}
+.stat span{font-size:12px;color:var(--dim)}
+.levelcard{display:block;width:100%;text-align:left;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:14px 0;transition:.15s}
+.levelcard:hover{border-color:var(--accent);transform:translateY(-1px)}
+.levelcard .top{display:flex;align-items:center;gap:12px}
+.levelcard .dot{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.levelcard h3{font-size:17px}
+.levelcard .sub{color:var(--muted);font-size:13.5px;margin-top:8px}
+.levelcard .meta{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--dim);align-items:center;flex-wrap:wrap}
+.levelcard .bar{flex:1;min-width:120px;margin-top:0}
+
+/* lesson */
+.crumb{font-size:12.5px;color:var(--dim);margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.crumb b{color:var(--muted);font-weight:600}
+h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6px}
+.lmeta{color:var(--dim);font-size:13px;margin-bottom:26px}
+.body h2{font-size:20px;margin:30px 0 10px;letter-spacing:-.01em}
+.body h3{font-size:16.5px;margin:22px 0 8px}
+.body p{margin:13px 0;color:#cfcfd6}
+.body ul,.body ol{margin:13px 0 13px 24px;color:#cfcfd6}
+.body li{margin:7px 0}
+.body strong{color:#fff}
+.body table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+.body th,.body td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.body th{background:var(--bg2);color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+.callout{border:1px solid var(--border);border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 10px 10px 0;padding:13px 16px;margin:18px 0;font-size:14.5px}
+.callout.warn{border-left-color:var(--amber)}
+.callout.fail{border-left-color:var(--red)}
+.callout.tip{border-left-color:var(--green)}
+.callout .ct{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;color:var(--accent2)}
+.callout.warn .ct{color:var(--amber)}.callout.fail .ct{color:var(--red)}.callout.tip .ct{color:var(--green)}
+.gl{border-bottom:1px dashed var(--accent2);cursor:help;position:relative;color:#d8d2ff}
+.gl:hover::after{content:attr(data-def);position:absolute;left:0;bottom:calc(100% + 6px);z-index:50;background:#1c1c24;border:1px solid var(--border2);color:var(--text);font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:9px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+/* sim */
+.sim{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:18px;margin:24px 0}
+.sim .simtitle{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.sim input[type=range]{width:100%;accent-color:var(--accent)}
+.sim input[type=text],.sim textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px;outline:none}
+.sim input[type=text]:focus,.sim textarea:focus{border-color:var(--accent)}
+.sim .row{display:flex;gap:12px;align-items:center;margin:10px 0;flex-wrap:wrap}
+.sim .lbl{font-size:12.5px;color:var(--muted);min-width:120px}
+.sim .val{font-family:var(--mono);font-size:12.5px;color:var(--accent2);min-width:46px;text-align:right}
+.tok{display:inline-block;margin:2px;padding:2px 7px;border-radius:6px;font-family:var(--mono);font-size:13px}
+.simout{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;margin-top:10px;font-size:13.5px;min-height:44px}
+.simbtn{background:var(--accent);color:#fff;font-weight:600;font-size:13px;padding:8px 16px;border-radius:8px}
+.simbtn:hover{background:#6a5af0}
+.simbtn.ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}
+.barrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:12.5px}
+.barrow .bl{width:130px;color:var(--muted);text-align:right;flex-shrink:0}
+.barrow .bv{height:18px;border-radius:5px;background:var(--accent);min-width:2px;transition:width .3s}
+.barrow .bn{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+
+/* quiz */
+.quiz{margin-top:40px;border:1px solid var(--border2);border-radius:14px;overflow:hidden}
+.quiz .qhead{background:var(--bg2);padding:14px 18px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.qq{padding:16px 18px;border-bottom:1px solid var(--border)}
+.qq:last-of-type{border-bottom:none}
+.qq .qt{font-weight:600;font-size:15px;margin-bottom:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--border);border-radius:9px;margin:7px 0;cursor:pointer;font-size:14px;color:var(--muted);transition:.12s}
+.opt:hover{border-color:var(--border2);color:var(--text)}
+.opt.sel{border-color:var(--accent);background:rgba(124,108,246,.1);color:var(--text)}
+.opt.right{border-color:var(--green);background:rgba(52,211,153,.1);color:var(--text)}
+.opt.wrong{border-color:var(--red);background:rgba(248,113,113,.08)}
+.opt .ob{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;margin-top:2px}
+.opt.sel .ob{border-color:var(--accent);background:var(--accent)}
+.opt.right .ob{border-color:var(--green);background:var(--green)}
+.expl{font-size:13px;color:var(--muted);background:var(--bg2);border-radius:8px;padding:10px 12px;margin-top:8px;display:none}
+.expl.show{display:block}
+.qfoot{padding:14px 18px;display:flex;align-items:center;gap:14px;background:var(--bg2)}
+.qmsg{font-size:13.5px;font-weight:600}
+.qmsg.ok{color:var(--green)}.qmsg.no{color:var(--red)}
+
+/* nav buttons */
+.lessonnav{display:flex;gap:12px;margin-top:34px}
+.navbtn{flex:1;border:1px solid var(--border);border-radius:12px;padding:13px 16px;text-align:left;transition:.13s}
+.navbtn:hover{border-color:var(--accent)}
+.navbtn small{display:block;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.navbtn.next{text-align:right}
+.navbtn span{font-size:14px;font-weight:600}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navbtn:disabled:hover{border-color:var(--border)}
+
+/* gate / checklist */
+.gatecard{border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.05);border-radius:14px;padding:20px;margin:22px 0}
+.check{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin:8px 0;cursor:pointer;font-size:14px}
+.check:hover{border-color:var(--border2)}
+.check .cb{width:19px;height:19px;border-radius:6px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px}
+.check.on{color:var(--muted)}
+.check.on .cb{background:var(--green);border-color:var(--green);color:#052e1d}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid var(--border2);color:var(--muted)}
+
+/* glossary */
+.glsearch{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;color:var(--text);padding:12px 15px;font-size:15px;outline:none;margin:16px 0}
+.glitem{padding:13px 0;border-bottom:1px solid var(--border)}
+.glitem b{color:var(--accent2)}
+.glitem p{color:var(--muted);font-size:14px;margin-top:4px}
+
+/* review */
+.reviewbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 8px;border-radius:7px;font-size:12.5px;color:var(--cyan);margin-top:2px}
+.reviewbtn:hover{background:var(--bg3)}
+
+/* ---------- terminal exercise ---------- */
+.exo{border:1px solid var(--border2);border-radius:14px;margin:24px 0;overflow:hidden}
+.exo .exhead{background:var(--bg2);padding:12px 16px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.exo .exhead.done{color:var(--green)}
+.tasklist{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.taskitem{display:flex;gap:9px;font-size:13px;color:var(--muted);padding:4px 0;align-items:flex-start}
+.taskitem.cur{color:var(--text)}
+.taskitem.tdone{color:var(--dim);text-decoration:line-through}
+.taskitem .ti{width:16px;flex-shrink:0;color:var(--green)}
+.termwin{background:#0a0a0e;padding:12px 14px;min-height:180px;max-height:320px;overflow-y:auto;font-family:var(--mono);font-size:13px;line-height:1.6;cursor:text}
+.termwin .tline{white-space:pre-wrap;word-break:break-all}
+.termwin .tps{color:var(--green)}
+.termwin .terr{color:var(--red)}
+.termwin .tout{color:#b8b8c4}
+.termwin .thint{color:var(--amber)}
+.terminrow{display:flex;align-items:center;background:#0a0a0e;padding:0 14px 12px;font-family:var(--mono);font-size:13px}
+.terminrow .tps{color:var(--green);margin-right:8px;white-space:nowrap}
+.terminrow input{flex:1;background:none;border:none;outline:none;color:var(--text);font:inherit}
+/* ---------- python exercise ---------- */
+.pyed{width:100%;background:#0a0a0e;border:none;border-bottom:1px solid var(--border);color:#d6d3f0;font-family:var(--mono);font-size:13px;line-height:1.6;padding:14px;min-height:170px;resize:vertical;outline:none;tab-size:4}
+.pybar{display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--bg2)}
+.pyout{background:#0a0a0e;border-top:1px solid var(--border);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;color:#b8b8c4;min-height:30px;max-height:260px;overflow-y:auto}
+.pyout .perr{color:var(--red)}
+.pyout .pok{color:var(--green)}
+/* ---------- playground ---------- */
+.pg textarea{min-height:60px;resize:vertical;font-family:var(--mono);font-size:13px;margin:6px 0}
+.pgout{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;margin-top:10px;font-size:14px;white-space:pre-wrap;min-height:50px}
+.pgmeta{font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:6px}
+.keywarn{border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.06);border-radius:10px;padding:12px 14px;font-size:13.5px;margin:10px 0}
+.keyinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 12px;font-family:var(--mono);font-size:13px;outline:none;margin:8px 0}
+@media(max-width:860px){
+  .sidebar{position:fixed;left:0;top:0;z-index:40;transform:translateX(-100%);transition:transform .25s;width:290px}
+  .sidebar.open{transform:none;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  .topbar{display:flex}
+  .content{padding:26px 18px 90px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <div class="topbar">
+      <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="font-size:20px">☰</button>
+      <b style="font-size:14px">Zero to AI Engineer</b>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script src="data/glossary.js"></script>
+<script src="data/level1.js"></script>
+<script src="data/level2.js"></script>
+<script src="data/level3.js"></script>
+<script src="data/level4.js"></script>
+<script src="data/level5.js"></script>
+<script src="data/level6.js"></script>
+<script>
+/* ================= state ================= */
+const LEVELS = window.COURSE_LEVELS || [];
+const GLOSSARY = window.GLOSSARY || {};
+const LKEY='z2ai_progress_v1';
+let P = {}; try{ P = JSON.parse(localStorage.getItem(LKEY)||'{}'); }catch(e){ P={}; }
+function save(){ localStorage.setItem(LKEY, JSON.stringify(P)); }
+function isDone(id){ return !!P[id]; }
+const COLORS=['#34d399','#22d3ee','#a78bfa','#fbbf24','#fb923c','#f87171'];
+
+function allLessons(){ const out=[]; LEVELS.forEach((lv,li)=>{ lv.chapters.forEach(ch=>ch.lessons.forEach(l=>out.push({...l,_lv:li,_ch:ch.title}))); if(lv.project) out.push({...lv.project,_lv:li,_gate:true,_ch:'Project Gate'}); }); return out; }
+function levelStats(lv,li){ let t=0,d=0; lv.chapters.forEach(ch=>ch.lessons.forEach(l=>{t++; if(isDone(l.id))d++;})); if(lv.project){t++; if(isDone(lv.project.id))d++;} return {t,d}; }
+
+/* ================= glossary inline ================= */
+function gloss(html){
+  return html.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(m,term,show)=>{
+    const def=GLOSSARY[term.toLowerCase()];
+    const txt=show||term;
+    if(!def) return txt;
+    return `<span class="gl" data-def="${def.replace(/"/g,'&quot;')}">${txt}</span>`;
+  });
+}
+
+/* ================= router ================= */
+function go(view,arg){ location.hash = view + (arg?'/'+arg:''); }
+window.addEventListener('hashchange', render);
+function render(){
+  const h=location.hash.replace('#','');
+  const [view,arg]=h.split('/');
+  document.getElementById('sidebar').classList.remove('open');
+  renderSidebar();
+  const c=document.getElementById('content');
+  if(view==='lesson') renderLesson(arg,c);
+  else if(view==='gate') renderGate(arg,c);
+  else if(view==='glossary') renderGlossary(c);
+  else if(view==='settings') renderSettings(c);
+  else if(view==='review') renderReview(parseInt(arg),c);
+  else renderHome(c);
+  window.scrollTo(0,0);
+}
+
+/* ================= sidebar ================= */
+let openLevels = new Set([0]);
+function renderSidebar(){
+  const sb=document.getElementById('sidebar');
+  const all=allLessons(); const total=all.length; const done=all.filter(l=>isDone(l.id)).length;
+  const cur=(location.hash.match(/lesson\/([^/]+)/)||[])[1];
+  let html=`<div class="logo" onclick="go('home')"><div class="mark">AI</div><div class="nm">Zero to AI Engineer<small>beginner → expert</small></div></div>
+  <div class="overall">${done} / ${total} complete<div class="bar"><i style="width:${total?Math.round(done/total*100):0}%"></i></div></div>`;
+  LEVELS.forEach((lv,li)=>{
+    const st=levelStats(lv,li); const open=openLevels.has(li); const col=COLORS[li%COLORS.length];
+    html+=`<button class="lvlhead" onclick="toggleLevel(${li})"><span class="dot" style="background:${col}22;color:${col};border:1px solid ${col}55">${li+1}</span> ${lv.title}<span class="pc">${st.d}/${st.t}</span></button>`;
+    if(open){
+      lv.chapters.forEach(ch=>{
+        html+=`<div class="chap"><div class="chapname">${ch.title}</div>`;
+        ch.lessons.forEach(l=>{
+          html+=`<button class="lessonlink ${isDone(l.id)?'done':''} ${cur===l.id?'active':''}" onclick="go('lesson','${l.id}')"><span class="st">${isDone(l.id)?'✓':''}</span><span>${l.t}</span></button>`;
+        });
+        html+='</div>';
+      });
+      if(lv.project){
+        const pl=lv.project;
+        html+=`<div class="chap"><div class="chapname">⛩ project gate</div><button class="lessonlink gate ${isDone(pl.id)?'done':''}" onclick="go('gate','${pl.id}')"><span class="st">${isDone(pl.id)?'✓':'★'}</span><span>${pl.t}</span></button>
+        <button class="reviewbtn" onclick="go('review','${li}')">↻ Review checkpoint (Levels 1–${li+1})</button></div>`;
+      }
+    }
+  });
+  html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
+  html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
+  sb.innerHTML=html;
+}
+function toggleLevel(i){ openLevels.has(i)?openLevels.delete(i):openLevels.add(i); renderSidebar(); }
+
+/* ================= home ================= */
+function renderHome(c){
+  const all=allLessons(); const done=all.filter(l=>isDone(l.id)).length;
+  const quizCount=all.reduce((n,l)=>n+((l.quiz&&l.quiz.length)||0),0);
+  let html=`<div class="hero"><h1>Zero to AI Engineer</h1>
+  <p>An interactive course that takes you from "what is a token?" to designing inference systems at scale. Built on the ideas in <em>AI Engineering</em>, the <em>LLM Engineer's Handbook</em>, and <em>Inference Engineering</em> — with labs, projects, and quizzes. No background required. Expertise expected by the end.</p></div>
+  <div class="statrow">
+    <div class="stat"><b>${all.length}</b><span>lessons & gates</span></div>
+    <div class="stat"><b>${quizCount}</b><span>quiz questions</span></div>
+    <div class="stat"><b>${LEVELS.length}</b><span>levels</span></div>
+    <div class="stat"><b>${done}</b><span>completed</span></div>
+  </div>`;
+  LEVELS.forEach((lv,li)=>{
+    const st=levelStats(lv,li); const col=COLORS[li%COLORS.length];
+    const first = lv.chapters[0].lessons[0];
+    html+=`<button class="levelcard" onclick="openLevels.add(${li});go('lesson','${first.id}')">
+      <div class="top"><span class="dot" style="background:${col}22;color:${col};border:1px solid ${col}55">${li+1}</span><h3>${lv.title}</h3></div>
+      <div class="sub">${lv.sub}</div>
+      <div class="meta"><span>${st.t} lessons</span><div class="bar"><i style="width:${st.t?Math.round(st.d/st.t*100):0}%;background:${col}"></i></div><span>${Math.round(st.d/st.t*100)||0}%</span></div>
+    </button>`;
+  });
+  html+=`<div class="callout tip" style="margin-top:26px"><div class="ct">How to use this course</div>Go in order. Read each lesson, play with the interactive demos, pass the quiz, and do every lab on your own computer. Project gates at the end of each level are mandatory — they're where the real learning happens. Your progress is saved in this browser automatically.</div>`;
+  c.innerHTML=html;
+}
+
+/* ================= lesson ================= */
+function findLesson(id){
+  const all=allLessons();
+  const i=all.findIndex(l=>l.id===id);
+  return {l:all[i], prev:all[i-1], next:all[i+1]};
+}
+function renderLesson(id,c){
+  const {l,prev,next}=findLesson(id);
+  if(!l){renderHome(c);return;}
+  if(l._gate){renderGate(id,c);return;}
+  const lv=LEVELS[l._lv];
+  let html=`<div class="crumb"><b>Level ${l._lv+1}: ${lv.title}</b> · ${l._ch}</div>
+  <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
+  <div class="body">${gloss(l.body)}</div>`;
+  if(l.sim) html+=renderSim(l.sim);
+  if(l.term) html+=renderTermEx(l);
+  if(l.py) html+=renderPyEx(l);
+  if(l.quiz&&l.quiz.length) html+=renderQuiz(l);
+  else if(!l.term&&!l.py) html+=`<div style="margin-top:30px"><button class="simbtn" onclick="markDone('${l.id}')">${isDone(l.id)?'✓ Completed':'Mark as complete'}</button></div>`;
+  html+=navBtns(prev,next);
+  c.innerHTML=html;
+  if(l.sim) initSim(l.sim);
+  if(l.term) initTermEx(l);
+  if(l.py) initPyEx(l);
+}
+function exDone(id){ return !!P[id+'_ex']; }
+function navBtns(prev,next){
+  return `<div class="lessonnav">
+    <button class="navbtn" ${prev?`onclick="go('${prev._gate?'gate':'lesson'}','${prev.id}')"`:'disabled'}><small>← Previous</small><span>${prev?prev.t:'—'}</span></button>
+    <button class="navbtn next" ${next?`onclick="go('${next._gate?'gate':'lesson'}','${next.id}')"`:'disabled'}><small>Next →</small><span>${next?next.t:'Course complete!'}</span></button>
+  </div>`;
+}
+function markDone(id){ P[id]=true; save(); render(); }
+
+/* ================= quiz ================= */
+let qSel={};
+function renderQuiz(l){
+  qSel={};
+  let html=`<div class="quiz" id="quiz"><div class="qhead">✏️ Check your understanding <span style="color:var(--dim);font-weight:500;font-size:12px">— all correct to complete the lesson</span></div>`;
+  l.quiz.forEach((q,qi)=>{
+    html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q}</div>`;
+    q.o.forEach((o,oi)=>{
+      html+=`<div class="opt" data-o="${oi}" onclick="pick(${qi},${oi},this)"><span class="ob"></span><span>${o}</span></div>`;
+    });
+    html+=`<div class="expl" id="ex${qi}">${q.e||''}</div></div>`;
+  });
+  html+=`<div class="qfoot"><button class="simbtn" onclick="grade('${l.id}')">Submit answers</button><span class="qmsg" id="qmsg"></span></div></div>`;
+  return html;
+}
+function pick(qi,oi,el){
+  qSel[qi]=oi;
+  el.parentElement.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel','right','wrong'));
+  el.classList.add('sel');
+}
+function grade(id){
+  const {l}=findLesson(id);
+  let allRight=true;
+  l.quiz.forEach((q,qi)=>{
+    const qq=document.querySelector(`.qq[data-q="${qi}"]`);
+    const opts=qq.querySelectorAll('.opt');
+    opts.forEach(o=>o.classList.remove('right','wrong'));
+    const sel=qSel[qi];
+    if(sel===undefined){allRight=false;return;}
+    if(sel===q.a){opts[sel].classList.add('right');}
+    else{opts[sel].classList.add('wrong');opts[q.a].classList.add('right');allRight=false;}
+    document.getElementById('ex'+qi).classList.add('show');
+  });
+  const msg=document.getElementById('qmsg');
+  if(allRight){
+    if((l.term||l.py)&&!exDone(id)){ msg.textContent='Quiz correct — now finish the hands-on exercise above to complete the lesson'; msg.className='qmsg no'; P[id+'_quiz']=true; save(); return; }
+    msg.textContent='✓ Passed — lesson complete'; msg.className='qmsg ok'; P[id]=true; save(); renderSidebar();
+  }
+  else { msg.textContent='Not quite — review the explanations and try again'; msg.className='qmsg no'; }
+}
+function maybeComplete(l){
+  // called when an exercise finishes: complete lesson if quiz also passed (or no quiz)
+  if(!l.quiz||!l.quiz.length||P[l.id+'_quiz']){ P[l.id]=true; }
+  save(); renderSidebar();
+}
+
+/* ================= project gate ================= */
+function renderGate(id,c){
+  const all=allLessons(); const i=all.findIndex(l=>l.id===id); const g=all[i];
+  if(!g){renderHome(c);return;}
+  const prev=all[i-1],next=all[i+1];
+  const ck=P[id+'_ck']||[];
+  let html=`<div class="crumb"><b>Level ${g._lv+1} Project Gate</b></div>
+  <h1 class="ltitle">⛩ ${g.t}</h1><div class="lmeta">Mandatory project — build it for real before moving on ${isDone(id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
+  <div class="body">${gloss(g.body)}</div>
+  <div class="gatecard"><div style="font-weight:700;margin-bottom:10px">✅ Completion checklist — check each item only when it's true</div>`;
+  g.checklist.forEach((item,ci)=>{
+    const on=ck.includes(ci);
+    html+=`<div class="check ${on?'on':''}" onclick="toggleCheck('${id}',${ci})"><span class="cb">${on?'✓':''}</span><span>${item}</span></div>`;
+  });
+  html+=`</div>`;
+  html+=navBtns(prev,next);
+  c.innerHTML=html;
+}
+function toggleCheck(id,ci){
+  let ck=P[id+'_ck']||[];
+  ck=ck.includes(ci)?ck.filter(x=>x!==ci):[...ck,ci];
+  P[id+'_ck']=ck;
+  const all=allLessons(); const g=all.find(l=>l.id===id);
+  P[id]=ck.length===g.checklist.length;
+  save(); render();
+}
+
+/* ================= review checkpoint ================= */
+function renderReview(maxLv,c){
+  const pool=[];
+  LEVELS.slice(0,maxLv+1).forEach((lv,li)=>lv.chapters.forEach(ch=>ch.lessons.forEach(l=>(l.quiz||[]).forEach(q=>pool.push({...q,from:l.t})))));
+  const pick=[...pool].sort(()=>Math.random()-.5).slice(0,8);
+  window._review=pick; qSel={};
+  let html=`<h1 class="ltitle">↻ Review checkpoint</h1><div class="lmeta">8 random questions from Levels 1–${maxLv+1}. Spaced repetition: if you miss any, revisit that lesson.</div><div class="quiz" id="quiz"><div class="qhead">Mixed review</div>`;
+  pick.forEach((q,qi)=>{
+    html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q} <span style="color:var(--dim);font-weight:400;font-size:12px">(${q.from})</span></div>`;
+    q.o.forEach((o,oi)=>{html+=`<div class="opt" data-o="${oi}" onclick="pick(${qi},${oi},this)"><span class="ob"></span><span>${o}</span></div>`;});
+    html+=`<div class="expl" id="ex${qi}">${q.e||''}</div></div>`;
+  });
+  html+=`<div class="qfoot"><button class="simbtn" onclick="gradeReview()">Submit</button><span class="qmsg" id="qmsg"></span></div></div>
+  <div style="margin-top:20px"><button class="navbtn" onclick="go('home')"><small>←</small><span>Back home</span></button></div>`;
+  c.innerHTML=html;
+}
+function gradeReview(){
+  let right=0;
+  window._review.forEach((q,qi)=>{
+    const qq=document.querySelector(`.qq[data-q="${qi}"]`);
+    const opts=qq.querySelectorAll('.opt');
+    const sel=qSel[qi];
+    if(sel===q.a){opts[sel].classList.add('right');right++;}
+    else if(sel!==undefined){opts[sel].classList.add('wrong');opts[q.a].classList.add('right');}
+    else opts[q.a].classList.add('right');
+    document.getElementById('ex'+qi).classList.add('show');
+  });
+  const msg=document.getElementById('qmsg');
+  msg.textContent=`${right}/${window._review.length} correct`;
+  msg.className='qmsg '+(right===window._review.length?'ok':'no');
+}
+
+/* ================= glossary page ================= */
+function renderGlossary(c){
+  const terms=Object.keys(GLOSSARY).sort();
+  let html=`<h1 class="ltitle">📖 Glossary</h1><div class="lmeta">${terms.length} terms — every piece of jargon in the course, in plain language</div>
+  <input class="glsearch" placeholder="Search terms…" oninput="filterGl(this.value)"><div id="gllist">`;
+  terms.forEach(t=>{html+=`<div class="glitem" data-t="${t}"><b>${t}</b><p>${GLOSSARY[t]}</p></div>`;});
+  c.innerHTML=html+'</div>';
+}
+function filterGl(v){
+  v=v.toLowerCase();
+  document.querySelectorAll('.glitem').forEach(el=>{
+    el.style.display=(el.dataset.t.includes(v)||el.textContent.toLowerCase().includes(v))?'':'none';
+  });
+}
+
+/* ================= simulations ================= */
+function renderSim(name){
+  const titles={playground:'LIVE LAB: real API call — your key, your tokens',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
+  return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
+}
+function initSim(name){
+  const b=document.getElementById('simbody-'+name);
+  if(!b) return;
+  SIMS[name] && SIMS[name](b);
+}
+const SIMS={};
+
+/* tokenizer: crude BPE-ish splitter for intuition */
+SIMS.tokenizer=function(b){
+  b.innerHTML=`<input type="text" id="tkin" value="The unbelievable transformer architecture tokenizes everything!" oninput="SIMS._tok()">
+  <div class="simout" id="tkout"></div><div style="font-size:12px;color:var(--dim);margin-top:8px" id="tkn"></div>`;
+  SIMS._tok=function(){
+    const v=document.getElementById('tkin').value;
+    const parts=[];
+    v.split(/(\s+)/).forEach(w=>{
+      if(/^\s+$/.test(w)||w==='')return;
+      if(w.length<=4){parts.push(w);return;}
+      let rest=w;
+      const common=['ing','tion','ed','er','es','ly','un','re','ble','ize','iz','arch','itect','ure','trans','form','token','every','thing','believ'];
+      let out=[];
+      while(rest.length>4){
+        let cut=false;
+        for(const c of common){ if(rest.toLowerCase().startsWith(c)&&rest.length-c.length>=2){out.push(rest.slice(0,c.length));rest=rest.slice(c.length);cut=true;break;} }
+        if(!cut){out.push(rest.slice(0,4));rest=rest.slice(4);}
+      }
+      if(rest)out.push(rest);
+      parts.push(...out);
+    });
+    const cols=['#7c6cf6','#22d3ee','#34d399','#fbbf24','#fb923c','#f87171','#a78bfa'];
+    document.getElementById('tkout').innerHTML=parts.map((p,i)=>`<span class="tok" style="background:${cols[i%cols.length]}26;color:${cols[i%cols.length]};border:1px solid ${cols[i%cols.length]}44">${p}</span>`).join('');
+    document.getElementById('tkn').textContent=`≈ ${parts.length} tokens (real tokenizers differ, but this is the idea: common pieces become single tokens; rare words get split)`;
+  };
+  SIMS._tok();
+};
+
+/* temperature sampling over toy distribution */
+SIMS.temperature=function(b){
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Prompt: <i>“The capital of France is”</i> — the model's raw preferences for the next token:</p>
+  <div class="row"><span class="lbl">Temperature</span><input type="range" id="tmp" min="0" max="200" value="70" oninput="SIMS._temp()"><span class="val" id="tmpv">0.7</span></div>
+  <div id="tmpbars"></div>
+  <div class="row" style="margin-top:12px"><button class="simbtn" onclick="SIMS._tsample()">Sample next token 20×</button><span id="tsout" style="font-family:var(--mono);font-size:12.5px;color:var(--muted)"></span></div>`;
+  const logits=[['Paris',8],['the',4.5],['a',4],['located',3.4],['beautiful',2.8],['Lyon',2.2]];
+  SIMS._tprobs=function(){
+    const t=Math.max(parseInt(document.getElementById('tmp').value)/100,0.01);
+    const exps=logits.map(([w,l])=>Math.exp(l/t));
+    const s=exps.reduce((a,b)=>a+b,0);
+    return logits.map(([w],i)=>[w,exps[i]/s]);
+  };
+  SIMS._temp=function(){
+    const t=parseInt(document.getElementById('tmp').value)/100;
+    document.getElementById('tmpv').textContent=t.toFixed(2);
+    const probs=SIMS._tprobs();
+    document.getElementById('tmpbars').innerHTML=probs.map(([w,p])=>`<div class="barrow"><span class="bl">${w}</span><div class="bv" style="width:${Math.max(p*420,2)}px"></div><span class="bn">${(p*100).toFixed(1)}%</span></div>`).join('');
+  };
+  SIMS._tsample=function(){
+    const probs=SIMS._tprobs();
+    let out=[];
+    for(let i=0;i<20;i++){
+      let r=Math.random(),acc=0,chosen=probs[0][0];
+      for(const [w,p] of probs){acc+=p;if(r<=acc){chosen=w;break;}}
+      out.push(chosen);
+    }
+    document.getElementById('tsout').textContent=out.join(' · ');
+  };
+  SIMS._temp();
+};
+
+/* embeddings: 2D toy map + cosine */
+SIMS.embedding=function(b){
+  const words={king:[8,8],queen:[7.6,8.4],man:[6,5],woman:[5.6,5.4],apple:[1,2],banana:[1.4,1.6],fruit:[1.8,2.4],paris:[4,9],france:[4.5,9.3],tokyo:[3.5,8.6]};
+  b.innerHTML=`<div class="row"><span class="lbl">Word A</span><select id="ea" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">${Object.keys(words).map(w=>`<option>${w}</option>`).join('')}</select>
+  <span class="lbl" style="min-width:60px">Word B</span><select id="eb" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">${Object.keys(words).map((w,i)=>`<option ${i===1?'selected':''}>${w}</option>`).join('')}</select></div>
+  <div class="simout" id="eout"></div>
+  <p style="font-size:12px;color:var(--dim);margin-top:8px">Real embeddings have 1,000+ dimensions, not 2 — but the principle is identical: similar meaning ⇒ vectors point the same way ⇒ high cosine similarity.</p>`;
+  const upd=()=>{
+    const a=words[document.getElementById('ea').value], c=words[document.getElementById('eb').value];
+    const dot=a[0]*c[0]+a[1]*c[1];
+    const cos=dot/(Math.hypot(...a)*Math.hypot(...c));
+    const pct=Math.max((cos-0.5)/0.5,0)*100;
+    document.getElementById('eout').innerHTML=`Vector A = [${a}]   Vector B = [${c}]<br>Cosine similarity = <b style="color:var(--accent2)">${cos.toFixed(3)}</b>
+    <div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:6px;font-size:13px;color:${cos>0.97?'var(--green)':cos>0.9?'var(--amber)':'var(--red)'}">${cos>0.97?'Very similar meaning':cos>0.9?'Somewhat related':'Different concepts'}</div>`;
+  };
+  document.getElementById('ea').onchange=upd; document.getElementById('eb').onchange=upd; upd();
+};
+
+/* chunking */
+SIMS.chunking=function(b){
+  const text="AI engineering is the discipline of building applications on top of foundation models. Unlike classical machine learning, you usually start from a model someone else trained. Your job is to adapt it: with prompts, with retrieved context, or with fine-tuning. Evaluation is the hardest part of the job. Without reliable evaluation, you cannot tell whether any change made your system better or worse. Retrieval-augmented generation grounds the model in your own documents. It splits documents into chunks, embeds them, and retrieves the most relevant ones at question time.";
+  b.innerHTML=`<div class="row"><span class="lbl">Chunk size (chars)</span><input type="range" id="cs" min="40" max="300" value="120" oninput="SIMS._chunk()"><span class="val" id="csv">120</span></div><div class="simout" id="cout"></div>`;
+  SIMS._chunk=function(){
+    const n=parseInt(document.getElementById('cs').value);
+    document.getElementById('csv').textContent=n;
+    const cols=['#7c6cf6','#22d3ee','#34d399','#fbbf24','#fb923c','#f87171'];
+    let chunks=[],i=0;
+    while(i<text.length){
+      let end=Math.min(i+n,text.length);
+      if(end<text.length){const sp=text.lastIndexOf(' ',end); if(sp>i)end=sp;}
+      chunks.push(text.slice(i,end)); i=end+1;
+    }
+    document.getElementById('cout').innerHTML=chunks.map((c,ci)=>`<span style="background:${cols[ci%cols.length]}1f;border-bottom:2px solid ${cols[ci%cols.length]};padding:1px 2px">${c}</span>`).join(' ')+`<div style="margin-top:10px;font-size:12.5px;color:var(--dim)">${chunks.length} chunks. Small chunks = precise retrieval but lost context. Big chunks = more context but diluted relevance.</div>`;
+  };
+  SIMS._chunk();
+};
+
+/* mini RAG retrieval */
+SIMS.rag=function(b){
+  const docs=[
+    "Refund policy: customers may return any item within 30 days for a full refund.",
+    "Shipping: standard delivery takes 3-5 business days within the country.",
+    "Warranty: all electronics include a 2-year manufacturer warranty.",
+    "Support hours: our help desk is open Monday to Friday, 9am to 6pm.",
+    "Loyalty program: members earn 2 points per dollar spent on every purchase."
+  ];
+  b.innerHTML=`<input type="text" id="rq" value="how long do I have to return something?" oninput="SIMS._rag()">
+  <div class="simout" id="rout"></div>
+  <p style="font-size:12px;color:var(--dim);margin-top:8px">This demo scores by word overlap. Real RAG uses embedding similarity — same idea, much smarter matching.</p>`;
+  SIMS._rag=function(){
+    const q=document.getElementById('rq').value.toLowerCase().split(/\W+/).filter(w=>w.length>2);
+    const scored=docs.map(d=>{
+      const dw=d.toLowerCase().split(/\W+/);
+      const score=q.filter(w=>dw.some(x=>x.startsWith(w.slice(0,4)))).length;
+      return {d,score};
+    }).sort((a,b)=>b.score-a.score);
+    const max=Math.max(scored[0].score,1);
+    document.getElementById('rout').innerHTML=scored.map((s,i)=>`<div class="barrow" style="align-items:flex-start"><div class="bv" style="width:${Math.max(s.score/max*90,3)}px;background:${i===0&&s.score>0?'var(--green)':'var(--accent)'}"></div><span style="font-size:12.5px;color:${i===0&&s.score>0?'var(--text)':'var(--dim)'}">${s.d} <b style="color:var(--accent2)">(score ${s.score})</b></span></div>`).join('')+`<div style="margin-top:8px;font-size:12.5px;color:var(--green)">${scored[0].score>0?'→ Top chunk gets pasted into the prompt as context.':'No match — the model would have to answer without grounding (risky!).'}</div>`;
+  };
+  SIMS._rag();
+};
+
+/* cost calculator */
+SIMS.costcalc=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Requests / day</span><input type="range" id="cc1" min="1" max="1000" value="100" oninput="SIMS._cc()"><span class="val" id="cc1v"></span></div>
+  <div class="row"><span class="lbl">Input tokens / request</span><input type="range" id="cc2" min="100" max="20000" step="100" value="2000" oninput="SIMS._cc()"><span class="val" id="cc2v"></span></div>
+  <div class="row"><span class="lbl">Output tokens / request</span><input type="range" id="cc3" min="50" max="4000" step="50" value="500" oninput="SIMS._cc()"><span class="val" id="cc3v"></span></div>
+  <div class="row"><span class="lbl">Model tier</span><select id="cc4" onchange="SIMS._cc()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px"><option value="0.15,0.6">Small (e.g. gpt-4o-mini class)</option><option value="2.5,10">Frontier (e.g. gpt-4o class)</option><option value="15,60">Premium reasoning class</option></select></div>
+  <div class="simout" id="ccout"></div>`;
+  SIMS._cc=function(){
+    const r=+document.getElementById('cc1').value, ti=+document.getElementById('cc2').value, to=+document.getElementById('cc3').value;
+    const [pi,po]=document.getElementById('cc4').value.split(',').map(Number);
+    document.getElementById('cc1v').textContent=r; document.getElementById('cc2v').textContent=ti; document.getElementById('cc3v').textContent=to;
+    const day=(r*ti/1e6*pi)+(r*to/1e6*po);
+    document.getElementById('ccout').innerHTML=`Daily: <b style="color:var(--accent2)">$${day.toFixed(2)}</b> · Monthly: <b style="color:${day*30>1000?'var(--red)':day*30>100?'var(--amber)':'var(--green)'}">$${(day*30).toFixed(2)}</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">Notice: input tokens usually dominate cost in RAG apps (long contexts), and a frontier model is ~17× the price of a small one. Model choice is a cost decision.</div>`;
+  };
+  SIMS._cc();
+};
+
+/* context window */
+SIMS.context=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Conversation length (messages)</span><input type="range" id="cw" min="2" max="60" value="10" oninput="SIMS._cw()"><span class="val" id="cwv"></span></div><div class="simout" id="cwout"></div>`;
+  SIMS._cw=function(){
+    const n=+document.getElementById('cw').value;
+    document.getElementById('cwv').textContent=n;
+    const tokens=n*350, win=8000;
+    const over=tokens>win;
+    let html=`<div style="font-size:13px">≈ ${tokens.toLocaleString()} tokens of history · window = ${win.toLocaleString()} tokens</div><div class="bar" style="margin-top:8px;height:14px"><i style="width:${Math.min(tokens/win*100,100)}%;background:${over?'var(--red)':'var(--accent)'}"></i></div>`;
+    html+=`<div style="margin-top:8px;font-size:12.5px;color:${over?'var(--red)':'var(--dim)'}">${over?`Overflow! The oldest ${Math.ceil((tokens-win)/350)} messages get cut off — the model literally cannot see them anymore. This is why chatbots "forget".`:'Everything still fits — the model can see the whole conversation.'}</div>`;
+    document.getElementById('cwout').innerHTML=html;
+  };
+  SIMS._cw();
+};
+
+/* quantization */
+SIMS.quant=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Precision</span><select id="qp" onchange="SIMS._q()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">
+  <option value="16">FP16 — 16 bits/weight</option><option value="8">INT8 — 8 bits/weight</option><option value="4" selected>INT4 — 4 bits/weight</option><option value="2">2-bit (extreme)</option></select>
+  <span class="lbl" style="min-width:80px">Model size</span><select id="qm" onchange="SIMS._q()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px"><option value="7">7B params</option><option value="70">70B params</option><option value="405">405B params</option></select></div>
+  <div class="simout" id="qout"></div>`;
+  SIMS._q=function(){
+    const bits=+document.getElementById('qp').value, p=+document.getElementById('qm').value;
+    const gb=p*bits/8;
+    const qual={16:'~100% (reference quality)',8:'~99% — nearly free win',4:'~97-98% — the sweet spot for most uses',2:'~80-90% — noticeable damage, niche only'}[bits];
+    const fits=gb<=24?'fits on one consumer GPU (24 GB)':gb<=80?'needs one datacenter GPU (80 GB)':`needs ${Math.ceil(gb/80)} × 80 GB GPUs`;
+    document.getElementById('qout').innerHTML=`Memory for weights: <b style="color:var(--accent2)">${gb.toFixed(1)} GB</b> → ${fits}<br>Typical quality retained: <b style="color:${bits>=4?'var(--green)':'var(--red)'}">${qual}</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">Lower precision also means fewer bytes to move from memory → faster decoding, since LLM decoding is memory-bandwidth-bound.</div>`;
+  };
+  SIMS._q();
+};
+
+/* batching */
+SIMS.batching=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Batch size</span><input type="range" id="bs" min="1" max="64" value="8" oninput="SIMS._b()"><span class="val" id="bsv"></span></div><div class="simout" id="bout"></div>`;
+  SIMS._b=function(){
+    const n=+document.getElementById('bs').value;
+    document.getElementById('bsv').textContent=n;
+    const thr=Math.round(40*n/(1+n*0.02));
+    const lat=Math.round(25*(1+n*0.02));
+    document.getElementById('bout').innerHTML=
+    `<div class="barrow"><span class="bl">Throughput</span><div class="bv" style="width:${thr/2200*420}px;background:var(--green)"></div><span class="bn">${thr.toLocaleString()} tok/s total</span></div>
+    <div class="barrow"><span class="bl">Per-token latency</span><div class="bv" style="width:${lat*4}px;background:var(--amber)"></div><span class="bn">${lat} ms/token per user</span></div>
+    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Batching reuses one weight-load from memory across many users — throughput scales almost linearly while each user's latency degrades only slightly. This is THE core economics of inference serving.</div>`;
+  };
+  SIMS._b();
+};
+
+/* KV cache */
+SIMS.kvcache=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Tokens generated so far</span><input type="range" id="kv" min="10" max="2000" value="300" oninput="SIMS._kv()"><span class="val" id="kvv"></span></div><div class="simout" id="kvout"></div>`;
+  SIMS._kv=function(){
+    const n=+document.getElementById('kv').value;
+    document.getElementById('kvv').textContent=n;
+    const naive=n*(n+1)/2, cached=n;
+    document.getElementById('kvout').innerHTML=
+    `<div class="barrow"><span class="bl">Without KV cache</span><div class="bv" style="width:${Math.min(naive/2001000*420,420)}px;background:var(--red)"></div><span class="bn">${naive.toLocaleString()} token-computations</span></div>
+    <div class="barrow"><span class="bl">With KV cache</span><div class="bv" style="width:${Math.max(cached/2001000*420,2)}px;background:var(--green)"></div><span class="bn">${cached.toLocaleString()}</span></div>
+    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Without caching, every new token would recompute attention over ALL previous tokens from scratch (quadratic). The KV cache stores past keys/values so each new token costs one step. Price: the cache eats GPU memory — and managing that memory is half of inference engineering.</div>`;
+  };
+  SIMS._kv();
+};
+
+/* speculative decoding */
+SIMS.speculative=function(b){
+  b.innerHTML=`<div class="row"><span class="lbl">Draft acceptance rate</span><input type="range" id="sp" min="10" max="95" value="70" oninput="SIMS._sp()"><span class="val" id="spv"></span></div><div class="simout" id="spout"></div>`;
+  SIMS._sp=function(){
+    const a=+document.getElementById('sp').value/100;
+    document.getElementById('spv').textContent=Math.round(a*100)+'%';
+    const k=4;
+    const accepted=(1-Math.pow(a,k+1))/(1-a);
+    const speed=accepted/(1+k*0.15);
+    document.getElementById('spout').innerHTML=`Drafting ${k} tokens per round with a small model, verifying with the big one:<br>Expected tokens accepted per big-model pass: <b style="color:var(--accent2)">${accepted.toFixed(2)}</b><br>Effective speedup: <b style="color:${speed>1.3?'var(--green)':'var(--amber)'}">${speed.toFixed(2)}×</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">When the draft model guesses well (predictable text, code), speculation flies. When acceptance drops, you pay for drafting and get nothing — speculation can even slow you down.</div>`;
+  };
+  SIMS._sp();
+};
+
+/* attention toy */
+SIMS.attention=function(b){
+  const sent=['The','cat','sat','on','the','mat','because','it','was','soft'];
+  const att={7:[[1,0.62],[5,0.23],[9,0.08]],9:[[5,0.55],[1,0.2],[8,0.1]],2:[[1,0.7],[0,0.15]]};
+  b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Click a word to see what it "attends to" (toy weights):</p><div id="atw" style="line-height:2.4"></div><div class="simout" id="atout">Click <b>it</b> — what does the model think "it" refers to?</div>`;
+  const draw=(sel)=>{
+    document.getElementById('atw').innerHTML=sent.map((w,i)=>{
+      let bg='var(--bg3)',col='var(--muted)';
+      if(i===sel){bg='var(--accent)';col='#fff';}
+      else if(sel!==undefined&&att[sel]){const f=att[sel].find(x=>x[0]===i); if(f){bg=`rgba(34,211,238,${f[1]})`;col='#fff';}}
+      return `<span class="tok" style="background:${bg};color:${col};cursor:pointer;padding:4px 10px" onclick="SIMS._at(${i})">${w}</span>`;
+    }).join('');
+  };
+  SIMS._at=function(i){
+    draw(i);
+    const a=att[i];
+    document.getElementById('atout').innerHTML=a?`<b>"${sent[i]}"</b> attends most to: ${a.map(([j,w])=>`<b style="color:var(--cyan)">${sent[j]}</b> (${Math.round(w*100)}%)`).join(', ')} — attention is how the model resolves references and relationships between tokens.`:`<b>"${sent[i]}"</b> — this toy demo only has interesting weights for <b>it</b>, <b>sat</b> and <b>soft</b>. Try those!`;
+  };
+  draw();
+};
+
+/* ================= API key & live calls ================= */
+function getKey(){ return localStorage.getItem('z2ai_key')||''; }
+function renderSettings(c){
+  const k=getKey();
+  c.innerHTML=`<h1 class="ltitle">🔑 Connect your OpenAI API key</h1>
+  <div class="lmeta">Powers the live labs: real model calls, real evals, fine-tune verification</div>
+  <div class="body">
+  <p>Your key is stored <strong>only in this browser</strong> (localStorage) and sent <strong>only to api.openai.com</strong> — never anywhere else. This whole app is a local file; there is no server behind it.</p>
+  <input class="keyinput" id="keyin" type="password" placeholder="sk-..." value="${k}">
+  <div class="row" style="display:flex;gap:10px;margin-top:6px">
+    <button class="simbtn" onclick="saveKey()">Save & test</button>
+    <button class="simbtn ghost" onclick="localStorage.removeItem('z2ai_key');renderSettings(document.getElementById('content'))">Remove key</button>
+  </div>
+  <div class="simout" id="keyout" style="margin-top:14px">${k?'Key saved. Click "Save & test" to verify it works.':'No key yet. Get one at platform.openai.com → API keys (the Level 2 lab walks you through it).'}</div>
+  <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>Set a monthly spending cap in your OpenAI billing settings. Course labs use gpt-4o-mini and cost cents, but caps protect you from mistakes — that's an engineering habit, not paranoia.</div>
+  </div>`;
+}
+async function saveKey(){
+  const k=document.getElementById('keyin').value.trim();
+  const out=document.getElementById('keyout');
+  if(!k){out.textContent='Paste a key first.';return;}
+  localStorage.setItem('z2ai_key',k);
+  out.textContent='Testing key against api.openai.com…';
+  try{
+    const r=await llm([{role:'user',content:'Reply with exactly: OK'}],{max_tokens:5});
+    out.innerHTML='<span style="color:var(--green)">✓ Key works! Model replied: "'+r.text.trim()+'" — the live labs are now unlocked.</span>';
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+e.message+'</span>'; }
+  renderSidebar();
+}
+async function llm(messages,opts={}){
+  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const body={model:opts.model||'gpt-4o-mini',messages,temperature:opts.temperature??0.7};
+  if(opts.max_tokens)body.max_tokens=opts.max_tokens;
+  if(opts.response_format)body.response_format=opts.response_format;
+  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+    body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
+  const j=await res.json();
+  return {text:j.choices[0].message.content,usage:j.usage};
+}
+function costOf(usage,model){
+  const p=model==='gpt-4o'?[2.5,10]:[0.15,0.6];
+  return (usage.prompt_tokens*p[0]+usage.completion_tokens*p[1])/1e6;
+}
+
+/* ================= terminal exercise ================= */
+let termState={};
+function renderTermEx(l){
+  const done=exDone(l.id);
+  let html=`<div class="exo" id="termex"><div class="exhead ${done?'done':''}" id="termhead">${done?'✓ exercise complete':'⌨ hands-on: do it in the terminal below'}</div>
+  <div class="tasklist" id="termtasks"></div>
+  <div class="termwin" id="termwin" onclick="var i=document.getElementById('termin');i&&i.focus()"></div>
+  <div class="terminrow"><span class="tps" id="termps">you@ai-course:~$</span><input id="termin" autocomplete="off" spellcheck="false"></div></div>`;
+  return html;
+}
+function termTasksHtml(l){
+  const ti=termState.i;
+  return l.term.tasks.map((t,i)=>`<div class="taskitem ${i<ti?'tdone':i===ti?'cur':''}"><span class="ti">${i<ti?'✓':i===ti?'▸':'·'}</span><span>${t.desc}</span></div>`).join('');
+}
+function tprint(html,cls){
+  const w=document.getElementById('termwin');
+  const d=document.createElement('div');d.className='tline '+(cls||'tout');d.innerHTML=html;
+  w.appendChild(d);w.scrollTop=w.scrollHeight;
+}
+function initTermEx(l){
+  termState={i:exDone(l.id)?l.term.tasks.length:0,fails:0,cwd:'~'};
+  document.getElementById('termtasks').innerHTML=termTasksHtml(l);
+  tprint(l.term.intro||'This is a practice terminal. It behaves like the real one. Work through the tasks above.','thint');
+  const inp=document.getElementById('termin');
+  inp.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const cmd=inp.value;inp.value='';
+    handleTermCmd(l,cmd.trim());
+  });
+  updatePs();
+}
+function updatePs(){ document.getElementById('termps').textContent=`you@ai-course:${termState.cwd}$`; }
+function handleTermCmd(l,cmd){
+  tprint(`<span class="tps">you@ai-course:${termState.cwd}$</span> ${escapeHtml(cmd)}`);
+  if(!cmd)return;
+  const tasks=l.term.tasks;
+  if(termState.i<tasks.length){
+    const t=tasks[termState.i];
+    if(new RegExp(t.expect).test(cmd)){
+      if(t.out)tprint(t.out.replace(/\n/g,'<br>'));
+      if(t.cd)termState.cwd=t.cd;
+      termState.i++;termState.fails=0;
+      document.getElementById('termtasks').innerHTML=termTasksHtml(l);
+      updatePs();
+      if(termState.i>=tasks.length){
+        tprint('🎉 All tasks complete. This is exactly what you will type on your real machine.','thint');
+        P[l.id+'_ex']=true;maybeComplete(l);
+        document.getElementById('termhead').className='exhead done';
+        document.getElementById('termhead').textContent='✓ exercise complete';
+      }
+      return;
+    }
+  }
+  // generic fallbacks so it feels real
+  const generic=termGeneric(cmd);
+  if(generic!==null){ if(generic)tprint(generic.replace(/\n/g,'<br>')); }
+  else tprint(`bash: ${escapeHtml(cmd.split(' ')[0])}: command not found`,'terr');
+  if(termState.i<tasks.length){
+    termState.fails++;
+    if(termState.fails>=2){ tprint('hint: '+tasks[termState.i].hint,'thint'); termState.fails=0; }
+  }
+}
+function termGeneric(cmd){
+  const c=cmd.toLowerCase();
+  if(c==='pwd')return '/home/you'+(termState.cwd==='~'?'':termState.cwd.replace('~',''));
+  if(c==='ls')return termState.cwd.includes('ai-course')?'venv  hello.py  .env':'Desktop  Documents  Downloads  ai-course';
+  if(c==='cd ..'){termState.cwd='~';updatePs();return '';}
+  if(c==='clear'){document.getElementById('termwin').innerHTML='';return '';}
+  if(c.startsWith('echo '))return escapeHtml(cmd.slice(5));
+  if(c==='whoami')return 'you';
+  if(c.startsWith('python')&&c.includes('--version'))return 'Python 3.12.4';
+  if(c.startsWith('pip')&&c.includes('--version'))return 'pip 24.0';
+  if(c==='help'||c==='?')return 'Try the current task shown above. After 2 wrong tries you get a hint.';
+  return null;
+}
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ================= python exercise (Pyodide) ================= */
+let pyodideReady=null;
+function loadPyodide_(){
+  if(pyodideReady)return pyodideReady;
+  pyodideReady=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload=async()=>{try{resolve(await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}));}catch(e){reject(e);}};
+    s.onerror=()=>reject(new Error('Could not load Python runtime — check your internet connection.'));
+    document.head.appendChild(s);
+  });
+  return pyodideReady;
+}
+function renderPyEx(l){
+  const done=exDone(l.id);
+  return `<div class="exo"><div class="exhead ${done?'done':''}" id="pyhead">${done?'✓ exercise complete':'🐍 hands-on: write & run real Python'}</div>
+  <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${l.py.task}</div>
+  <textarea class="pyed" id="pyed" spellcheck="false">${escapeHtml(l.py.starter||'')}</textarea>
+  <div class="pybar"><button class="simbtn" id="pyrun" onclick="runPy()">▶ Run</button><span style="font-size:12px;color:var(--dim)" id="pystat">Python runs right here in your browser — first run downloads the runtime (~10s)</span></div>
+  <div class="pyout" id="pyout"></div></div>`;
+}
+let curPyLesson=null;
+function initPyEx(l){ curPyLesson=l; }
+function pyCheck(chk,stdout,code){
+  if(chk.stdoutIncludes){for(const s of chk.stdoutIncludes){if(!stdout.includes(s))return {ok:false,why:'Expected the output to include: '+JSON.stringify(s)};}}
+  if(chk.stdoutRegex&&!new RegExp(chk.stdoutRegex,'m').test(stdout))return {ok:false,why:chk.failMsg||'Output does not match what the task asked for yet.'};
+  if(chk.codeIncludes){for(const s of chk.codeIncludes){if(!code.includes(s))return {ok:false,why:'Your code should use: '+s};}}
+  return {ok:true,why:''};
+}
+async function runPy(){
+  const l=curPyLesson, out=document.getElementById('pyout'), stat=document.getElementById('pystat');
+  const code=document.getElementById('pyed').value;
+  out.textContent='';stat.textContent='Loading Python…';
+  let py;
+  try{ py=await loadPyodide_(); }catch(e){ out.innerHTML='<span class="perr">'+e.message+'</span>'; stat.textContent=''; return; }
+  stat.textContent='Running…';
+  let stdout='';
+  py.setStdout({batched:s=>{stdout+=s+'\n';}});
+  py.setStderr({batched:s=>{stdout+=s+'\n';}});
+  try{
+    await py.runPythonAsync(code);
+    out.textContent=stdout||'(no output — did you forget print()?)';
+    const {ok,why}=pyCheck(l.py.check,stdout,code);
+    if(ok){
+      out.innerHTML+= '\n<span class="pok">✓ Check passed — exercise complete!</span>';
+      P[l.id+'_ex']=true;maybeComplete(l);
+      document.getElementById('pyhead').className='exhead done';
+      document.getElementById('pyhead').textContent='✓ exercise complete';
+    }else{
+      out.innerHTML+='\n<span class="perr">✗ Not yet: '+escapeHtml(why)+'</span>'+(l.py.hint?'\n<span style="color:var(--amber)">hint: '+escapeHtml(l.py.hint)+'</span>':'');
+    }
+  }catch(e){
+    out.innerHTML='<span class="perr">'+escapeHtml(String(e).split('\n').slice(-3).join('\n'))+'</span>\n<span style="color:var(--amber)">Errors are information — read the last line: it names the problem and the line number.</span>';
+  }
+  stat.textContent='';
+}
+
+/* ================= live playground sim ================= */
+SIMS.playground=function(b){
+  if(!getKey()){
+    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab — it calls the real OpenAI API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+    return;
+  }
+  b.innerHTML=`<div class="row"><span class="lbl">System prompt</span></div>
+  <textarea id="pgsys" class="keyinput" style="font-family:var(--mono);min-height:46px">You are a helpful assistant. Answer in one short sentence.</textarea>
+  <div class="row"><span class="lbl">User message</span></div>
+  <textarea id="pgusr" class="keyinput" style="font-family:var(--mono);min-height:46px">Explain what an API is.</textarea>
+  <div class="row"><span class="lbl">Temperature</span><input type="range" id="pgtemp" min="0" max="200" value="70" oninput="document.getElementById('pgtv').textContent=(this.value/100).toFixed(2)"><span class="val" id="pgtv">0.70</span></div>
+  <div class="row"><button class="simbtn" id="pgbtn" onclick="SIMS._pg()">Send to gpt-4o-mini</button></div>
+  <div class="pgout" id="pgout">The model's real response will appear here.</div><div class="pgmeta" id="pgmeta"></div>`;
+  SIMS._pg=async function(){
+    const btn=document.getElementById('pgbtn'),out=document.getElementById('pgout'),meta=document.getElementById('pgmeta');
+    btn.disabled=true;out.textContent='…calling api.openai.com…';
+    try{
+      const t0=performance.now();
+      const r=await llm([{role:'system',content:document.getElementById('pgsys').value},{role:'user',content:document.getElementById('pgusr').value}],{temperature:+document.getElementById('pgtemp').value/100});
+      out.textContent=r.text;
+      meta.textContent=`${r.usage.prompt_tokens} in + ${r.usage.completion_tokens} out tokens · ~$${costOf(r.usage).toFixed(6)} · ${Math.round(performance.now()-t0)}ms — this is a real, billed API call.`;
+    }catch(e){out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>';}
+    btn.disabled=false;
+  };
+};
+
+/* boot */
+if(!LEVELS.length){
+  document.getElementById('content').innerHTML='<div style="padding:60px;text-align:center;color:var(--muted)">Course data failed to load. Make sure the <code>data/</code> folder sits next to this file.</div>';
+}else render();
+</script>
+</body>
+</html>
