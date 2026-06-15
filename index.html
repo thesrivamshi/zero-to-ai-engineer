@@ -329,8 +329,9 @@ function renderLesson(id,c){
   if(l._gate){renderGate(id,c);return;}
   const lv=LEVELS[l._lv];
   let html=`<div class="crumb"><b>Level ${l._lv+1}: ${lv.title}</b> · ${l._ch}</div>
-  <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
+  <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>
   <div class="body">${gloss(l.body)}</div>`;
+  if(l.videos&&l.videos.length) html+=renderVideos(l.videos);
   if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
   if(l.term) html+=renderTermEx(l);
   if(l.py) html+=renderPyEx(l);
@@ -352,6 +353,20 @@ function renderLesson(id,c){
   if(l.deploy) initDeployEx(l);
 }
 function simList(s){ return Array.isArray(s)?s:[s]; }
+const BOOK_NAMES={AIE:'AI Engineering',LEH:"LLM Engineer's Handbook",INF:'Inference Engineering'};
+function srcLabel(src){
+  // "AIE ch.6 §RAG" -> "AI Engineering, Chapter 6 (RAG)"
+  return String(src).split('+').map(part=>{
+    const m=part.trim().match(/^(AIE|LEH|INF)\s*ch\.?\s*([\d–\-–.]+)\s*(?:§(.*))?$/i);
+    if(!m) return part.trim();
+    return BOOK_NAMES[m[1].toUpperCase()]+', Chapter '+m[2]+(m[3]?' ('+m[3].trim()+')':'');
+  }).join(' · ');
+}
+function renderVideos(videos){
+  return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold</div><ul style="margin:6px 0 2px 18px">`+
+    videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
+  `</ul></div>`;
+}
 function hasExercise(l){ return !!(l.term||l.py||l.live||l.evalrun||l.colab||l.deploy); }
 function exDone(id){ return !!P[id+'_ex']; }
 function navBtns(prev,next){
