@@ -242,7 +242,8 @@ print(response.choices[0].message.content)</code></pre>
 <div class="callout tip"><div class="ct">If it failed</div><code>AuthenticationError</code> → key wrong/missing; check <code>.env</code> spelling (exactly <code>OPENAI_API_KEY</code>), no quotes, no spaces. <code>insufficient_quota</code> → add billing credit. <code>No module named openai</code> → activate your venv. Paste any other error into an AI and ask for an explanation.</div>`,
 quiz:[
 {q:"What is messages in the API call?",o:["A single string of text","A list of dictionaries, each with a role and content","A file path"],a:1,e:"The chat format is a list of role+content dictionaries — exactly the Python structures from the crash course. This shape is universal across providers."},
-{q:"Why use gpt-4o-mini for learning labs?",o:["Mini models are smarter","They're ~20× cheaper and plenty capable for practice","Big models refuse beginners"],a:1,e:"Cost scales with model tier. For learning mechanics, a small model is ideal — same API shape, tiny bills. Engineering means right-sizing the model to the task."}]},
+{q:"Why use gpt-4o-mini for learning labs?",o:["Mini models are smarter","They're ~20× cheaper and plenty capable for practice","Big models refuse beginners"],a:1,e:"Cost scales with model tier. For learning mechanics, a small model is ideal — same API shape, tiny bills. Engineering means right-sizing the model to the task."}],
+videos:[{title:"OpenAI Platform — official developer docs (quickstart & API reference)",url:"https://platform.openai.com/docs",why:"Bookmark this. The quickstart, API reference, and prompt-engineering guide are the canonical source — keep it open while you build."}]},
 {id:"l2b2",t:"Roles: system, user, assistant",min:5,body:`
 <p>Each message's <code>role</code> tells the model who is speaking — and this little field is the backbone of every chat application:</p>
 <ul>
@@ -576,7 +577,114 @@ print(f"\\nAccuracy: {score}/{len(TESTS)} = {score/len(TESTS):.0%}")</code></pre
 <p>That loop — baseline, change one thing, re-measure — is the scientific method applied to prompts, and it's the core daily practice of AI engineering.</p>`,
 quiz:[
 {q:"Why is temperature=0 used in the eval harness?",o:["It's cheaper","Reproducibility — you want score changes to reflect your prompt changes, not random sampling","It makes the model smarter"],a:1,e:"Evals isolate variables. With sampling randomness minimized, a moved score means YOUR change moved it. (Advanced evals also run multiple samples per case.)"},
-{q:"Your improvement raised accuracy on sarcasm but the 'It's fine I guess' case now fails. What does this teach?",o:["The eval is broken","Prompt changes have global effects — the test set exists precisely to expose these trade-offs","Sarcasm should be removed from tests"],a:1,e:"This trade-off was invisible before you had a test set. Now it's a measured, manageable decision. That visibility is the whole point of evaluation."}]}
+{q:"Your improvement raised accuracy on sarcasm but the 'It's fine I guess' case now fails. What does this teach?",o:["The eval is broken","Prompt changes have global effects — the test set exists precisely to expose these trade-offs","Sarcasm should be removed from tests"],a:1,e:"This trade-off was invisible before you had a test set. Now it's a measured, manageable decision. That visibility is the whole point of evaluation."}]},
+{id:"l2d4",t:"Perplexity: the model's sense of surprise",min:5,src:"AIE ch.3 §Evaluation Methodology",body:`
+<p>Before we score whole answers, meet the oldest, most intrinsic measure of a language model's quality: <strong>[[perplexity]]</strong>. You'll see it in model cards and papers, and the intuition is genuinely useful.</p>
+<p>Recall that at each step a model assigns a probability to the actual next [[token]]. Perplexity asks: <em>across a piece of held-out text the model never trained on, how surprised was it by what actually came next?</em> Low perplexity = the model confidently predicted the real tokens (it "gets" this kind of text). High perplexity = it was constantly caught off guard.</p>
+<p>The handy mental image: perplexity is roughly <strong>"how many tokens was the model effectively choosing among"</strong> at each step. A perplexity of 1 means perfect certainty (it always nailed the next token). A perplexity of 20 means it was, on average, as unsure as if picking among 20 equally-likely options. Lower is better.</p>
+<p>What perplexity is good for, and not:</p>
+<ul>
+<li><strong>Good for:</strong> comparing language models on a fixed text set; detecting whether text is "natural" to a model (useful in data cleaning — gibberish has sky-high perplexity); a cheap, label-free signal of fluency.</li>
+<li><strong>Not good for:</strong> measuring whether an <em>answer is correct or useful.</em> A model can be confidently fluent (low perplexity) and completely wrong (recall: fluency is uncorrelated with truth). Perplexity scores prediction, not helpfulness.</li></ul>
+<div class="callout"><div class="ct">Why it matters even though you won't compute it daily</div>Perplexity is the bridge between "the model predicts tokens" (Level 1) and "is the output any good?" (this chapter). It measures the training objective directly — and its key limitation (fluent ≠ correct) is precisely why the rest of evaluation, which scores actual task success, has to exist. Intrinsic metrics judge the model; the next lessons judge the <em>system</em>.</div>`,
+quiz:[
+{q:"A model has very low perplexity on your documents. What does that tell you?",o:["Its answers will be factually correct","It predicts that kind of text well (it's fluent/familiar with the style) — but not whether its answers are correct or useful","It will be fast"],a:1,e:"Perplexity measures prediction surprise, i.e. fluency/familiarity, not correctness. A model can be confidently fluent and dead wrong — which is exactly why task-level evaluation is needed on top."},
+{q:"Where is perplexity genuinely handy?",o:["Grading whether a chatbot was helpful","Comparing language models on fixed text, or flagging gibberish in data cleaning (it has very high perplexity)","Measuring API latency"],a:1,e:"As an intrinsic, label-free signal it's great for model-to-model fluency comparison and spotting unnatural text. It just can't judge answer quality — that needs the task-level scoring coming next."}]},
+{id:"l2d5",t:"Scoring open-ended answers: overlap vs meaning",min:6,src:"AIE ch.3 §Evaluation Methodology",body:`
+<p>Exact match is perfect when there's one right answer ("positive" / "negative"). But most LLM output is open-ended: a summary, an explanation, a rewrite. "The cost is high" and "It's quite expensive" mean the same thing and share almost no words. How do you score that automatically? Three families, from crude to smart.</p>
+<h2>1. Lexical overlap: BLEU and ROUGE</h2>
+<p>The old guard. <strong>[[bleu]]</strong> (from machine translation) and <strong>[[rouge]]</strong> (from summarization) compare output to one or more reference texts by counting overlapping word sequences (n-grams). They're cheap, fast, and deterministic — and <em>blind to meaning</em>. A perfect paraphrase that reuses no words scores terribly; a fluent-but-wrong answer that parrots key words scores well. Use them for a quick regression signal, never as the final word on quality.</p>
+<h2>2. Semantic similarity: compare meanings, not words</h2>
+<p><strong>[[semantic similarity]]</strong> fixes overlap's blindness. Turn both the output and the reference into [[embedding|embeddings]] (vectors of meaning — your deep dive is Level 3) and measure how close they point ([[cosine similarity]]). Now "the cost is high" and "it's expensive" score as nearly identical because their <em>meanings</em> are close, regardless of shared words. This is the workhorse for scoring open-ended answers against reference answers.</p>
+<h2>3. Functional correctness: did it actually work?</h2>
+<p>The gold standard when available: don't judge the text, <strong>run it.</strong> For generated code, execute it against unit tests — it either passes or it doesn't, no opinion required. For structured output, check it parses and has the right fields. Whenever your task has an objective success test, use it; it's the most reliable signal there is.</p>
+<div class="callout tip"><div class="ct">Match the scorer to the task</div>The hierarchy of trust: <strong>functional/exact</strong> (objective, free) &gt; <strong>semantic similarity</strong> (meaning-aware, cheap) &gt; <strong>[[llm-as-judge]]</strong> (flexible, for nuanced quality — last lesson) &gt; <strong>lexical overlap</strong> (cheap but shallow). Reach for the most objective method your task allows, and only climb toward judges when the task is genuinely open-ended. Using an LLM judge to grade "2+2" is silly; using exact match to grade an essay is impossible.</div>`,
+quiz:[
+{q:"Your reference answer is 'It's expensive' and the model says 'The cost is quite high.' Which scorer correctly rates them as similar?",o:["BLEU/ROUGE (word overlap)","Semantic similarity via embeddings — it compares meaning, not shared words","Exact match"],a:1,e:"The two share almost no words, so overlap metrics and exact match fail. Embedding-based semantic similarity captures that the meanings are close — the right tool for open-ended answers."},
+{q:"When you can run the output (e.g. generated code against unit tests), why prefer that over any text-similarity score?",o:["It's slower but looks rigorous","Functional correctness is objective — pass/fail with no opinion — making it the most reliable signal available","Text scores are illegal for code"],a:1,e:"Executing against tests removes judgment entirely: it worked or it didn't. Whenever an objective success test exists, it beats every text-comparison heuristic."}]},
+{id:"l2d6",t:"Comparative evaluation: ranking when there's no answer key",min:5,src:"AIE ch.3 §Evaluation Methodology",body:`
+<p>Sometimes there's no reference answer at all — you just want to know <em>which of two outputs is better</em>: prompt A vs prompt B, model X vs model Y, this week's system vs last week's. Scoring each in isolation ("rate this 7/10") is noisy and inconsistent. The fix is <strong>[[pairwise comparison|comparison]]</strong>.</p>
+<p>The insight: humans (and judge models) are far more reliable at <em>"is A better than B?"</em> than at <em>"how good is A on an absolute scale?"</em> Relative judgments are stabler than absolute ones. So instead of asking for scores, you ask for preferences across many head-to-head matchups.</p>
+<p>How it scales up:</p>
+<ul>
+<li><strong>Pairwise win rate</strong> — run both systems on the same inputs, have a judge (human or LLM) pick the winner each time, report "B beat A on 63% of cases."</li>
+<li><strong>Ranked arenas / Elo</strong> — the public Chatbot Arena ranks models this way: real users compare anonymous pairs and vote, and an Elo rating (like chess) emerges from thousands of matchups. It's how the community ranks frontier models when no single benchmark suffices.</li></ul>
+<p>You'll recognize this idea later: <strong>preference data</strong> for aligning models ([[rlhf|RLHF]]/[[dpo|DPO]], Level 4) is exactly this — humans comparing pairs — used as <em>training</em> signal rather than evaluation signal. Same primitive, two jobs.</p>
+<div class="callout warn"><div class="ct">Comparison has its own traps</div>Judge models carry the biases you met earlier — they favor the first option shown (position bias) and longer answers (length bias). Mitigate by running each pair in both orders and averaging, and by controlling for length. A win rate from a biased, un-randomized judge can point you confidently in the wrong direction.</div>`,
+quiz:[
+{q:"Why is 'which answer is better, A or B?' more reliable than 'rate each answer 1–10'?",o:["It uses fewer tokens","Relative/comparative judgments are more consistent for humans and judge models than absolute scores","Absolute scores are banned"],a:1,e:"Absolute scoring drifts and varies between (and within) raters. Head-to-head preference is stabler — which is why arenas, win-rates, and preference-based training all use comparison."},
+{q:"You rank two prompts by LLM-judge win rate but always show prompt A first. What's the risk?",o:["No risk, order doesn't matter","Position bias — judges favor the first option, so A may 'win' for the wrong reason; run both orders and average","The judge will crash"],a:1,e:"Position (and length) bias can manufacture a fake winner. Randomizing/averaging presentation order is the standard control, exactly as with single-output judging."}]},
+{id:"l2d7",t:"🧪 Lab: Run a live eval and beat the bar",min:9,lab:true,src:"AIE ch.3 §Evaluation Methodology",evalrun:{
+goal:"You're shipping a sentiment classifier. Edit the prompt template until it scores high enough on the test cases. Every {{input}} is replaced by a feedback string; the model must reply with exactly one word.",
+template:"Classify the sentiment of this customer feedback as exactly one word — positive, negative, or mixed. Reply with only that word.\n\nFeedback: {{input}}\nSentiment:",
+match:"exact",
+threshold:0.8,
+maxTokens:5,
+cases:[
+{input:"Absolutely love it, works perfectly",expected:"positive"},
+{input:"Broke on day two. Garbage.",expected:"negative"},
+{input:"Great screen but the battery is a joke",expected:"mixed"},
+{input:"Fast shipping, product exactly as described",expected:"positive"},
+{input:"Not what I ordered and support ignored me",expected:"negative"},
+{input:"Oh fantastic, ANOTHER update that breaks everything",expected:"negative"},
+{input:"Beautiful design, but it crashes constantly",expected:"mixed"},
+{input:"Expensive but honestly worth every penny",expected:"positive"},
+{input:"Stopped working after a week, very disappointed",expected:"negative"},
+{input:"Does the job, nothing special",expected:"mixed"}]},
+body:`
+<p>You built a harness as a local script in the last lab. Now run one <strong>live, in this page</strong>, against your connected API key — and feel the real engineering loop: change the prompt, re-measure, beat the threshold.</p>
+<p>The lab below runs your prompt template against 10 sentiment cases and reports per-case ✓/✗ plus accuracy. Your job: get to <strong>80%+</strong>. The interesting cases are the sarcastic ones ("Oh fantastic, ANOTHER update…") and the genuinely mixed ones ("Great screen but the battery is a joke"). A first run rarely clears the bar.</p>
+<p>Strategy, in order:</p>
+<ol>
+<li>Run the starter template once. Note the baseline and <em>which</em> cases fail.</li>
+<li>Add a one-line definition of "mixed" (both clear positives and clear negatives present).</li>
+<li>Add a <strong>few-shot example</strong> of sarcasm → negative (show, don't tell).</li>
+<li>Re-run. Watch the score move. If a fix breaks another case, you've just met the trade-off that makes test sets essential.</li></ol>
+<div class="callout tip"><div class="ct">This is the job, in miniature</div>Notice what you're doing: not "writing a good prompt" by intuition, but <em>changing one thing and measuring the effect on a fixed test set.</em> Every serious prompt, RAG tweak, and model swap for the rest of this course runs through this exact loop. Cost is shown per run — budget awareness is part of the craft.</div>
+<p>Every run makes real API calls (10 tiny ones). Total cost is fractions of a cent on a mini model.</p>`,
+quiz:[
+{q:"A prompt change pushes you from 70% to 80%, but one previously-passing case now fails. The right reaction?",o:["Revert everything — the change failed","Accept it if net accuracy rose, and note the regression; the test set made a real trade-off visible to decide deliberately","Delete the failing case"],a:1,e:"Net improvement with a visible regression is a normal, informed trade-off — exactly what evals exist to surface. You decide with data, and you don't hide the broken case by deleting it."},
+{q:"Why run the eval at temperature 0 (as this harness does)?",o:["To save money","So a score change reflects YOUR prompt change, not random sampling variance","To make the model more creative"],a:1,e:"Determinism isolates your variable. If sampling were random, you couldn't tell whether a score moved because of your edit or chance. (Rigorous evals of creative tasks instead average many samples.)"}]}
+]},
+{title:"Evaluating AI systems",lessons:[
+{id:"l2f1",t:"From one score to an evaluation pipeline",min:6,src:"AIE ch.4 §Evaluating AI Systems",body:`
+<p>A single accuracy number is a start. A real product needs an <strong>evaluation pipeline</strong>: a repeatable system that measures the things you care about, every time you change anything. The shift in mindset: <em>your eval set is a product asset you build and grow, as carefully as the app itself.</em></p>
+<h2>Design your criteria first</h2>
+<p>Before scoring, decide <em>what</em> "good" means for your task — and it's usually several things at once. For a support bot:</p>
+<ul>
+<li><strong>Correctness / faithfulness</strong> — is the answer right and grounded in real policy?</li>
+<li><strong>Relevance</strong> — does it address what was actually asked?</li>
+<li><strong>Safety</strong> — does it refuse what it should, avoid leaking data?</li>
+<li><strong>Format / tone</strong> — does it follow required structure and voice?</li>
+<li><strong>Cost &amp; latency</strong> — within budget and fast enough?</li></ul>
+<p>Each criterion gets its own scorer (the right tool from the last lessons: exact match, semantic similarity, or an LLM judge with a specific rubric). A system can ace one criterion and fail another — a bot that's accurate but leaks PII isn't shippable. Scoring criteria separately tells you <em>which</em> dimension to fix.</p>
+<h2>Build the test set deliberately</h2>
+<p>Your [[test set]] is only as good as its coverage. Principles:</p>
+<ul>
+<li><strong>Represent real usage</strong> — include the questions users actually ask, not just easy ones you imagined.</li>
+<li><strong>Include hard and adversarial cases</strong> — edge cases, ambiguous inputs, injection attempts, the sarcastic review. These are where systems break.</li>
+<li><strong>Grow it from production.</strong> Every real failure becomes a new permanent test case. This is the flywheel: a bug found once should never silently return.</li></ul>
+<div class="callout"><div class="ct">Evals catch regressions, not just measure quality</div>The deepest payoff of a standing eval pipeline is catching <strong>[[regression|regressions]]</strong> — when improving one thing quietly breaks another. You change a prompt to fix sarcasm; the suite flags that refunds-handling dropped. Without the pipeline, your users find that regression in production. With it, you find it in seconds. This is why "re-run the evals" is non-negotiable before any change ships — and why your project gates demand it.</div>`,
+quiz:[
+{q:"Why score multiple criteria (correctness, safety, format…) separately instead of one overall number?",o:["It looks more thorough","A single number hides which dimension failed; separate scores tell you a bot is accurate-but-leaking-PII and exactly what to fix","Overall scores are forbidden"],a:1,e:"Conflating criteria masks failures — an unsafe-but-accurate system can post a decent average. Per-criterion scores make trade-offs visible and point at the specific thing to fix."},
+{q:"A user hits a bug your test set didn't cover. Best practice?",o:["Fix it quietly and move on","Add that failure as a permanent test case so the bug can never silently return — grow the set from production","Rebuild the whole eval from scratch"],a:1,e:"Test sets grow from real failures. Capturing each one permanently turns every bug into a guardrail against its own recurrence — the evaluation flywheel."}]},
+{id:"l2f2",t:"Benchmarks, contamination, and choosing a model",min:6,src:"AIE ch.4 §Evaluating AI Systems",body:`
+<p>Every model launch trumpets [[benchmark]] scores — "90% on MMLU!" You need to read these like an engineer: useful for a first cut, dangerous if trusted blindly.</p>
+<h2>Why public benchmarks mislead</h2>
+<ul>
+<li><strong>They're not your task.</strong> MMLU measures broad academic knowledge. It says nothing about whether a model answers <em>your</em> customers' questions about <em>your</em> product. General capability ≠ your-task performance.</li>
+<li><strong>[[benchmark contamination|Contamination.]]</strong> Benchmarks are public, so their questions often leak into models' training data. A high score can reflect <em>memorization</em>, not reasoning — the model saw the test. As benchmarks age, scores inflate for this reason, and new private benchmarks are constantly needed.</li>
+<li><strong>They're gameable.</strong> Recall from Level 1: Gemini's launch claimed an MMLU win over GPT-4 using a different prompting technique (CoT@32 vs 5-shot); on equal footing the result flipped. Numbers without matched conditions are marketing.</li></ul>
+<h2>The model-selection workflow</h2>
+<p>So how do you actually pick a model? A two-stage funnel:</p>
+<ol>
+<li><strong>Shortlist by benchmark</strong> (and price, latency, context length, licensing). Public scores are fine for narrowing dozens of models to a handful of plausible candidates. This stage is cheap and approximate.</li>
+<li><strong>Decide by your own evals.</strong> Run the shortlist through <em>your</em> test set on <em>your</em> task and let the numbers choose. This is the only judgment that counts — and you can only do it because you built that eval pipeline.</li></ol>
+<p>Other real selection factors beyond quality: cost per request, latency, context-window size, data-privacy terms, open vs closed (Level 1's decision), and how likely the provider is to keep the model alive.</p>
+<div class="callout fail"><div class="ct">Why it breaks: shipping on the leaderboard</div>Teams pick the #1 leaderboard model, skip their own evals, and ship — then discover it's worse than a cheaper model on their actual support tickets, or that its benchmark lead was contamination. The leaderboard narrows the field; <em>your</em> evals pick the winner. Anyone who selects a model without testing it on their own data is guessing with extra steps.</div>`,
+quiz:[
+{q:"A model tops the MMLU leaderboard. What's the correct way to use that fact?",o:["Ship it — it's the best model","Use it to shortlist candidates, then decide with your own test set on your own task","Ignore benchmarks entirely"],a:1,e:"Benchmarks are a cheap first filter, not a verdict. They're not your task and can be inflated by contamination. Your own evals on your data make the real decision."},
+{q:"What is benchmark contamination?",o:["When a benchmark is too hard","When the benchmark's test questions leaked into the model's training data, so a high score may reflect memorization rather than ability","When two models tie"],a:1,e:"Public benchmarks seep into training corpora over time. A model may have effectively seen the test, inflating its score — which is why aging benchmarks lose signal and private evals matter."}]}
 ]}
 ],
 project:{id:"l2gate",t:"Project Gate 2 — Build a CLI chatbot with an eval suite",
