@@ -234,7 +234,7 @@ while not done:
         history += [decision, result]       # observe
     else:
         done = True                         # final answer</code></pre>
-<p>This reason→act→observe cycle (the "ReAct" pattern) lets agents handle tasks no single prompt can: "Find the three customers with the most late invoices and draft reminder emails for each" — requires queries, reading results, deciding, drafting, iterating.</p>
+<p>This reason→act→observe cycle (the "[[react|ReAct]]" pattern) lets agents handle tasks no single prompt can: "Find the three customers with the most late invoices and draft reminder emails for each" — requires queries, reading results, deciding, drafting, iterating.</p>
 <p>Now the engineering reality check — agent failure modes are the field's running joke and budget sink:</p>
 <ul>
 <li><strong>Error compounding</strong> — a 95%-reliable step compounds to ~60% success over 10 steps (0.95<sup>10</sup>). Long chains need checkpoints, retries, and validation between steps.</li>

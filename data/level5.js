@@ -220,7 +220,7 @@ quiz:[
 <ol>
 <li><strong>Version everything that affects behavior</strong> — prompts (in git, not in someone's head!), model IDs (pin exact versions, never "latest"), retrieval configs, guardrail rules, datasets. A production answer should be reproducible from versions alone.</li>
 <li><strong>Offline eval first</strong> — every change runs the eval suite before touching users. Score drops → it doesn't ship. (Your CI for AI behavior.)</li>
-<li><strong>Canary rollout</strong> — ship to 5% of traffic; compare dashboards (quality scores, feedback, latency, cost) against the 95% control. Healthy → ramp. Not → instant rollback, which is trivial <em>because everything is versioned</em>.</li>
+<li><strong>[[canary deployment|Canary rollout]]</strong> — ship to 5% of traffic; compare dashboards (quality scores, feedback, latency, cost) against the 95% control. Healthy → ramp. Not → instant rollback, which is trivial <em>because everything is versioned</em>.</li>
 <li><strong>A/B for the big calls</strong> — model swaps or major prompt rewrites deserve a real experiment with user-level metrics, not just judge scores.</li></ol>
 <p>This is [[llmops|LLMOps]] in one sentence: <em>classical DevOps discipline, extended to the new behavior-defining artifacts — prompts, models, datasets, and evals.</em></p>
 <div class="callout warn"><div class="ct">The "latest" trap</div>Pointing at a provider's <code>latest</code> model alias means your system's behavior can change overnight without any action by you — and your carefully tuned prompts were tuned for the OLD model. Pin exact versions; upgrade deliberately, through the eval suite, like any other change.</div>`,
@@ -232,7 +232,7 @@ quiz:[
 <h2>The lineage of the discipline</h2>
 <ul>
 <li><strong>DevOps</strong> — automate testing and shipping of <em>code</em>. (CI/CD, the previous lesson.)</li>
-<li><strong>MLOps</strong> — DevOps plus the new things ML adds: data and models are also versioned, tested, and deployed. Code alone no longer determines behavior — data and weights do too.</li>
+<li><strong>[[mlops|MLOps]]</strong> — DevOps plus the new things ML adds: data and models are also versioned, tested, and deployed. Code alone no longer determines behavior — data and weights do too.</li>
 <li><strong>LLMOps</strong> — MLOps plus what foundation models add: prompts, retrieval configs, and evals become first-class versioned artifacts, and evaluation runs continuously because behavior is open-ended.</li></ul>
 <p>Each layer adds artifacts that define behavior. Forget to version any of them and reproducibility breaks.</p>
 <h2>The registry</h2>

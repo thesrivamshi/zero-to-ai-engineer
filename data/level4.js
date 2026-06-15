@@ -152,7 +152,7 @@ quiz:[
  "rejected": "It's probably nothing, don't worry about it!"}</code></pre>
 <p>Methods, practically:</p>
 <ul>
-<li><strong>[[rlhf|RLHF]]</strong> — the original: train a separate reward model on preferences, then optimize the LLM against it with reinforcement learning. Powerful, finicky, infrastructure-heavy: frontier-lab territory.</li>
+<li><strong>[[rlhf|RLHF]]</strong> — the original: train a separate [[reward model]] on preferences, then optimize the LLM against it with reinforcement learning. Powerful, finicky, infrastructure-heavy: frontier-lab territory.</li>
 <li><strong>[[dpo|DPO]]</strong> — the practical default: a clever loss trains <em>directly</em> on (chosen, rejected) pairs. No reward model, no RL loop — runs wherever SFT runs (yes, with LoRA). This brought alignment to ordinary teams.</li></ul>
 <p>The standard recipe, as used for virtually every modern open model: <strong>SFT first</strong> (teach the task) <strong>→ DPO second</strong> (refine judgment between plausible responses). Where do pairs come from? Human ratings of A/B outputs, production thumbs-up/down (gold!), or LLM-judged comparisons (synthetic preferences — same curation rules as before).</p>
 <div class="callout warn"><div class="ct">Alignment is a double-edged sword</div>Push preferences carelessly and you create the pathologies from Level 1: optimize "users liked it" and you breed sycophancy; over-penalize risk and you breed useless over-refusal. Your preference data defines the trade-off — audit what it actually rewards before training on it.</div>`,

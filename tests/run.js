@@ -116,6 +116,22 @@ allLessons.forEach(({ l, li, gate }) => {
 });
 console.log(`  ${allLessons.length} lessons/gates, ${ids.size} unique ids`);
 
+/* every level has a project gate; every non-gate lesson is completable (quiz or exercise) */
+LEVELS.forEach((lv, li) => ok(lv.project && lv.project.id, `level ${li + 1} has a project gate`));
+ok(LEVELS.length === 6, 'exactly 6 levels');
+allLessons.forEach(({ l, gate }) => {
+  if (gate) return;
+  const hasEx = !!(l.term || l.py || l.live || l.evalrun || l.colab || l.deploy);
+  const hasQuiz = !!(l.quiz && l.quiz.length);
+  ok(hasEx || hasQuiz, `lesson ${l.id} is completable (has quiz or exercise)`);
+});
+// the final gate (capstone) carries evidence + live verification
+const capstone = LEVELS[LEVELS.length - 1].project;
+ok(capstone && Array.isArray(capstone.evidence) && capstone.evidence.length >= 3, 'capstone has >=3 evidence fields');
+ok(capstone && capstone.verify && Array.isArray(capstone.verify.cases), 'capstone has live verify cases');
+// glossary breadth target
+ok(Object.keys(GLOSSARY).length >= 150, 'glossary has >=150 terms');
+
 /* ================= 2. app boots & views render ================= */
 section('2. Views render');
 const doc = W.document;
