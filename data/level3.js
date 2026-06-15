@@ -329,6 +329,66 @@ quiz:[
 {q:"Where should you run a moderation check in a chatbot?",o:["Only on the final output","On both input (screen user/retrieved content early and cheaply) and output (catch unsafe model responses before the user sees them)","Only on the input"],a:1,e:"The safety sandwich: input moderation deflects bad content before it reaches your model; output moderation catches anything the model still produces. Both, with a safe fallback when flagged."},
 {q:"Why redact PII before writing debug logs rather than after?",o:["It makes logs smaller","Once written, PII spreads across dashboards and backups; redacting upstream prevents the logs themselves from becoming a breach","Logs can't store text otherwise"],a:1,e:"Logs proliferate. PII scrubbed at write-time never lands in the places you'd have to chase down later. The redaction belongs upstream of the log, not as cleanup."}]}
 ]},
+{title:"SQL — the agent's memory",lessons:[
+{id:"l3e1",t:"🧪 SQL: give your agent a memory it can query",min:7,lab:true,src:"LEH ch.2 §Databases (SQL)",body:`
+<p>Your agent can talk, use tools, and retrieve documents — but the moment it restarts, it forgets everything. Memory in a text file works until you ask it a question: "what did the user tell me last Tuesday?" Parsing a flat file for that is misery. The professional answer is a [[database]], and the language you talk to one with is [[sql|SQL]]. You don't need a five-hour SQL course — you need exactly enough to give your agent a memory, and you learn it by building that memory.</p>
+<p>The simplest database there is comes built into Python: [[sqlite|SQLite]]. No server, no setup — one file (or even just memory). Data lives in <strong>tables</strong>: rows and columns, like a spreadsheet your code can question precisely. You'll create a <code>memories</code> table the agent writes facts into and reads them back from.</p>
+<p>Three verbs do most of the work: <strong>CREATE TABLE</strong> (make the shape), <strong>INSERT</strong> (save a row), <strong>SELECT</strong> (read rows). Practice them in the SQLite shell below — same syntax you'll run from Python next lesson.</p>
+<div class="callout"><div class="ct">Mental model</div>A table is the agent's notebook with labeled columns. INSERT writes a line; SELECT reads back exactly the lines you ask for. The <code>id</code> column is the [[primary key]] — a unique tag per row so nothing is ambiguous.</div>`,
+term:{
+intro:"A simulated SQLite shell. Type SQL statements (end them with a semicolon). Build the agent's memory table, save two facts, and read them back. Hints appear after 2 wrong attempts.",
+tasks:[
+{desc:"Create the agent's memory table: memories with an id primary key, a key column, and a value column.", expect:"^CREATE TABLE\\s+memories", out:"", hint:"CREATE TABLE memories (id INTEGER PRIMARY KEY, key TEXT, value TEXT);"},
+{desc:"Save a memory — key 'user_name', value 'Vamshi'.", expect:"^INSERT INTO\\s+memories", out:"", hint:"INSERT INTO memories (key, value) VALUES ('user_name', 'Vamshi');"},
+{desc:"Save another — key 'favorite_lang', value 'Python'.", expect:"^INSERT INTO\\s+memories", out:"", hint:"INSERT INTO memories (key, value) VALUES ('favorite_lang', 'Python');"},
+{desc:"Read everything back: select all rows from memories.", expect:"^SELECT\\s+\\*\\s+FROM\\s+memories", out:"1|user_name|Vamshi\n2|favorite_lang|Python", hint:"SELECT * FROM memories;"}
+]},
+quiz:[
+{q:"Why give the agent a database instead of saving memories to a text file?",o:["Databases are required by the OpenAI API","You can query exactly the rows you want (by key, by date) instead of parsing a whole file by hand — reliable recall is the point","Text files can't store text"],a:1,e:"The win is querying: SELECT pulls precisely the memory you need. A flat file forces you to load and scan everything yourself, which falls apart as memories grow."},
+{q:"What is the id column (INTEGER PRIMARY KEY) for?",o:["It stores the user's age","It uniquely identifies each row, so you can reference and join rows unambiguously","It makes queries slower"],a:1,e:"A primary key is a unique tag per row. It's how you point at one specific memory and how tables get joined together later."}],
+videos:[{title:"Programming with Mosh — SQL Course for Beginners [Full Course]",url:"https://www.youtube.com/watch?v=7S_tz1z_5bA",why:"You only need the first third (SELECT, WHERE, ORDER BY, JOIN) to give your agent memory. Watch that much; come back for joins when the agent needs them."}]},
+{id:"l3e2",t:"🧪 Reading what matters: WHERE, ORDER BY, JOIN",min:7,lab:true,src:"LEH ch.2 §Databases (SQL)",body:`
+<p>Saving facts is half the job; <em>recalling the right one</em> is the half that makes an agent feel like it remembers you. <code>SELECT *</code> dumps everything — useless once there are hundreds of memories. You want the agent's <code>recall("user_name")</code> tool to fetch just that one value. Three reading skills cover almost everything an agent needs.</p>
+<ul>
+<li><strong>WHERE</strong> — filter to the rows that match a condition. This is how <code>recall(key)</code> works: <code>SELECT value FROM memories WHERE key = 'user_name'</code>.</li>
+<li><strong>ORDER BY</strong> — sort the results (alphabetical, newest-first). "Show my recent memories" is ORDER BY a timestamp DESC.</li>
+<li><strong>[[sql join|JOIN]]</strong> — combine two tables by a shared column. When each memory belongs to a session, a JOIN reads the memory <em>and</em> its session together in one [[sql query|query]].</li></ul>
+<p>Practice in the shell. The <code>memories</code> table from last lesson is loaded, plus a <code>sessions</code> table.</p>
+<div class="callout tip"><div class="ct">This is exactly your recall tool</div>Every WHERE you write here is a line your agent will run when it answers "what's my name?" — the agent calls <code>recall("user_name")</code>, your code runs <code>SELECT value FROM memories WHERE key = ?</code>, and the answer comes back grounded in stored fact, not a guess.</div>`,
+term:{
+intro:"SQLite shell, continued. memories and sessions tables are loaded. Practice filtering, sorting, and joining — the reads behind a real recall tool.",
+tasks:[
+{desc:"Recall just the user's name: select the value where key = 'user_name'.", expect:"^SELECT\\s+value\\s+FROM\\s+memories\\s+WHERE\\s+key", out:"Vamshi", hint:"SELECT value FROM memories WHERE key = 'user_name';"},
+{desc:"List all memory keys in alphabetical order.", expect:"^SELECT\\s+key\\s+FROM\\s+memories\\s+ORDER BY\\s+key", out:"favorite_lang\nuser_name", hint:"SELECT key FROM memories ORDER BY key;"},
+{desc:"Each memory has a session_id; read each value together with the session it came from by joining memories to sessions.", expect:"^SELECT.*FROM\\s+memories\\s+JOIN\\s+sessions", out:"Vamshi|2026-06-15\nPython|2026-06-15", hint:"SELECT m.value, s.started_at FROM memories m JOIN sessions s ON m.session_id = s.id;"}
+]},
+quiz:[
+{q:"Your agent's recall('email') tool should fetch one stored value. Which clause does the work?",o:["ORDER BY","WHERE — it filters to the row whose key matches, returning just that value","JOIN"],a:1,e:"WHERE is the filter. recall(key) is literally SELECT value FROM memories WHERE key = ? — the parameter placeholder keeps it safe from injection."},
+{q:"What does a JOIN let the agent do?",o:["Sort memories by date","Read related rows from two tables together by a shared column — e.g. each memory alongside its session","Delete old memories"],a:1,e:"JOIN stitches tables on a matching column (session_id ↔ id), so one query returns the memory and its session context together instead of two separate lookups."}]},
+{id:"l3e3",t:"🧪 Lab: SQL from Python — the agent's remember/recall tools",min:9,lab:true,src:"LEH ch.2 §Databases (SQL)",body:`
+<p>Now wire SQL into Python, where your agent lives. The [[sqlite|sqlite3]] module is in the standard library — no install. The pattern: <code>connect</code> to a database, <code>execute</code> SQL, and <code>fetchone()</code>/<code>fetchall()</code> the results. Two small functions — <code>remember(key, value)</code> and <code>recall(key)</code> — become real agent tools (the function-calling lesson) backed by durable storage.</p>
+<pre><code>import sqlite3
+con = sqlite3.connect(":memory:")          # a real DB; ":memory:" = lives for this run
+con.execute("CREATE TABLE memories (id INTEGER PRIMARY KEY, key TEXT, value TEXT)")
+
+def remember(key, value):
+    con.execute("INSERT INTO memories (key, value) VALUES (?, ?)", (key, value))
+    con.commit()                            # ? placeholders = safe from SQL injection
+
+def recall(key):
+    row = con.execute("SELECT value FROM memories WHERE key = ?", (key,)).fetchone()
+    return row[0] if row else None</code></pre>
+<p>Notice the <code>?</code> placeholders — never glue user text into SQL with f-strings; placeholders are how you stay safe from SQL injection (the database cousin of prompt injection). Build it yourself below.</p>
+<div class="callout tip"><div class="ct">From here it's an agent tool</div>Give the model a <code>recall(key)</code> and <code>remember(key, value)</code> tool via function calling, and it can write to and read from this store on its own. Swap <code>":memory:"</code> for <code>"agent.db"</code> and the memory survives restarts. That's long-term agent memory — built, not theorized.</div>`,
+py:{
+task:"Build the agent's memory store with sqlite3. (1) connect to an in-memory database. (2) Create a table memories(id INTEGER PRIMARY KEY, key TEXT, value TEXT). (3) Write remember(key, value) that INSERTs a row (use ? placeholders) and commits. (4) Write recall(key) that SELECTs the value WHERE key matches and returns it. (5) remember('user_name','Vamshi') and remember('stack','Python'), then print recall('user_name') and print recall('stack').",
+starter:"import sqlite3\ncon = sqlite3.connect(\":memory:\")\n# 1) create the memories table\n\n# 2) define remember(key, value)  -- use INSERT with ? placeholders, then con.commit()\n\n# 3) define recall(key)  -- SELECT value WHERE key = ?, return the value\n\n# 4) save two memories, then print recall('user_name') and recall('stack')\n",
+check:{stdoutIncludes:["Vamshi","Python"],codeIncludes:["sqlite3","CREATE TABLE","INSERT","SELECT"],failMsg:"Create the memories table, INSERT two rows with ? placeholders, then print recall('user_name') (Vamshi) and recall('stack') (Python)."},
+hint:"recall: row = con.execute(\"SELECT value FROM memories WHERE key = ?\", (key,)).fetchone(); return row[0] if row else None"},
+quiz:[
+{q:"Why use ? placeholders instead of f-strings to put values into SQL?",o:["f-strings are slower","Placeholders prevent SQL injection — they keep user-supplied text as data, never as executable SQL","SQLite doesn't support f-strings"],a:1,e:"Gluing user text into a query lets a malicious value rewrite your SQL (the DB cousin of prompt injection). Parameter placeholders pass values as data, so they can't change the query's structure."},
+{q:"Swapping sqlite3.connect(':memory:') for sqlite3.connect('agent.db') changes what?",o:["Nothing — they're identical","The memory persists to a file on disk, so the agent remembers across restarts instead of forgetting when the program ends",":memory: is faster and that's all"],a:1,e:"':memory:' lives only for the run; a filename writes to disk. That one change turns short-term scratch memory into durable long-term memory for the agent."}]}
+]},
 {title:"Twin Track — Stage 1",lessons:[
 {id:"l3twin1",t:"🧪 Twin Stage 1: your writing, made retrievable",min:12,lab:true,src:"LEH ch.4 · the LLM Twin project",body:`
 <p>Time to start the project that runs through the rest of this course: <strong>your LLM Twin</strong> — an AI that knows your writing and, by Level 5, writes like you. It's the <em>LLM Engineer's Handbook</em>'s flagship build, adapted to your scale and your data. Each stage stands alone and stacks: <strong>Stage 1 (now): make your own writing retrievable</strong> — a "chat with myself" RAG over things you've written.</p>

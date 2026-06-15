@@ -182,5 +182,11 @@ window.GLOSSARY = {
 "vlm": "Vision-Language Model — a model that takes images (and text) as input and produces text, e.g. describing or answering questions about a picture. Serving it adds an image-encoding step before the language model.",
 "asr": "Automatic Speech Recognition — turning audio speech into text (speech-to-text). One of the modalities you may need to serve alongside LLMs.",
 "tts": "Text-to-Speech — generating spoken audio from text. Often latency-sensitive and streamed, with its own serving considerations.",
-"zero-downtime deploy": "Releasing a new version with no interruption to users, typically via blue-green or rolling strategies that shift traffic to healthy new instances before retiring old ones."
+"zero-downtime deploy": "Releasing a new version with no interruption to users, typically via blue-green or rolling strategies that shift traffic to healthy new instances before retiring old ones.",
+"database": "An organized store of data that software can query and update efficiently. For an agent, a database is how it remembers things reliably across runs — far sturdier than a loose text file you parse by hand.",
+"sql": "Structured Query Language — the standard language for talking to relational databases: create tables, insert rows, and read them back with SELECT/WHERE/JOIN. Your agent's memory tools run SQL under the hood; you learn it by giving the agent a memory.",
+"sqlite": "A tiny, file-based SQL database built right into Python (the sqlite3 module). No server to install or run — which makes it the perfect local memory store for an agent while you learn.",
+"primary key": "A column whose value uniquely identifies each row in a table (commonly an auto-incrementing id). It lets you reference a specific row and join tables together unambiguously.",
+"sql query": "A request to a database for data, written in SQL — most often a SELECT statement that returns just the rows matching the conditions you specify in a WHERE clause.",
+"sql join": "A SQL operation that stitches rows from two tables together by a shared column (e.g. link each saved memory to the session it came from), so related data can be read in a single query."
 };

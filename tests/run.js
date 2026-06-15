@@ -132,6 +132,38 @@ ok(capstone && capstone.verify && Array.isArray(capstone.verify.cases), 'capston
 // glossary breadth target
 ok(Object.keys(GLOSSARY).length >= 150, 'glossary has >=150 terms');
 
+/* ----- book reading references (data/reads.js) ----- */
+section('1b. Book reading references');
+const READS = W.READS;
+ok(READS && typeof READS === 'object', 'READS loaded');
+const BOOK_OK = ['AIE', 'LEH', 'INF'];
+const bookChapters = { AIE: new Set(), LEH: new Set(), INF: new Set() };
+let readsEntries = 0;
+Object.keys(READS || {}).forEach(id => {
+  ok(ids.has(id), `READS key "${id}" is a real lesson/gate id`);
+  const arr = READS[id];
+  ok(Array.isArray(arr) && arr.length, `READS["${id}"] is a non-empty array`);
+  (arr || []).forEach((r, i) => {
+    readsEntries++;
+    ok(BOOK_OK.includes(r.b), `READS["${id}"][${i}] book is AIE/LEH/INF (got ${r.b})`);
+    ok(typeof r.c === 'string' && r.c, `READS["${id}"][${i}] has chapter label`);
+    ok(typeof r.p === 'string' && /\d/.test(r.p), `READS["${id}"][${i}] has page numbers`);
+    const chNum = String(r.c).match(/^\s*(\d+)/);
+    if (r.b && chNum) bookChapters[r.b].add(Number(chNum[1]));
+  });
+});
+// coverage contract: union of references must span every chapter of all three books
+const REQUIRED = { AIE: [1,2,3,4,5,6,7,8,9,10], LEH: [1,2,3,4,5,6,7,8,9,10,11], INF: [0,1,2,3,4,5,6,7] };
+Object.keys(REQUIRED).forEach(b => {
+  REQUIRED[b].forEach(n => ok(bookChapters[b].has(n), `book coverage: ${b} chapter ${n} is referenced by some lesson`));
+});
+// every non-gate lesson should point at the books (depth path)
+allLessons.forEach(({ l, gate }) => {
+  if (gate) return;
+  ok(Array.isArray(READS[l.id]) && READS[l.id].length, `lesson ${l.id} has a book reading reference`);
+});
+console.log(`  ${Object.keys(READS || {}).length} lessons referenced, ${readsEntries} book pointers`);
+
 /* ================= 2. app boots & views render ================= */
 section('2. Views render');
 const doc = W.document;

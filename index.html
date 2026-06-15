@@ -215,6 +215,7 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
 <script src="data/level4.js"></script>
 <script src="data/level5.js"></script>
 <script src="data/level6.js"></script>
+<script src="data/reads.js"></script>
 <script>
 /* ================= state ================= */
 const LEVELS = window.COURSE_LEVELS || [];
@@ -332,6 +333,7 @@ function renderLesson(id,c){
   <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>
   <div class="body">${gloss(l.body)}</div>`;
   if(l.videos&&l.videos.length) html+=renderVideos(l.videos);
+  if(window.READS&&READS[l.id]&&READS[l.id].length) html+=renderReads(READS[l.id]);
   if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
   if(l.term) html+=renderTermEx(l);
   if(l.py) html+=renderPyEx(l);
@@ -365,6 +367,11 @@ function srcLabel(src){
 function renderVideos(videos){
   return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold</div><ul style="margin:6px 0 2px 18px">`+
     videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
+  `</ul></div>`;
+}
+function renderReads(reads){
+  return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books — your path to finishing all three</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">These page references are the depth behind this lesson. Read every lesson's box across the course and you will have read all three books cover to cover — the goal.</p><ul style="margin:6px 0 2px 18px">`+
+    reads.map(r=>`<li style="margin:6px 0"><b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}${r.f?` <span style="color:var(--muted)">— ${r.f}</span>`:''}</li>`).join('')+
   `</ul></div>`;
 }
 function hasExercise(l){ return !!(l.term||l.py||l.live||l.evalrun||l.colab||l.deploy); }
