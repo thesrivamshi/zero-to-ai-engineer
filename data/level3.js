@@ -46,7 +46,37 @@ quiz:[
 <p>Advanced variants exist (semantic chunking, summaries-of-chunks, parent-document retrieval — retrieve small, hand the model the surrounding larger section), but tune the basics first: chunk size, overlap, and structure-awareness account for most of the gain.</p>`,
 quiz:[
 {q:"What's the core trade-off in chunk size?",o:["Cost vs. legality","Small = precise matching but starved context; large = rich context but diluted, mushy embeddings","Speed vs. security"],a:1,e:"Each chunk gets ONE vector. Focused chunk = sharp vector = good matching. Sprawling chunk = averaged vector = poor matching. But the chunk must still contain enough to be useful once retrieved."},
-{q:"Why add overlap between consecutive chunks?",o:["To increase the database size","So information near a chunk boundary isn't split into two useless halves","Embedding models require it"],a:1,e:"A sentence cut in half at a boundary may match nothing. Overlap ensures boundary content appears whole in at least one chunk."}]}
+{q:"Why add overlap between consecutive chunks?",o:["To increase the database size","So information near a chunk boundary isn't split into two useless halves","Embedding models require it"],a:1,e:"A sentence cut in half at a boundary may match nothing. Overlap ensures boundary content appears whole in at least one chunk."}]},
+{id:"l3a4",t:"How retrieval actually finds things: keywords, vectors, hybrid",min:6,src:"AIE ch.6 §RAG",body:`
+<p>"Find the relevant chunks" sounds simple, but <em>how</em> you search decides what you find. There are two fundamentally different strategies, and the best systems use both.</p>
+<h2>Sparse: match the words ([[bm25|BM25]])</h2>
+<p><strong>[[sparse retrieval|Keyword search]]</strong> represents a document by which words it contains and ranks by overlap with the query's words. The standard algorithm is <strong>[[bm25|BM25]]</strong> — decades old, no model required, and still excellent. It weights rare words more (matching "tokenization" matters more than matching "the") and dampens the effect of very long documents. Its superpower: <strong>exact matches</strong> — product codes, error numbers, names, acronyms, an exact phrase. Its blind spot: it has no idea that "car" and "automobile" mean the same thing.</p>
+<h2>Dense: match the meaning (embeddings)</h2>
+<p><strong>[[dense retrieval|Embedding search]]</strong> (you just built one) represents each document as a vector of meaning and ranks by [[cosine similarity]]. Its superpower is the mirror image of BM25's: it matches <strong>meaning</strong> across different words ("how long to send something back" finds "30-day return policy"). Its blind spot: it can <em>miss exact tokens</em> — a precise part number might embed near lots of vaguely-similar text and get buried.</p>
+<h2>Hybrid: use both</h2>
+<p>Notice the strengths are complementary: BM25 nails exact terms, embeddings nail paraphrases. <strong>[[hybrid search]]</strong> runs both and merges the results (a common merge is Reciprocal Rank Fusion — combine the rank positions from each list). This is the default for serious RAG, because real queries contain <em>both</em> exact terms ("error E-1042") and fuzzy intent ("why won't it start").</p>
+<table>
+<tr><th>Need</th><th>Best retriever</th></tr>
+<tr><td>Exact code / name / phrase</td><td>Keyword (BM25)</td></tr>
+<tr><td>Paraphrased / conceptual question</td><td>Embeddings (dense)</td></tr>
+<tr><td>Real-world mix of both</td><td>Hybrid</td></tr>
+</table>
+<div class="callout tip"><div class="ct">Don't reach for embeddings reflexively</div>Beginners assume "RAG = embeddings." But for a knowledge base full of part numbers, legal citations, or code identifiers, plain BM25 often beats a pure vector search — and it's cheaper and simpler (no embedding API, no vector DB). Measure both on your data. Frequently the answer is hybrid; sometimes it's just keywords.</div>`,
+quiz:[
+{q:"A user searches your support docs for the exact error code 'ERR_4821'. Which retriever is most reliable here, and why?",o:["Embeddings — they understand meaning","Keyword/BM25 — exact tokens like codes are its strength; embeddings can bury an exact string among vaguely-similar text","Neither can find codes"],a:1,e:"Exact identifiers are sparse retrieval's home turf. Dense embeddings match meaning and may rank the precise code below semantically-similar prose. This is exactly why hybrid exists."},
+{q:"Why is hybrid search the default for serious RAG?",o:["It's cheaper than either alone","Real queries mix exact terms and fuzzy intent; keyword nails the former, embeddings the latter, so combining them covers both","Vector databases require it"],a:1,e:"BM25 and embeddings have complementary blind spots. Merging their results captures exact matches AND semantic matches, which single-method retrieval misses."}]},
+{id:"l3a5",t:"🧪 Lab: Real embeddings, real retrieval — build a mini-RAG",min:8,lab:true,sim:"ragreal",src:"AIE ch.6 §RAG",body:`
+<p>Enough theory — let's retrieve for real. The lab below is a genuine [[dense retrieval|dense retriever]]: it sends your query and a small document corpus to the live <strong>embeddings API</strong> (<code>text-embedding-3-small</code>), computes [[cosine similarity]] in your browser, and ranks the documents. This is the actual machinery inside every RAG system, with nothing faked.</p>
+<p>Things to try, and what to notice:</p>
+<ul>
+<li>The default query — "how long do I have to send something back?" — shares <em>almost no words</em> with the winning document ("...refunds within 30 days..."). Watch dense retrieval match it anyway. That's meaning over words.</li>
+<li>Ask "do you take Bitcoin?" — see it surface the payments document (which mentions crypto) even though you said Bitcoin.</li>
+<li>Ask something the corpus can't answer ("what's your CEO's name?") — watch <em>every</em> score stay low. <strong>This is the signal a good RAG app uses to refuse</strong> instead of hallucinating: if the top similarity is weak, there's no real context, so don't pretend.</li></ul>
+<div class="callout tip"><div class="ct">You just built the heart of RAG</div>Embed the corpus once (cached), embed each query, rank by cosine, take the top chunk(s), paste into the prompt. Everything else in RAG — chunking, hybrid search, reranking, query rewriting — is refinement around this core loop. When you build your Level 3 project, this is the engine under it.</div>
+<p>The corpus embeds once and is cached; each query is one tiny embedding call (fractions of a cent).</p>`,
+quiz:[
+{q:"In the lab, your query and the matching document share almost no words, yet it ranks first. What made that work?",o:["Hidden keyword matching","Embeddings place text by meaning, so semantically-related sentences have high cosine similarity regardless of shared words","The API was told the answer"],a:1,e:"That's dense retrieval: meaning becomes geometry. Close meaning → vectors point the same way → high cosine — no word overlap required."},
+{q:"For an out-of-scope query, every similarity score is low. How should a well-built RAG app use that?",o:["Return the highest-scoring chunk anyway","Treat weak top-similarity as 'no real context found' and refuse or say it doesn't know, instead of hallucinating","Raise the temperature to be creative"],a:1,e:"A low best-match is the app's cue that the answer isn't in the corpus. Honest refusal beats confidently grounding on irrelevant text — a key reliability habit you'll bake into your project."}]}
 ]},
 {title:"RAG",lessons:[
 {id:"l3b1",t:"RAG: the architecture that powers everything",min:5,sim:"rag",body:`
