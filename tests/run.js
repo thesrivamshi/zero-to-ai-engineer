@@ -430,6 +430,36 @@ if (pySnippets.length) {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
+/* ================= 8. authored Colab notebooks ================= */
+section('8. Colab notebooks');
+{
+  const nbDir = path.join(ROOT, 'notebooks');
+  if (fs.existsSync(nbDir)) {
+    const nbs = fs.readdirSync(nbDir).filter(f => f.endsWith('.ipynb'));
+    ok(nbs.length >= 3, 'at least 3 notebooks authored');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'z2ai-nb-'));
+    nbs.forEach(f => {
+      let nb;
+      try { nb = JSON.parse(fs.readFileSync(path.join(nbDir, f), 'utf8')); ok(true, `${f} is valid JSON`); }
+      catch (e) { ok(false, `${f} is valid JSON`); return; }
+      ok(Array.isArray(nb.cells) && nb.cells.length, `${f} has cells`);
+      ok(nb.nbformat >= 4, `${f} is nbformat >=4`);
+      nb.cells.forEach((c, ci) => {
+        if (c.cell_type !== 'code') return;
+        const src = (c.source || []).join('');
+        // skip cells using notebook magics / shell escapes
+        if (src.split('\n').some(l => /^\s*[%!]/.test(l))) return;
+        if (!src.trim()) return;
+        const fp = path.join(tmp, `${f.replace(/\W/g,'_')}_${ci}.py`);
+        fs.writeFileSync(fp, src);
+        try { execFileSync('python3', ['-m', 'py_compile', fp], { stdio: 'pipe' }); ok(true, `${f} cell#${ci} compiles`); }
+        catch (e) { ok(false, `${f} cell#${ci} compiles — ${String(e.stderr).slice(0,160)}`); }
+      });
+    });
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
 /* ================= summary ================= */
 console.log('\n========================================');
 console.log(`${passed} passed, ${failed} failed`);
