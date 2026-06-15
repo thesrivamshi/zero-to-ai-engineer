@@ -208,6 +208,30 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
   </div>
 </div>
 
+<!-- floating focus timer + global notes -->
+<button id="fabTimer" onclick="toggleTimer()" title="Focus timer" style="position:fixed;right:18px;bottom:74px;z-index:50;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)">🍅 <span id="fabTimerLabel">25:00</span></button>
+<button id="fabNotes" onclick="toggleNotes()" title="Notes" style="position:fixed;right:18px;bottom:22px;z-index:50;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.25)">📝 Notes</button>
+<div id="notesDrawer" style="display:none;position:fixed;right:18px;bottom:118px;z-index:51;width:min(390px,92vw);background:var(--bg3);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:14px">📝 My notes</b><span style="font-size:11px;color:var(--muted)" id="notesSaved">autosaves</span></div>
+  <textarea id="globalNotes" placeholder="Jot anything as you go — questions, ideas, things to revisit. Autosaves to this browser; open anytime with the 📝 button." style="width:100%;min-height:220px;resize:vertical;background:var(--bg2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-size:13px;outline:none;font-family:inherit" oninput="saveGlobalNotes(this.value)"></textarea>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px">Global pad. Each lesson also has its own note box at the bottom. Both back up via Settings → Export progress.</div>
+</div>
+<div id="timerDrawer" style="display:none;position:fixed;right:18px;bottom:118px;z-index:51;width:min(300px,92vw);background:var(--bg3);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:16px;text-align:center">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:14px">🍅 Focus timer</b><span id="focusCount" style="font-size:11px;color:var(--muted)"></span></div>
+  <div id="timerBig" style="font-size:46px;font-weight:700;letter-spacing:1px;margin:6px 0">25:00</div>
+  <div id="timerMode" style="font-size:12px;color:var(--muted);margin-bottom:12px">Focus</div>
+  <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+    <button class="simbtn" id="timerStart" onclick="timerToggle()">Start</button>
+    <button class="simbtn ghost" onclick="timerReset()">Reset</button>
+  </div>
+  <div style="display:flex;gap:6px;justify-content:center">
+    <button class="simbtn ghost" style="font-size:12px;padding:4px 9px" onclick="timerSet('focus')">Focus 25</button>
+    <button class="simbtn ghost" style="font-size:12px;padding:4px 9px" onclick="timerSet('short')">Break 5</button>
+    <button class="simbtn ghost" style="font-size:12px;padding:4px 9px" onclick="timerSet('long')">Long 15</button>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:10px">Pomodoro: 25 min focus, then a 5 min break. Completed focus blocks are counted.</div>
+</div>
+
 <script src="data/glossary.js"></script>
 <script src="data/level1.js"></script>
 <script src="data/level2.js"></script>
@@ -896,19 +920,45 @@ SIMS.attention=function(b){
 
 /* ================= API key & live calls ================= */
 function getKey(){ return localStorage.getItem('z2ai_key')||''; }
+function getBase(){ return (localStorage.getItem('z2ai_base')||'https://api.openai.com/v1').replace(/\/+$/,''); }
+function getChatModel(){ return localStorage.getItem('z2ai_chatmodel')||'gpt-4o-mini'; }
+function getEmbedModel(){ return localStorage.getItem('z2ai_embedmodel')||'text-embedding-3-small'; }
+function providerHost(){ try{ return new URL(getBase()).host; }catch(e){ return getBase(); } }
 function renderSettings(c){
   const k=getKey();
-  c.innerHTML=`<h1 class="ltitle">🔑 Connect your OpenAI API key</h1>
-  <div class="lmeta">Powers the live labs: real model calls, real evals, fine-tune verification</div>
+  c.innerHTML=`<h1 class="ltitle">🔑 API key — optional, and here's why</h1>
+  <div class="lmeta">Needed only for the handful of live labs · the other ~90% of the course works with no key</div>
   <div class="body">
-  <p>Your key is stored <strong>only in this browser</strong> (localStorage) and sent <strong>only to api.openai.com</strong> — never anywhere else. This whole app is a local file; there is no server behind it.</p>
-  <input class="keyinput" id="keyin" type="password" placeholder="sk-..." value="${k}">
-  <div class="row" style="display:flex;gap:10px;margin-top:6px">
-    <button class="simbtn" onclick="saveKey()">Save & test</button>
-    <button class="simbtn ghost" onclick="localStorage.removeItem('z2ai_key');renderSettings(document.getElementById('content'))">Remove key</button>
+  <div class="callout"><div class="ct">You do NOT need this to learn most of the course</div>Every lesson, quiz, 📖 book reference, 🎬 video, 📐 diagram, the terminal &amp; SQL labs, the in-browser Python labs (they run locally), and all the interactive sims (tokenizer, temperature, chunking, KV cache, cost calculator…) work with <strong>no key at all</strong>. Connect one only when you want the live labs to actually call a model.</div>
+  <h2 style="font-size:18px;margin:22px 0 6px">What the key is actually used for</h2>
+  <p>The app makes exactly two kinds of real call, and only inside these labs:</p>
+  <ul>
+  <li><strong>Chat completions</strong> (<code>POST /chat/completions</code>) — the "first real API call" lab, structured-outputs lab, the live eval harness (l2d7), the streaming/TTFT playground, and the fine-tune/deploy verification checks. This is where you feel real model behavior, latency, and cost instead of a simulation.</li>
+  <li><strong>Embeddings</strong> (<code>POST /embeddings</code>) — the real-embeddings mini-RAG (l3a5) and the Twin retrieval labs, where your query and documents become real vectors.</li>
+  </ul>
+  <p>That's it. No call happens unless you open one of those labs and run it. Your key is stored <strong>only in this browser</strong> (localStorage) and sent <strong>only to the provider URL below</strong> — there is no server behind this app.</p>
+
+  <h2 style="font-size:18px;margin:26px 0 6px">Provider — use OpenAI, a local model, or any compatible endpoint</h2>
+  <p>The labs speak the standard OpenAI <em>format</em>, so they work with anything that exposes that format. Pick what suits you:</p>
+  <ul style="font-size:13.5px;color:var(--muted)">
+  <li><strong>OpenAI</strong> (default) — base URL <code>https://api.openai.com/v1</code>, key from platform.openai.com. <code>gpt-4o-mini</code> costs cents.</li>
+  <li><strong>Local &amp; free</strong> — run Ollama or LM Studio and set the base URL to its server (e.g. <code>http://localhost:11434/v1</code> for Ollama, <code>http://localhost:1234/v1</code> for LM Studio). Key can be anything. No cost, runs on your machine.</li>
+  <li><strong>Gateways</strong> — OpenRouter (<code>https://openrouter.ai/api/v1</code>) or similar let you point the chat model at Claude, Llama, etc. (Embeddings labs need an endpoint that serves <code>/embeddings</code> — most local servers and OpenAI do; pure-chat gateways may not.)</li>
+  </ul>
+  <div class="row" style="margin-top:8px"><span class="lbl">Base URL</span></div>
+  <input class="keyinput" id="baseinput" placeholder="https://api.openai.com/v1" value="${escapeHtml(getBase())}">
+  <div class="row" style="display:flex;gap:10px;margin-top:8px">
+    <div style="flex:1"><span class="lbl">Chat model</span><input class="keyinput" id="chatmodelinput" placeholder="gpt-4o-mini" value="${escapeHtml(getChatModel())}"></div>
+    <div style="flex:1"><span class="lbl">Embeddings model</span><input class="keyinput" id="embedmodelinput" placeholder="text-embedding-3-small" value="${escapeHtml(getEmbedModel())}"></div>
   </div>
-  <div class="simout" id="keyout" style="margin-top:14px">${k?'Key saved. Click "Save & test" to verify it works.':'No key yet. Get one at platform.openai.com → API keys (the Level 2 lab walks you through it).'}</div>
-  <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>Set a monthly spending cap in your OpenAI billing settings. Course labs use gpt-4o-mini and cost cents, but caps protect you from mistakes — that's an engineering habit, not paranoia.</div>
+  <div class="row" style="margin-top:8px"><span class="lbl">API key <span style="color:var(--muted);font-weight:400">(any non-empty value for local servers)</span></span></div>
+  <input class="keyinput" id="keyin" type="password" placeholder="sk-..." value="${k}">
+  <div class="row" style="display:flex;gap:10px;margin-top:8px">
+    <button class="simbtn" onclick="saveKey()">Save &amp; test</button>
+    <button class="simbtn ghost" onclick="['z2ai_key','z2ai_base','z2ai_chatmodel','z2ai_embedmodel'].forEach(x=>localStorage.removeItem(x));renderSettings(document.getElementById('content'))">Reset to defaults</button>
+  </div>
+  <div class="simout" id="keyout" style="margin-top:14px">${k?'Saved. Click "Save & test" to verify a live call works.':'No key yet — fine for ~90% of the course. Add one when you reach a live lab (the Level 2 lab walks you through getting an OpenAI key).'}</div>
+  <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>If you use a paid provider, set a monthly spending cap in its billing settings. Course labs use a mini model and cost cents — caps protect you from mistakes. That's an engineering habit, not paranoia.</div>
   <h2 style="font-size:20px;margin:34px 0 10px">💾 Backup your progress</h2>
   <p>Progress (including your notes) lives only in this browser. A cleared cache wipes months of work — export a backup regularly.</p>
   <div class="row" style="display:flex;gap:10px">
@@ -921,22 +971,28 @@ function renderSettings(c){
 }
 async function saveKey(){
   const k=document.getElementById('keyin').value.trim();
+  const base=(document.getElementById('baseinput')||{}).value;
+  const cm=(document.getElementById('chatmodelinput')||{}).value;
+  const em=(document.getElementById('embedmodelinput')||{}).value;
+  if(base&&base.trim()) localStorage.setItem('z2ai_base',base.trim()); else localStorage.removeItem('z2ai_base');
+  if(cm&&cm.trim()) localStorage.setItem('z2ai_chatmodel',cm.trim()); else localStorage.removeItem('z2ai_chatmodel');
+  if(em&&em.trim()) localStorage.setItem('z2ai_embedmodel',em.trim()); else localStorage.removeItem('z2ai_embedmodel');
   const out=document.getElementById('keyout');
-  if(!k){out.textContent='Paste a key first.';return;}
+  if(!k){out.textContent='Paste a key first (any non-empty value for a local server).';return;}
   localStorage.setItem('z2ai_key',k);
-  out.textContent='Testing key against api.openai.com…';
+  out.textContent='Testing a live call against '+providerHost()+' …';
   try{
     const r=await llm([{role:'user',content:'Reply with exactly: OK'}],{max_tokens:5});
-    out.innerHTML='<span style="color:var(--green)">✓ Key works! Model replied: "'+r.text.trim()+'" — the live labs are now unlocked.</span>';
-  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+e.message+'</span>'; }
+    out.innerHTML='<span style="color:var(--green)">✓ Works! '+escapeHtml(getChatModel())+' replied: "'+escapeHtml(r.text.trim())+'" — live labs unlocked via '+escapeHtml(providerHost())+'.</span>';
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber);font-size:12px">If using a local server, check the server is running and the base URL ends in /v1. Browser CORS may also block it — some local servers need a flag to allow browser requests.</span>'; }
   renderSidebar();
 }
 async function llm(messages,opts={}){
   const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
-  const body={model:opts.model||'gpt-4o-mini',messages,temperature:opts.temperature??0.7};
+  const body={model:opts.model||getChatModel(),messages,temperature:opts.temperature??0.7};
   if(opts.max_tokens)body.max_tokens=opts.max_tokens;
   if(opts.response_format)body.response_format=opts.response_format;
-  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+  const res=await fetch(getBase()+'/chat/completions',{
     method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
     body:JSON.stringify(body)});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
@@ -949,9 +1005,9 @@ function costOf(usage,model){
 }
 async function embedText(texts,opts={}){
   const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
-  const res=await fetch('https://api.openai.com/v1/embeddings',{
+  const res=await fetch(getBase()+'/embeddings',{
     method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
-    body:JSON.stringify({model:opts.model||'text-embedding-3-small',input:texts})});
+    body:JSON.stringify({model:opts.model||getEmbedModel(),input:texts})});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
   const j=await res.json();
   return {vectors:j.data.map(d=>d.embedding),usage:j.usage};
@@ -1136,9 +1192,9 @@ function parseSSE(buf){
 }
 async function llmStream(messages,opts={},onToken){
   const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
-  const body={model:opts.model||'gpt-4o-mini',messages,temperature:opts.temperature??0.7,stream:true,stream_options:{include_usage:true}};
+  const body={model:opts.model||getChatModel(),messages,temperature:opts.temperature??0.7,stream:true,stream_options:{include_usage:true}};
   if(opts.max_tokens)body.max_tokens=opts.max_tokens;
-  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+  const res=await fetch(getBase()+'/chat/completions',{
     method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
     body:JSON.stringify(body)});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
@@ -1598,10 +1654,24 @@ SIMS.ragreal=function(b){
   };
 };
 
+/* ================= global notes + focus (pomodoro) timer ================= */
+function saveGlobalNotes(v){ if(v) localStorage.setItem('z2ai_globalnotes',v); else localStorage.removeItem('z2ai_globalnotes'); const s=document.getElementById('notesSaved'); if(s) s.textContent='saved ✓'; }
+function toggleNotes(){ const d=document.getElementById('notesDrawer'),t=document.getElementById('timerDrawer'); if(t)t.style.display='none'; if(!d)return; const open=(d.style.display==='none'||!d.style.display); d.style.display=open?'block':'none'; if(open){ const ta=document.getElementById('globalNotes'); if(ta){ ta.value=localStorage.getItem('z2ai_globalnotes')||''; ta.focus(); } } }
+let _tk=null,_tRemain=1500,_tMode='focus',_tRunning=false;
+const _tLen={focus:1500,short:300,long:900},_tName={focus:'Focus',short:'Short break',long:'Long break'};
+function _tFmt(s){ const m=Math.floor(s/60),x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+function _tPaint(){ const big=document.getElementById('timerBig'),lab=document.getElementById('fabTimerLabel'),md=document.getElementById('timerMode'),btn=document.getElementById('timerStart'),fc=document.getElementById('focusCount'); const f=_tFmt(_tRemain); if(big)big.textContent=f; if(lab)lab.textContent=f; if(md)md.textContent=_tName[_tMode]+(_tRunning?' · running':''); if(btn)btn.textContent=_tRunning?'Pause':'Start'; if(fc)fc.textContent=(localStorage.getItem('z2ai_focus_sessions')||'0')+' done'; }
+function toggleTimer(){ const d=document.getElementById('timerDrawer'),n=document.getElementById('notesDrawer'); if(n)n.style.display='none'; if(!d)return; d.style.display=(d.style.display==='none'||!d.style.display)?'block':'none'; _tPaint(); }
+function timerToggle(){ _tRunning=!_tRunning; if(_tRunning){ _tk=setInterval(_tTick,1000); } else if(_tk){ clearInterval(_tk); _tk=null; } _tPaint(); }
+function _tTick(){ if(_tRemain>0){ _tRemain--; _tPaint(); } if(_tRemain<=0){ if(_tk){clearInterval(_tk);_tk=null;} _tRunning=false; if(_tMode==='focus'){ localStorage.setItem('z2ai_focus_sessions',String((+(localStorage.getItem('z2ai_focus_sessions')||'0'))+1)); } _tPaint(); setTimeout(()=>alert(_tName[_tMode]+' done! '+(_tMode==='focus'?'Take a break.':'Back to focus.')),50); } }
+function timerReset(){ if(_tk){clearInterval(_tk);_tk=null;} _tRunning=false; _tRemain=_tLen[_tMode]; _tPaint(); }
+function timerSet(m){ if(!_tLen[m])return; _tMode=m; if(_tk){clearInterval(_tk);_tk=null;} _tRunning=false; _tRemain=_tLen[m]; _tPaint(); }
+function initWidgets(){ _tPaint(); document.addEventListener('keydown',e=>{ if(e.altKey&&(e.key==='n'||e.key==='N')){ e.preventDefault(); toggleNotes(); } }); }
+
 /* boot */
 if(!LEVELS.length){
   document.getElementById('content').innerHTML='<div style="padding:60px;text-align:center;color:var(--muted)">Course data failed to load. Make sure the <code>data/</code> folder sits next to this file.</div>';
-}else render();
+}else { render(); initWidgets(); }
 </script>
 </body>
 </html>

@@ -196,6 +196,26 @@ Object.keys(DIAG || {}).forEach(id => {
 });
 console.log(`  ${Object.keys(DIAG || {}).length} lessons with a diagram, ${diagCount} SVGs (all original vector)`);
 
+/* ----- provider config + global notes + focus timer ----- */
+ok(typeof W.getBase === 'function' && /\/v1$/.test(W.getBase()), 'provider base URL defaults to OpenAI /v1');
+ok(W.getChatModel() === 'gpt-4o-mini', 'default chat model is gpt-4o-mini');
+ok(W.getEmbedModel() === 'text-embedding-3-small', 'default embeddings model');
+ok(typeof W.saveGlobalNotes === 'function' && typeof W.toggleNotes === 'function', 'global notes functions exist');
+W.saveGlobalNotes('hello notes');
+ok(W.localStorage.getItem('z2ai_globalnotes') === 'hello notes', 'global notes persist to localStorage');
+W.saveGlobalNotes('');
+ok(!W.localStorage.getItem('z2ai_globalnotes'), 'clearing global notes removes the key');
+ok(!!W.document.getElementById('globalNotes') && !!W.document.getElementById('fabNotes'), 'notes drawer + button render');
+ok(typeof W.timerSet === 'function' && typeof W.timerToggle === 'function', 'focus timer functions exist');
+W.timerSet('short');
+ok(W.document.getElementById('timerBig').textContent === '05:00', 'timer set to short break shows 05:00');
+W.timerSet('focus');
+ok(W.document.getElementById('timerBig').textContent === '25:00', 'timer reset to focus shows 25:00');
+ok(!!W.document.getElementById('fabTimer'), 'focus timer button renders');
+W.location.hash = 'settings'; W.render();
+ok(!!W.document.getElementById('baseinput') && !!W.document.getElementById('chatmodelinput') && !!W.document.getElementById('keyin'), 'settings shows provider + key fields');
+W.location.hash = ''; W.render();
+
 /* ----- reading-progress tracker (books view) ----- */
 ok(typeof W.bookStats === 'function', 'bookStats() exists');
 ok(typeof W.toggleRead === 'function', 'toggleRead() exists');
