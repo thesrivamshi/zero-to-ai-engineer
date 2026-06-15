@@ -499,7 +499,7 @@ function filterGl(v){
 
 /* ================= simulations ================= */
 function renderSim(name){
-  const titles={playground:'LIVE LAB: real API call — your key, your tokens',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
+  const titles={playground:'LIVE LAB: real API call — your key, your tokens',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
   return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
 }
 function initSim(name){
@@ -567,6 +567,44 @@ SIMS.temperature=function(b){
     document.getElementById('tsout').textContent=out.join(' · ');
   };
   SIMS._temp();
+};
+
+/* samplers: temperature + top-k + top-p on one toy distribution */
+SIMS.samplers=function(b){
+  const logits=[['Paris',8.0],['the',4.6],['a',4.1],['located',3.5],['beautiful',2.9],['Lyon',2.3],['surrounded',1.7],['definitely',1.2]];
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">One distribution, three controls. Prompt: <i>"The capital of France is"</i>. Watch which tokens survive each filter.</p>
+  <div class="row"><span class="lbl">Temperature</span><input type="range" id="sm_t" min="0" max="200" value="70" oninput="SIMS._sm()"><span class="val" id="sm_tv">0.70</span></div>
+  <div class="row"><span class="lbl">top-k (0 = off)</span><input type="range" id="sm_k" min="0" max="8" value="0" oninput="SIMS._sm()"><span class="val" id="sm_kv">off</span></div>
+  <div class="row"><span class="lbl">top-p (1 = off)</span><input type="range" id="sm_p" min="10" max="100" value="100" oninput="SIMS._sm()"><span class="val" id="sm_pv">1.00</span></div>
+  <div id="sm_bars"></div>
+  <div class="simout" id="sm_out" style="font-size:12.5px"></div>`;
+  SIMS._sm=function(){
+    const t=Math.max(+document.getElementById('sm_t').value/100,0.01);
+    const k=+document.getElementById('sm_k').value;
+    const p=+document.getElementById('sm_p').value/100;
+    document.getElementById('sm_tv').textContent=t.toFixed(2);
+    document.getElementById('sm_kv').textContent=k===0?'off':k;
+    document.getElementById('sm_pv').textContent=p.toFixed(2);
+    // softmax with temperature
+    const exps=logits.map(([w,l])=>Math.exp(l/t));
+    const s=exps.reduce((a,b)=>a+b,0);
+    let dist=logits.map(([w],i)=>({w,p:exps[i]/s})).sort((a,b)=>b.p-a.p);
+    // top-k: keep k highest
+    let kept=new Set(dist.map(d=>d.w));
+    if(k>0){ kept=new Set(dist.slice(0,k).map(d=>d.w)); }
+    // top-p: keep smallest set whose cumulative prob >= p
+    if(p<1){ let acc=0,pk=new Set(); for(const d of dist){ if(!kept.has(d.w))continue; pk.add(d.w); acc+=d.p; if(acc>=p)break; } kept=pk; }
+    // renormalize kept
+    const keptSum=dist.filter(d=>kept.has(d.w)).reduce((a,d)=>a+d.p,0)||1;
+    document.getElementById('sm_bars').innerHTML=dist.map(d=>{
+      const alive=kept.has(d.w);
+      const shown=alive?d.p/keptSum:0;
+      return `<div class="barrow"><span class="bl" style="color:${alive?'var(--text)':'var(--dim)'}">${d.w}</span><div class="bv" style="width:${Math.max((alive?shown:d.p)*360,2)}px;background:${alive?'var(--accent)':'var(--bg3)'};opacity:${alive?1:.5}"></div><span class="bn">${alive?(shown*100).toFixed(1)+'%':'cut'}</span></div>`;
+    }).join('');
+    const n=kept.size;
+    document.getElementById('sm_out').innerHTML=`<b style="color:var(--accent2)">${n}</b> of ${dist.length} tokens can be chosen. Temperature reshapes the odds; top-k caps the count; top-p caps the cumulative mass. They stack — most apps tune temperature + one of top-k/top-p.`;
+  };
+  SIMS._sm();
 };
 
 /* embeddings: 2D toy map + cosine */

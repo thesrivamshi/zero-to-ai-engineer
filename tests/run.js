@@ -54,7 +54,7 @@ ok(Array.isArray(W.COURSE_LEVELS) && W.COURSE_LEVELS.length >= 6, 'COURSE_LEVELS
 ok(W.GLOSSARY && Object.keys(W.GLOSSARY).length > 30, 'GLOSSARY loaded');
 
 const LEVELS = W.COURSE_LEVELS, GLOSSARY = W.GLOSSARY;
-const VALID_SIMS = ['playground','tokenizer','temperature','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
+const VALID_SIMS = ['playground','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
 const ids = new Set();
 const allLessons = [];
 LEVELS.forEach((lv, li) => {
