@@ -310,7 +310,64 @@ quiz:[
 <div class="callout fail"><div class="ct">Real-world failure</div>A developer left a script retrying in a tight loop without backoff over a weekend — tens of thousands of failed-then-billed requests later, a four-figure invoice. Spending caps + backoff + logging would have made it a non-event. Set the cap before Level 3.</div>`,
 quiz:[
 {q:"You're getting 429 errors during a traffic spike. Correct response?",o:["Retry immediately in a tight loop until it works","Retry with exponential backoff (increasing waits)","Switch providers permanently"],a:1,e:"429 means 'slow down'. Hammering makes it worse. Backoff — wait 1s, 2s, 4s… — is the universal pattern, built into the official library."},
-{q:"Why does cost per message RISE over a long chat session?",o:["The provider charges loyalty fees","You resend the ever-growing history as input tokens on every call","Models get slower as they tire"],a:1,e:"Statelessness means history is re-sent (and re-billed) each turn. Long chats are quadratic-ish in total tokens — which is why production apps trim or summarize history."}]}
+{q:"Why does cost per message RISE over a long chat session?",o:["The provider charges loyalty fees","You resend the ever-growing history as input tokens on every call","Models get slower as they tire"],a:1,e:"Statelessness means history is re-sent (and re-billed) each turn. Long chats are quadratic-ish in total tokens — which is why production apps trim or summarize history."}]},
+{id:"l2b5",t:"The API has no memory: statelessness and conversation state",min:5,src:"AIE ch.5 §OpenAI API practice",body:`
+<p>Here's a fact that confuses every beginner and underlies your whole chatbot project: <strong>the chat API is [[stateless]].</strong> The server remembers <em>nothing</em> between calls. Each request is judged entirely on the messages you send in that request — the model that answered you a second ago has already "forgotten" you exist.</p>
+<p>So how does ChatGPT seem to remember the conversation? Because the app <strong>resends the entire history every time.</strong> When you send your third message, the app actually sends messages one, two, and three (plus the system prompt) all over again. The illusion of memory is built by you, the engineer, replaying the transcript on every turn.</p>
+<pre><code>from openai import OpenAI
+client = OpenAI()
+
+# YOU hold the conversation in a list. The API does not.
+messages = [
+    {"role": "system", "content": "You are a terse, helpful assistant."},
+]
+
+def ask(user_text):
+    messages.append({"role": "user", "content": user_text})
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,            # send the WHOLE list every call
+    )
+    reply = resp.choices[0].message.content
+    messages.append({"role": "assistant", "content": reply})  # remember it yourself
+    return reply
+
+print(ask("My name is Sam."))
+print(ask("What's my name?"))   # only works because we resent the history</code></pre>
+<p>The pattern: keep a <code>messages</code> list, append the user's turn, send the list, then append the assistant's reply so it's there next time. Forget to append the reply and your bot develops amnesia between turns.</p>
+<div class="callout warn"><div class="ct">Statelessness has a cost — literally</div>Because you resend the growing transcript each turn, input tokens (and cost, and latency) climb as the chat lengthens. Eventually the history threatens the [[context window]]. That's why real chatbots <strong>trim</strong> (drop oldest turns) or <strong>summarize</strong> old history — a feature you'll build into your Level 2 gate project. Statelessness isn't a quirk to memorize; it's the reason half of chatbot engineering exists.</div>`,
+quiz:[
+{q:"How does a chatbot 'remember' earlier messages if the API is stateless?",o:["The provider stores your session server-side","Your code resends the entire conversation history on every API call","The model has a hidden long-term memory"],a:1,e:"Statelessness means the server keeps nothing. The app rebuilds context each turn by replaying the whole transcript. Memory is an illusion you engineer, not a feature you get."},
+{q:"Your bot answers the first question fine but acts like it forgot it on the next turn. Likely bug?",o:["The API key expired mid-chat","You're not appending the assistant's reply (and/or prior turns) back into the messages list you resend","The model is too small"],a:1,e:"If you don't carry prior turns forward in the messages you send, each call starts blank. Append both user and assistant turns to the list every time."}]},
+{id:"l2b6",t:"🧪 Lab: Structured outputs — getting JSON you can trust",min:8,lab:true,src:"AIE ch.5 §OpenAI API practice",live:{
+goal:"Make the model classify a support message and return ONLY a JSON object with keys \"category\" (one of: billing, technical, account) and \"urgent\" (true/false). No prose, no markdown fences — just the object. Use the message: \"My card was charged twice and I need this fixed today!\"",
+system:"You are a support-ticket classifier. Output only valid JSON.",
+starter:"Classify this support message as JSON with keys \"category\" (billing|technical|account) and \"urgent\" (boolean). Message: \"My card was charged twice and I need this fixed today!\"",
+temperature:0,
+check:{mustParse:"json",schemaKeys:["category","urgent"]},
+hint:"Tell the model the exact keys and allowed values, and say 'output only JSON, no explanation'. Lower temperature helps."},
+body:`
+<p>For a chatbot, free-flowing prose is fine. For a <em>system</em> — code that routes tickets, extracts fields, or feeds another step — you need output your program can parse reliably, every time. That means <strong>[[structured output|structured outputs]]</strong>, usually [[json|JSON]].</p>
+<p>The naive approach is to just ask: "reply in JSON." It mostly works, then one day the model wraps it in <code>\`\`\`json</code> fences, or adds "Sure, here you go:" before it, and your <code>json.loads()</code> crashes in production. Two sturdier levels:</p>
+<ul>
+<li><strong>Ask precisely</strong> — specify the exact keys and allowed values, give an example, and say "output only the JSON object, no explanation." Set [[temperature]] to 0 for determinism.</li>
+<li><strong>Enforce it</strong> — modern APIs offer a [[json mode|JSON mode]] / structured-output setting that <em>guarantees</em> syntactically valid JSON (and can enforce a schema), by constraining the model's sampling to only legal tokens (recall the constrained-decoding idea from Level 1).</li></ul>
+<pre><code>resp = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "You output only valid JSON."},
+        {"role": "user", "content": "Extract name and age as JSON: 'Maria is 34.'"},
+    ],
+    response_format={"type": "json_object"},   # JSON mode: valid JSON guaranteed
+    temperature=0,
+)
+import json
+data = json.loads(resp.choices[0].message.content)   # safe to parse</code></pre>
+<div class="callout tip"><div class="ct">Always validate anyway</div>JSON mode guarantees valid <em>syntax</em>, not correct <em>content</em> — the model could still return the wrong keys or a hallucinated value. Production code parses the JSON AND checks the fields it expects (the keys exist, the value is in the allowed set). Trust the format; verify the meaning.</div>
+<p>The live lab below makes you do it for real: coax the model into returning a clean, parseable classification object. The checker parses your output and verifies the required keys — exactly what your own code would do.</p>`,
+quiz:[
+{q:"Why isn't 'please reply in JSON' enough for a production system?",o:["JSON is too slow to parse","The model may still wrap it in code fences or add prose, breaking your parser on some inputs","JSON can't represent text"],a:1,e:"Polite requests work most of the time, and 'most' isn't good enough at scale. Use JSON mode/structured outputs to guarantee valid syntax, and still validate the fields."},
+{q:"JSON mode guarantees valid JSON syntax. What must your code still do?",o:["Nothing — it's fully safe now","Validate the content: check the expected keys exist and values are in the allowed set","Re-ask the model to confirm"],a:1,e:"Valid syntax ≠ correct data. The model can still emit wrong or invented values. Parse, then verify the fields against what you require before acting on them."}]}
 ]},
 {title:"Prompt engineering",lessons:[
 {id:"l2c1",t:"Prompting is programming in English",min:5,body:`
