@@ -3,7 +3,8 @@
    b ∈ AIE (AI Engineering, Huyen) | LEH (LLM Engineer's Handbook) | INF (Inference Engineering).
    Page numbers are the PRINTED page numbers in each book.
    COVERAGE CONTRACT: the union of these references spans every chapter of all three
-   books. Read every lesson's "Read deeper" box and you will have read all three books. */
+   books. Read every lesson's "Read deeper" box and you'll have worked through every
+   chapter of all three (page ranges focus on the parts each lesson teaches). */
 window.READS = {
 /* ===================== LEVEL 1 — Foundations (AIE ch.1–2, INF ch.0–1) ===================== */
 "l1a1":[{b:"AIE",c:"1 · Introduction to Building AI Applications with FMs",p:"1-15",f:"The Rise of AI Engineering — what the job is"}],
@@ -120,7 +121,7 @@ window.READS = {
 
 /* ===================== LEVEL 5 — Shipping to Production (LEH ch.1/10/11, AIE ch.9/10) ===================== */
 "l5a1":[{b:"LEH",c:"1 · Understanding the LLM Twin Concept and Architecture",p:"8-16",f:"Building ML systems with feature/training/inference pipelines"}],
-"l5a2":[{b:"LEH",c:"2 · Tooling and Installation",p:"30-47",f:"MLOps and LLMOps tooling — orchestration"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"Orchestration in the production loop"}],
+"l5a2":[{b:"LEH",c:"2 · Tooling and Installation",p:"30-47",f:"MLOps and LLMOps tooling — orchestration"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Orchestration in the production loop"}],
 "l5a3":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Model serving (FastAPI specifics: see the video — books frame the architecture)"}],
 "l5a4":[{b:"INF",c:"7 · Production",p:"179-183",f:"Containerization & dependency management"},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deployment options"}],
 "l5a5":[{b:"LEH",c:"1 · Understanding the LLM Twin Concept and Architecture",p:"1-23",f:"Planning the MVP & designing the system architecture"}],
@@ -128,18 +129,18 @@ window.READS = {
 "l5a7":[{b:"INF",c:"7 · Production",p:"183-193",f:"Autoscaling — concurrency, cold starts, scale-to-zero"},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Serving economics"}],
 "l5a8":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploying & verifying the live service"},{b:"INF",c:"7 · Production",p:"204-208",f:"Client Code — latency, async, streaming"}],
 "l5a9":[{b:"AIE",c:"10 · AI Engineering Architecture and User Feedback",p:"449-470",f:"The end-to-end architecture as layers (gateway, routing, caches, guardrails)"}],
-"l5b1":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"Monitoring, prompt tracing — observability"},{b:"INF",c:"7 · Production",p:"203-204",f:"Observability for inference"}],
-"l5b2":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"Monitoring and alerting, drift"}],
+"l5b1":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Monitoring, prompt tracing — observability"},{b:"INF",c:"7 · Production",p:"203-204",f:"Observability for inference"}],
+"l5b2":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Monitoring and alerting, drift"}],
 "l5b3":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Cost engineering — cascades, caching tiers, batch APIs"},{b:"INF",c:"7 · Production",p:"201-203",f:"Cost Estimation"}],
-"l5b4":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"CI/CD for ML, model registries, safe rollouts"},{b:"INF",c:"7 · Production",p:"199-201",f:"Testing & zero-downtime deployment"}],
-"l5b5":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"DevOps→MLOps→LLMOps; registries and artifacts"}],
-"l5c1":[{b:"AIE",c:"10 · AI Engineering Architecture and User Feedback",p:"470-499",f:"User Feedback and the data flywheel"}],
+"l5b4":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"CI/CD for ML, model registries, safe rollouts"},{b:"INF",c:"7 · Production",p:"199-201",f:"Testing & zero-downtime deployment"}],
+"l5b5":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"DevOps→MLOps→LLMOps; registries and artifacts"}],
+"l5c1":[{b:"AIE",c:"10 · AI Engineering Architecture and User Feedback",p:"470-496",f:"User Feedback and the data flywheel"}],
 "l5c2":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference Optimization — system-level cost"}],
 "l5d1":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — the function-calling MCP standardizes (MCP itself is post-books: see the video)"}],
 "l5d2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — registering and dispatching tools (the MCP mechanic)"}],
 "l5d3":[{b:"INF",c:"7 · Production",p:"204-208",f:"Client Code — an MCP server is an API: transports, latency, protocols"}],
 "l5twin3":[{b:"LEH",c:"9 · RAG Inference Pipeline",p:"317-354",f:"Twin Stage 3 — serve the RAG inference pipeline"},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the twin"}],
-"l5gate":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the inference pipeline"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"Tracing & monitoring the deployed service"}],
+"l5gate":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the inference pipeline"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Tracing & monitoring the deployed service"}],
 
 /* ===================== LEVEL 6 — Inference at Scale (INF ch.0–7, AIE ch.9, LEH ch.8) ===================== */
 "l6a1":[{b:"INF",c:"2 · Models",p:"46-55",f:"LLM Inference Mechanics — prefill and decode"},{b:"INF",c:"0 · Inference",p:"15-22",f:"What happens during inference"}],
