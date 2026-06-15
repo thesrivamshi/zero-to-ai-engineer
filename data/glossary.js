@@ -140,5 +140,14 @@ window.GLOSSARY = {
 "inference pipeline": "The serving-time path of an ML/RAG system: take a request, rewrite/expand the query, retrieve and rerank context, assemble the prompt, call the model, post-process. The counterpart to the offline feature pipeline.",
 "moderation": "Automated screening of input or output for disallowed content (hate, self-harm, violence, etc.), often via a dedicated classification endpoint. A standard input/output guardrail.",
 "pii": "Personally Identifiable Information — names, emails, phone numbers, IDs. A guardrail concern: detect and redact it before logging, before sending to a model, or before returning a response.",
-"ground truth retrieval set": "For evaluating retrieval, the human-labeled set of which documents are actually relevant to each test query — what recall@k and precision@k are measured against."
+"ground truth retrieval set": "For evaluating retrieval, the human-labeled set of which documents are actually relevant to each test query — what recall@k and precision@k are measured against.",
+"instruction dataset": "A training set of (instruction → ideal response) examples, usually formatted as chat messages, used for supervised fine-tuning to teach a model to follow instructions in a particular way or voice.",
+"chat template": "The exact text format (special tokens and role markers) a chat model expects, e.g. wrapping each turn with role tags. You must apply the model's own chat template when preparing fine-tuning data, or training silently degrades.",
+"sequence packing": "Concatenating several short training examples into one full-length sequence (separated by markers) so no tokens are wasted on padding — making fine-tuning faster and cheaper without changing what's learned.",
+"model merging": "Combining the weights of two or more models (or adapters) into one — e.g. averaging them or merging task-specific fine-tunes — to blend capabilities without retraining. Cheap, surprisingly effective, and a bit alchemical.",
+"data decontamination": "Removing from training data any examples that overlap with your evaluation/benchmark sets, so test scores measure real ability rather than memorization. The flip side of benchmark contamination.",
+"preference dataset": "A dataset of (prompt, chosen, rejected) triples expressing which response is better, used to align a model with DPO or RLHF. Built from human ratings, production thumbs up/down, or LLM-judged comparisons.",
+"reward model": "In RLHF, a separate model trained on human preference data to score how good a response is; the LLM is then optimized to maximize that score. DPO removes the need for an explicit reward model.",
+"web scraping": "Programmatically extracting text/data from web pages (vs. a clean API). A common raw-data source for building datasets; needs cleaning, deduplication, and attention to terms of service and legality.",
+"data pipeline": "An automated, staged process that turns raw sources into clean, structured data ready for use (ingest → clean → transform → store). The same idea as a RAG feature pipeline, generalized to dataset building."
 };

@@ -68,7 +68,36 @@ quiz:[
 <p>The pattern to remember: <strong>generation is cheap, curation is the value.</strong> The teams with great synthetic pipelines are really great at filtering.</p>`,
 quiz:[
 {q:"What's the biggest quality risk in synthetic training data?",o:["It costs too much","Low diversity — naive generation yields repetitive, samey examples, and models trained on them get blander","It's illegal everywhere"],a:1,e:"LLMs gravitate to their modal outputs. Without deliberate diversity engineering (taxonomies, personas, difficulty tiers) and aggressive filtering, you distill the blandness."},
-{q:"What's the 'generate 3×, keep the best third' practice about?",o:["Tripling GPU usage for luck","Curation is where quality comes from — overgenerate, then filter hard with dedup, judges, and spot checks","Avoiding rate limits"],a:1,e:"Generation is cheap; selection is the value-add. Aggressive filtering is what separates useful synthetic data from noise."}]}
+{q:"What's the 'generate 3×, keep the best third' practice about?",o:["Tripling GPU usage for luck","Curation is where quality comes from — overgenerate, then filter hard with dedup, judges, and spot checks","Avoiding rate limits"],a:1,e:"Generation is cheap; selection is the value-add. Aggressive filtering is what separates useful synthetic data from noise."}]},
+{id:"l4b3",t:"Where data comes from — and why you must look at it",min:6,src:"AIE ch.8 §Dataset Engineering",body:`
+<p>Beyond "curate hard" and "generate synthetically," dataset engineering has a few disciplines that separate amateurs from professionals. The first: knowing your acquisition options and their trade-offs.</p>
+<h2>Acquisition: the menu</h2>
+<ul>
+<li><strong>Experts write examples</strong> — gold standard, slowest and priciest. Worth it for the hardest, highest-value behaviors.</li>
+<li><strong>Curated production logs</strong> — your real inputs paired with corrected/approved outputs. Realistic and common; the work is the curation.</li>
+<li><strong>Synthetic generation</strong> — scalable, cheap, needs heavy filtering (last lesson).</li>
+<li><strong>Public datasets</strong> — fine for generic capability, useless for your special sauce, and watch the license.</li></ul>
+<h2>Annotation: harder than it looks for open-ended tasks</h2>
+<p>Labeling "spam / not spam" is easy. Labeling open-ended outputs — "is this summary good?" — is genuinely hard, because reasonable people disagree. The professional moves: write a <strong>precise annotation guideline</strong> (with examples of good/bad and edge cases), measure <strong>inter-annotator agreement</strong> (if two labelers rarely agree, your task definition is broken, not your labelers), and treat ambiguous cases as a signal to sharpen the guideline. Vague instructions produce inconsistent labels, and inconsistent labels train a coin-flipping model.</p>
+<h2>The discipline nobody brags about: look at your data</h2>
+<p>The highest-ROI habit in all of dataset engineering is the least glamorous: <strong>actually read your examples.</strong> Sit down and read 50–100 of them, by hand. You will find mislabeled examples, formatting drift, duplicates, a topic that's secretly 40% of your data, and outputs you'd be embarrassed to ship. Every serious practitioner does this; every disappointing fine-tune skipped it. Aggregate metrics hide the rot — your eyes don't.</p>
+<div class="callout tip"><div class="ct">Data work is the job</div>It's tempting to treat data as setup and training as the "real" work. It's the reverse. The model is a mirror of its data, so the leverage is in the data: better examples, cleaner labels, honest inspection. A mediocre method on great data beats a great method on mediocre data, almost every time.</div>`,
+quiz:[
+{q:"Two annotators labeling your summaries rarely agree with each other. What does that most likely mean?",o:["One annotator is lazy","Your task definition / annotation guideline is ambiguous — fix the instructions before blaming the labelers","The model is broken"],a:1,e:"Low inter-annotator agreement is usually a definition problem, not a people problem. If humans can't agree on 'good,' the model can't learn it. Sharpen the guideline with examples and edge cases."},
+{q:"What's the single highest-ROI habit when preparing a fine-tuning dataset?",o:["Generating as many examples as possible","Manually reading 50–100 of your actual examples to catch mislabels, drift, duplicates, and embarrassing outputs","Picking a higher learning rate"],a:1,e:"Reading your data by hand surfaces problems aggregate stats hide — and the model becomes whatever those examples are. The least glamorous habit has the biggest payoff."}]},
+{id:"l4b4",t:"The data-collection pipeline: from raw sources to a clean dataset",min:6,src:"LEH ch.3 §Data Engineering",body:`
+<p>For the LLM Twin — and most real projects — your data doesn't arrive as a tidy JSONL. It's scattered across blog posts, exports, documents, APIs. Turning that mess into a training set is a <strong>[[data pipeline]]</strong>, and the <em>LLM Engineer's Handbook</em> treats it as a first-class engineering stage, not a one-off script. (Notice the echo of the RAG feature pipeline — same discipline, different output.)</p>
+<h2>The stages</h2>
+<ol>
+<li><strong>Collect raw data.</strong> Pull from sources: <strong>[[web scraping]]</strong> for public pages (respect robots.txt, terms of service, and the law), <strong>APIs</strong> for platforms that offer them (cleaner and more stable than scraping), exports (your Notion, your posts), and files. For the Twin, this is gathering everything you've written.</li>
+<li><strong>Clean.</strong> Strip HTML/markup, boilerplate, navigation, ads, signatures; fix encoding; drop near-empty or junk items. Garbage here becomes garbage the model imitates.</li>
+<li><strong>Standardize.</strong> Convert everything into one consistent schema — a uniform record per item (text + metadata like source, date, author). Now downstream steps don't care where each piece came from.</li>
+<li><strong>Deduplicate &amp; decontaminate.</strong> Remove duplicates and near-duplicates (they over-weight repeated content and waste compute), and run <strong>[[data decontamination]]</strong> — make sure nothing in training overlaps your eval/test set, or your scores become memorization.</li>
+<li><strong>Store.</strong> Save the clean, standardized dataset (a versioned file or a data store) so the next stage — building instruction/preference examples — starts from something trustworthy and reproducible.</li></ol>
+<div class="callout warn"><div class="ct">Scraping responsibly</div>Just because data is reachable doesn't mean it's yours to use. Check terms of service and licensing, respect robots.txt and rate limits, avoid personal data you have no right to, and prefer official APIs when they exist. "We scraped it" has ended in lawsuits; building a product on shaky data rights is building on sand.</div>`,
+quiz:[
+{q:"Why standardize all collected data into one schema before building training examples?",o:["It compresses the data","So downstream steps work uniformly regardless of source, making the pipeline repeatable and the data trustworthy","Models reject non-standard data"],a:1,e:"A uniform record (text + metadata) decouples 'where it came from' from 'what we do next.' That's what turns a pile of sources into a reproducible dataset pipeline."},
+{q:"What is data decontamination, and why does it matter for fine-tuning?",o:["Removing toxic language only","Ensuring training data doesn't overlap your eval/test set, so your scores reflect real ability rather than memorization","Encrypting the dataset"],a:1,e:"If test examples leak into training, the model memorizes them and your eval lies to you (the contamination problem from Level 2, self-inflicted). Decontamination keeps evaluation honest."}]}
 ]},
 {title:"Fine-tuning in practice",lessons:[
 {id:"l4c1",t:"Why full fine-tuning is expensive: the memory math",min:5,body:`
@@ -127,7 +156,98 @@ quiz:[
 <div class="callout warn"><div class="ct">Alignment is a double-edged sword</div>Push preferences carelessly and you create the pathologies from Level 1: optimize "users liked it" and you breed sycophancy; over-penalize risk and you breed useless over-refusal. Your preference data defines the trade-off — audit what it actually rewards before training on it.</div>`,
 quiz:[
 {q:"Why has DPO largely replaced RLHF outside frontier labs?",o:["It produces dramatically better models","It trains directly on preference pairs — no reward model, no RL infrastructure — at comparable quality for most uses","RLHF is now prohibited"],a:1,e:"DPO collapses RLHF's complex pipeline into a single supervised-style training run. Accessibility, not superiority, drove the takeover."},
-{q:"When is preference data the right format (vs. SFT examples)?",o:["When you have too much data","When the target is a relative quality — less sycophantic, more concise — easier to express as 'A beats B' than as perfect examples","Never — SFT is always better"],a:1,e:"'Don't be sycophantic' is hard to demonstrate in isolated examples but trivial to encode as chosen-vs-rejected pairs. Comparisons capture subtle qualities."}]}
+{q:"When is preference data the right format (vs. SFT examples)?",o:["When you have too much data","When the target is a relative quality — less sycophantic, more concise — easier to express as 'A beats B' than as perfect examples","Never — SFT is always better"],a:1,e:"'Don't be sycophantic' is hard to demonstrate in isolated examples but trivial to encode as chosen-vs-rejected pairs. Comparisons capture subtle qualities."}]},
+{id:"l4c5",t:"From raw text to a training-ready dataset: chat templates and packing",min:6,src:"LEH ch.5 §SFT · ch.6",body:`
+<p>You have clean, standardized data. Two formatting details stand between you and a correct fine-tune — small, easy to get wrong, and quietly destructive when you do.</p>
+<h2>Build the instruction examples</h2>
+<p>An <strong>[[instruction dataset]]</strong> is (instruction → ideal response) pairs in the chat format you've seen. From raw material you create them by: turning documents into Q→A pairs (often synthetically, then curated), pairing real inputs with corrected outputs, or — for the Twin — generating questions your writing answers and using your actual text as the ideal response. For preference alignment, you instead build <strong>[[preference dataset|preference triples]]</strong>: same prompt, a <code>chosen</code> response (your-voice / better) and a <code>rejected</code> one (generic / worse).</p>
+<h2>Use the model's chat template — exactly</h2>
+<p>Every chat model was trained with a specific <strong>[[chat template]]</strong>: the precise special tokens and role markers that delimit system/user/assistant turns. When you fine-tune, you must format your examples with <em>that model's own template</em> (libraries expose <code>tokenizer.apply_chat_template(...)</code> for exactly this). Use the wrong format — or hand-roll your own — and the model trains on text that doesn't match how it will be prompted at inference, silently tanking quality. This is one of the most common "my fine-tune is mysteriously bad" bugs.</p>
+<h2>Packing: don't pay for padding</h2>
+<p>Training happens in fixed-length sequences. If your examples are short and you pad each to full length, most of the compute trains on meaningless padding tokens. <strong>[[sequence packing]]</strong> concatenates several short examples into one full sequence (with separators) so nearly every token is real. Same learning, often much faster and cheaper — many fine-tuning libraries turn it on with a flag. It doesn't change <em>what</em> the model learns, just how efficiently you spend GPU time.</p>
+<div class="callout fail"><div class="ct">Why it breaks: the silent template mismatch</div>A team fine-tunes, evals look terrible, and they blame their data or the method. The real culprit: they formatted training examples with plain text or the wrong chat template, so the model never saw the role markers it expects at inference. Fix the template, and the same data and method suddenly work. Always format with the target model's own chat template.</div>`,
+quiz:[
+{q:"You fine-tuned a chat model and quality is mysteriously poor, though the data looks good. Likely culprit?",o:["The learning rate is slightly off","You formatted training examples with the wrong (or no) chat template, so training text didn't match the inference format","The GPU was too small"],a:1,e:"Chat models expect their specific role-marker format. Train on the wrong template and you create a train/inference mismatch that quietly wrecks quality. Use tokenizer.apply_chat_template with the target model."},
+{q:"What does sequence packing improve, and what does it NOT change?",o:["It improves accuracy by adding data","It improves training efficiency (fewer wasted padding tokens) without changing what the model learns","It changes the model architecture"],a:1,e:"Packing concatenates short examples to avoid padding waste — a speed/cost win. The learning signal is the same; you're just not paying GPU time to process padding."}]},
+{id:"l4c6",t:"Model merging: combining models without retraining",min:4,src:"AIE ch.7 §Finetuning",body:`
+<p>A surprising, almost alchemical technique worth knowing exists: <strong>[[model merging]]</strong> — blending the <em>weights</em> of two or more models into one, with no further training. Because fine-tuned variants of the same base model live in compatible weight space, you can literally combine them.</p>
+<p>What it's used for:</p>
+<ul>
+<li><strong>Combining skills</strong> — merge a model fine-tuned for coding with one fine-tuned for math, hoping to get one model decent at both (sometimes it works remarkably well).</li>
+<li><strong>Averaging training runs</strong> — averaging several checkpoints or runs can yield a more robust model than any single one.</li>
+<li><strong>Cheap experimentation</strong> — merging is seconds of arithmetic, not hours of GPU training, so you can try many blends.</li></ul>
+<p>Techniques range from simple weight averaging to fancier recipes (task-vector arithmetic, TIES, DARE). You don't need the details now — just the mental model: fine-tunes of a shared base can be combined arithmetically, and a chunk of the open-model leaderboard is merged models.</p>
+<div class="callout warn"><div class="ct">It's empirical, not guaranteed</div>Merging sometimes produces a model better than its parents, and sometimes a confused mush that's worse at everything. There's no guarantee. As always: a merge is a hypothesis, and your eval set is the only judge. Merge, then measure.</div>`,
+quiz:[
+{q:"What is model merging?",o:["Training two models together from scratch","Combining the weights of existing (usually same-base) models arithmetically into one, with no further training","Running two models and averaging their outputs at inference"],a:1,e:"Merging blends the weights themselves — cheap, training-free. (Averaging outputs at inference is a different thing called ensembling.) Fine-tunes of a shared base live in compatible weight space, so they can be combined."},
+{q:"How should you decide whether a merged model is actually good?",o:["Trust the technique — merging always helps","Run it through your eval set; merging is empirical and can produce a worse model, so measure before trusting","Check that the file size is smaller"],a:1,e:"Merging is a hypothesis with no guarantee — it can beat the parents or muddle them. Only your evaluation on your task tells you which happened."}]}
+]},
+{title:"Evaluating customized models",lessons:[
+{id:"l4d1",t:"Evaluating fine-tuned models: base vs SFT vs DPO",min:6,src:"LEH ch.7 §Evaluating LLMs",body:`
+<p>You've trained a model. The whole point of this level — the reason fine-tuning is engineering and not vibes — is proving whether it's actually better. Evaluating a customized model has its own structure.</p>
+<h2>Three altitudes of evaluation</h2>
+<ul>
+<li><strong>General capability</strong> — did fine-tuning <em>damage</em> the model's broad abilities? Narrow fine-tuning can cause "catastrophic forgetting" — your model gets great at your task and worse at everything else. A few general benchmark checks catch this regression.</li>
+<li><strong>Domain</strong> — is it better across your whole subject area (your support topics, your writing themes), not just a couple of cases?</li>
+<li><strong>Task-specific</strong> — does it nail the exact behavior you trained for, scored on your held-out test set? This is the one that decides whether to ship.</li></ul>
+<h2>The comparison that matters: base vs SFT vs DPO</h2>
+<p>Run the same held-out test set through each stage and read the deltas:</p>
+<ul>
+<li><strong>Base</strong> (+ your best prompt) — the bar to beat, from Level 2's discipline.</li>
+<li><strong>After [[sft|SFT]]</strong> — did it learn the task/format/voice? Usually the big jump.</li>
+<li><strong>After [[dpo|DPO]]</strong> — did preference alignment refine the subtle qualities (less sycophantic, more on-voice) without breaking what SFT taught?</li></ul>
+<p>Score with the right tools from Level 2: objective checks where possible (format, keywords, functional), [[llm-as-judge]] with a rubric for nuanced quality, and [[pairwise comparison]] when you just need "is the tuned one better than base?" Watch for over-fitting: if it aces training-like cases but flops on slightly different held-out ones, it memorized instead of generalizing.</p>
+<div class="callout"><div class="ct">Negative results are real results</div>The honest verdict might be "SFT helped, DPO didn't move the needle" or even "the base model plus a good prompt matched the fine-tune." Both are valuable professional conclusions that save money — and exactly the kind of measured judgment your Gate 4 (and the LLM Twin's Stage-2 evaluation) demands. The standard is evidence, not hope.</div>`,
+quiz:[
+{q:"After fine-tuning, your model is great at the target task but noticeably worse at general questions it used to handle. What happened?",o:["The API throttled it","Catastrophic forgetting — narrow fine-tuning degraded broad capability; checking a few general benchmarks catches this regression","DPO is required to fix it"],a:1,e:"Over-narrow fine-tuning can erode general skills. That's why customized-model evaluation checks general capability too, not just the trained task — so you catch the trade-off you made."},
+{q:"What's the most decision-relevant comparison when evaluating a fine-tune?",o:["Tuned model vs. a random baseline","Tuned model vs. base-model-with-your-best-prompt, on held-out cases — beating the cheap alternative is what justifies shipping","Tuned model vs. a larger model"],a:1,e:"The honest bar is the best you could do without fine-tuning. If a good prompt on the base model matches your fine-tune, the fine-tune didn't earn its cost — a real and useful conclusion."}]},
+{id:"l4d2",t:"🧪 Lab: Verify a real fine-tune (Colab notebooks + proof)",min:14,lab:true,src:"LEH ch.5 §SFT · ch.7",colab:{
+goal:"Run an open-weights fine-tune end to end on a free GPU using the course's three Colab notebooks (QLoRA SFT → DPO → eval), then paste the eval notebook's JSON output here to verify it. The JSON must report base_accuracy and tuned_accuracy.",
+notebook:"notebooks/01_sft_qlora.ipynb",
+verify:"json",
+jsonKeys:["base_accuracy","tuned_accuracy"],
+plausible:{base_accuracy:[0,1],tuned_accuracy:[0,1]}},
+body:`
+<p>The lab in the last chapter used the managed (OpenAI) path. This one runs the <strong>open-weights</strong> path — real QLoRA on a free GPU — using the three notebooks this course ships in its <code>notebooks/</code> folder. This is the LLM Twin's training engine, and it's the deepest hands-on ML in the course.</p>
+<h2>The three notebooks</h2>
+<ol>
+<li><strong><code>01_sft_qlora.ipynb</code></strong> — loads a small model in 4-bit, attaches LoRA adapters, and fine-tunes on your <code>train.jsonl</code>. Watch the loss fall. Saves a tiny adapter.</li>
+<li><strong><code>02_dpo.ipynb</code></strong> — takes preference triples (<code>prefs.jsonl</code>) and runs DPO on top of the SFT model. Watch reward accuracy climb.</li>
+<li><strong><code>03_eval_base_vs_tuned.ipynb</code></strong> — scores the base model and your tuned model on the <em>same</em> held-out cases, then prints a JSON line with <code>base_accuracy</code> and <code>tuned_accuracy</code>.</li></ol>
+<h2>How to run them</h2>
+<ul>
+<li>Open a notebook in <a href="https://colab.research.google.com" target="_blank" rel="noopener">Google Colab</a> (upload it, or use File → Upload notebook). Set <strong>Runtime → Change runtime type → T4 GPU</strong>.</li>
+<li>Upload your <code>train.jsonl</code> (from Gate 4 / Twin) via the file panel. Run cells top to bottom; read each markdown note first.</li>
+<li>Every code cell explains what it does and <em>what to watch</em> — especially the loss curve (should trend down) and DPO reward accuracy (should rise toward 1).</li></ul>
+<h2>Verify</h2>
+<p>Run notebook 3 to the end. It prints a single JSON line like <code>{"base_accuracy": 0.55, "tuned_accuracy": 0.80, "n_cases": 10}</code>. <strong>Copy that line and paste it below</strong> to verify the lab. The checker confirms it parses and reports both scores in a plausible range.</p>
+<div class="callout tip"><div class="ct">This is the real thing</div>You loaded a quantized model, attached adapters, trained on a GPU, aligned with DPO, and measured base-vs-tuned with code — the exact workflow used to ship open-model fine-tunes. The managed API hides all of this; here you saw the machine. Honor system on the numbers, but the skill is yours.</div>`,
+quiz:[
+{q:"Notebook 3 prints base_accuracy and tuned_accuracy on the SAME held-out cases. Why is that comparison the point of the whole exercise?",o:["To make the notebook longer","It's the evidence that fine-tuning actually changed task performance — measured on unseen cases, base vs tuned side by side","Colab requires a JSON output"],a:1,e:"The numbers are the deliverable. Same test set, base vs tuned, on held-out cases: that delta is the honest proof that training helped (or didn't) — the core discipline of this level."},
+{q:"In notebook 1, the training loss stays flat and never decreases. What's the most likely issue?",o:["The model is perfect already","Something is off — learning rate, data format/chat template, or dataset — a healthy run shows the loss trending down","Colab always does this"],a:1,e:"A falling loss is the sign learning is happening. Flat loss points to a misconfiguration (LR too low, wrong chat template, broken data) — exactly the kind of signal the notebooks tell you to watch."}]}
+]},
+{title:"Twin Track — Stage 2",lessons:[
+{id:"l4twin2",t:"🧪 Twin Stage 2: train your voice",min:14,lab:true,src:"LEH ch.5 §SFT · ch.6",body:`
+<p>In Stage 1 you made your writing <em>retrievable</em>. Now make a model <em>sound like you</em>. This is the Twin's heart: turn your corpus into a training set, fine-tune a model on it (SFT), refine it toward your voice (DPO), and honestly test whether it worked.</p>
+<h2>Step 1 — Generate an instruction dataset FROM your writing</h2>
+<p>Use your <code>twin_data/</code> corpus to build (instruction → your-voice response) pairs. The synthetic recipe from this level, aimed at you:</p>
+<ul>
+<li>For passages you wrote, prompt a strong model: "Given this text I wrote, generate a question or instruction it would be the ideal answer to." Pair that instruction with your <em>actual</em> text as the assistant response — so the model learns your real voice, not a paraphrase.</li>
+<li>Cover variety: different topics, lengths, and a few "write X in my style" instructions.</li>
+<li><strong>Curate</strong> — read them, drop weak pairs, fix instructions. Aim for 100+ solid examples. Format with the model's chat template.</li></ul>
+<h2>Step 2 — SFT (notebook 1)</h2>
+<p>Run <code>01_sft_qlora.ipynb</code> on your <code>train.jsonl</code>. Watch the loss fall; save the adapter.</p>
+<h2>Step 3 — A small DPO pass (notebook 2)</h2>
+<p>Build a few dozen <strong>preference pairs</strong>: same prompt, <code>chosen</code> = your-voice answer, <code>rejected</code> = a generic-assistant answer (generate the bland version on purpose). Run <code>02_dpo.ipynb</code> to sharpen "sounds like me" vs "sounds like a chatbot."</p>
+<h2>Step 4 — Does it actually sound like you?</h2>
+<p>Two evals, both honest:</p>
+<ul>
+<li><strong>LLM-judge rubric</strong> — "Does this response match the voice in these reference samples [your real writing]? Score 1–5 on tone, vocabulary, structure." Run base vs SFT vs DPO (notebook 3 pattern).</li>
+<li><strong>Your blind test</strong> — mix a few model outputs with a few of your real sentences and see if a friend (or you, later) can tell which is which. The ultimate Turing-ish check for a Twin.</li></ul>
+<div class="callout"><div class="ct">Where the Twin stands now</div>You have a model fine-tuned on your own voice, measured against the base, with a real verdict. In Level 5 (Stage 3) you'll combine it with your Stage-1 retrieval and serve the whole thing behind your own deployed API — a personal AI that knows your writing and speaks in your voice, built entirely by you. Keep your dataset, adapter, and evals.</div>`,
+quiz:[
+{q:"Why pair generated instructions with your ACTUAL written text (not a paraphrase) as the response?",o:["It's faster to generate","So the model learns your real voice from genuine examples; paraphrases would teach a watered-down version","Paraphrases are against the rules"],a:1,e:"The assistant responses become the model's voice. Using your authentic text trains your actual style; paraphrasing would dilute exactly the thing you're trying to capture."},
+{q:"For the Twin's DPO pass, what makes a good (chosen, rejected) pair?",o:["chosen = longer answer, rejected = shorter","chosen = your-voice answer, rejected = a deliberately generic chatbot-style answer to the same prompt","chosen = correct facts, rejected = wrong facts"],a:1,e:"DPO refines the relative quality you care about: sounding like you. Contrasting your voice (chosen) against a generic version (rejected) teaches that preference directly — DPO's whole strength."}]}
 ]}
 ],
 project:{id:"l4gate",t:"Project Gate 4 — Fine-tune your own model, prove it's better",
