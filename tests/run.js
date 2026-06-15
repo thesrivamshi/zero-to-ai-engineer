@@ -97,6 +97,14 @@ allLessons.forEach(({ l, li, gate }) => {
       catch (e) { ok(false, `${name} term task#${ti} expect compiles`); }
     });
   }
+  if (l.videos) {
+    ok(Array.isArray(l.videos) && l.videos.length, name + ' videos is non-empty array');
+    (l.videos || []).forEach((v, vi) => {
+      ok(typeof v.title === 'string' && v.title, `${name} video#${vi} has title`);
+      ok(/^https?:\/\/.+/.test(v.url || ''), `${name} video#${vi} has http(s) url`);
+    });
+  }
+  if (l.src) ok(typeof l.src === 'string' && /^(AIE|LEH|INF)\s*ch/.test(l.src), name + ' src cites a book chapter');
   if (l.py) {
     ok(typeof l.py.task === 'string' && l.py.task, name + ' py has task');
     ok(l.py.check && typeof l.py.check === 'object', name + ' py has check');
