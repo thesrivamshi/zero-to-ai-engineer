@@ -196,6 +196,21 @@ Object.keys(DIAG || {}).forEach(id => {
 });
 console.log(`  ${Object.keys(DIAG || {}).length} lessons with a diagram, ${diagCount} SVGs (all original vector)`);
 
+/* ----- study questions (data/questions.js) ----- */
+const QQ = W.QUESTIONS;
+ok(QQ && typeof QQ === 'object', 'QUESTIONS loaded');
+let qTot = 0;
+Object.keys(QQ || {}).forEach(id => {
+  ok(ids.has(id), `QUESTIONS key "${id}" is a real lesson id`);
+  ok(Array.isArray(QQ[id]) && QQ[id].length, `QUESTIONS["${id}"] is non-empty`);
+  (QQ[id] || []).forEach((x, i) => {
+    qTot++;
+    ok(typeof x.q === 'string' && x.q.length > 5, `QUESTIONS["${id}"][${i}] has a question`);
+    ok(typeof x.a === 'string' && x.a.length > 5, `QUESTIONS["${id}"][${i}] has an answer`);
+  });
+});
+console.log(`  ${Object.keys(QQ || {}).length} lessons with study questions, ${qTot} questions`);
+
 /* ----- provider config + global notes + focus timer ----- */
 ok(typeof W.getBase === 'function' && /\/v1$/.test(W.getBase()), 'provider base URL defaults to OpenAI /v1');
 ok(W.getChatModel() === 'gpt-4o-mini', 'default chat model is gpt-4o-mini');

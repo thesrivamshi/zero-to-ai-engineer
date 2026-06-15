@@ -242,6 +242,7 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
 <script src="data/reads.js"></script>
 <script src="data/videos.js"></script>
 <script src="data/diagrams.js"></script>
+<script src="data/questions.js"></script>
 <script>
 /* ================= state ================= */
 const LEVELS = window.COURSE_LEVELS || [];
@@ -363,6 +364,7 @@ function renderLesson(id,c){
   if(window.DIAGRAMS&&DIAGRAMS[l.id]&&DIAGRAMS[l.id].length) html+=renderDiagrams(DIAGRAMS[l.id]);
   {const _vids=(l.videos||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); if(_vids.length) html+=renderVideos(_vids);}
   if(window.READS&&READS[l.id]&&READS[l.id].length) html+=renderReads(READS[l.id],l.id);
+  if(window.QUESTIONS&&QUESTIONS[l.id]&&QUESTIONS[l.id].length) html+=renderQuestions(QUESTIONS[l.id]);
   if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
   if(l.term) html+=renderTermEx(l);
   if(l.py) html+=renderPyEx(l);
@@ -397,6 +399,15 @@ function renderVideos(videos){
   return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold</div><ul style="margin:6px 0 2px 18px">`+
     videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
   `</ul></div>`;
+}
+function renderQuestions(arr){
+  const lc={easy:'var(--green)',medium:'var(--amber)',hard:'var(--red)'};
+  return `<div class="callout" style="margin-top:22px"><div class="ct">🎤 Test yourself — questions from the books</div><p style="font-size:13px;color:var(--muted);margin:2px 0 10px">Answer each one out loud (or in writing) first, then reveal. These are the deeper questions — the kind the book, or an interviewer, would press on.</p>`+
+    arr.map(x=>`<details style="margin:8px 0;border:1px solid var(--border);border-radius:8px;padding:9px 12px">
+      <summary style="cursor:pointer;font-weight:600;line-height:1.5">${x.level?`<span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:${lc[String(x.level).toLowerCase()]||'var(--muted)'};margin-right:7px">${escapeHtml(String(x.level))}</span>`:''}${escapeHtml(x.q)}</summary>
+      <div style="margin-top:9px;font-size:14px;line-height:1.6">${escapeHtml(x.a)}</div>
+    </details>`).join('')+
+  `</div>`;
 }
 function renderDiagrams(arr){
   return arr.map(d=>`<figure style="margin:20px 0;border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg3)">
