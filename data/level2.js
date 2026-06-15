@@ -128,6 +128,91 @@ quiz:[
 {q:"Why do API keys go in a .env file instead of directly in your code?",o:["It makes code run faster","Keys are secrets; code gets shared, and leaked keys are exploited within minutes","The API rejects keys placed in code"],a:1,e:"Separating secrets from code means you can share code safely. Automated scanners find keys in public code almost instantly — this is among the most common (and expensive) beginner mistakes."},
 {q:"Your script says 'No module named openai' but you installed it. Likely cause?",o:["OpenAI deleted the library","Your virtual environment isn't activated, so Python is looking in the wrong package set","Python is broken"],a:1,e:"Packages install into the active environment. No (venv) in your prompt = wrong environment. Activate and the 'missing' package reappears."}]}
 ]},
+{title:"Version control with git",lessons:[
+{id:"l2e1",t:"🧪 Lab: git — your project's undo history",min:9,lab:true,src:"LEH ch.2 §Tooling",body:`
+<p>Imagine writing an essay with no undo, no version history, no way to see what you changed yesterday. That's coding without [[git]]. Git records <strong>snapshots</strong> of your project over time, so you can see every change, undo any mistake, and (next lessons) back your work up and collaborate. Every professional uses it on every project — including the ones you're about to build.</p>
+<h2>The mental model</h2>
+<p>Git has three places your work lives, and one command moves between each:</p>
+<ul>
+<li><strong>Working directory</strong> — your actual files, as you edit them.</li>
+<li><strong>[[staging area|Staging area]]</strong> — a holding zone for changes you've chosen to include in the next snapshot. <code>git add</code> puts changes here.</li>
+<li><strong>Repository</strong> — the permanent history of snapshots. <code>git commit</code> saves the staged changes as a [[commit]] with a message.</li></ul>
+<p>So the everyday loop is: <strong>edit → <code>git add</code> → <code>git commit</code></strong>. That's it, forever.</p>
+<h2>Start a repo</h2>
+<pre><code class="frag">cd ai-course          # be inside your project folder
+git init              # turn this folder into a git repository (once per project)
+git status            # see what git sees: untracked/modified files
+git add .             # stage ALL current changes (the dot means "everything here")
+git commit -m "Initial commit: first scripts"   # save the snapshot with a message</code></pre>
+<p>The <code>-m</code> flag attaches a message. Good messages describe <em>why</em>, in the present tense ("Add cost tracking", not "stuff"). Future-you reads these to understand past-you.</p>
+<div class="callout tip"><div class="ct">First-time setup</div>The very first time you use git on a machine, it asks who you are: <code>git config --global user.name "Your Name"</code> and <code>git config --global user.email "you@example.com"</code>. This just labels your commits.</div>
+<p>Practice the full loop below, then run the exact same commands in your real <code>ai-course</code> folder.</p>`,
+term:{
+intro:"Practice git. Same commands as the real tool. Work through the tasks above; hints appear after 2 wrong tries.",
+tasks:[
+{desc:"Turn the current folder into a git repository", expect:"^git\\s+init$", out:"Initialized empty Git repository in /home/you/ai-course/.git/", hint:"type: git init"},
+{desc:"See what git currently sees", expect:"^git\\s+status$", out:"On branch main\n\nNo commits yet\n\nUntracked files:\n  (use \"git add &lt;file&gt;...\" to include in what will be committed)\n        hello.py\n        first_call.py\n\nnothing added to commit but untracked files present (use \"git add\")", hint:"type: git status"},
+{desc:"Stage all current changes", expect:"^git\\s+add\\s+(\\.|-A|hello\\.py)$", out:"", hint:"type: git add ."},
+{desc:"Commit the snapshot with a message", expect:"^git\\s+commit\\s+-m\\s+.+$", out:"[main (root-commit) a1b2c3d] Initial commit: first scripts\n 2 files changed, 18 insertions(+)", hint:'type: git commit -m "Initial commit"'}
+]},
+quiz:[
+{q:"What is the correct everyday git loop?",o:["commit → add → init, before every edit","edit your files → git add (stage) → git commit (snapshot)","git push after every keystroke"],a:1,e:"You edit, stage what you want with add, then snapshot with commit. init happens once per project; push (next lessons) is separate and occasional."},
+{q:"What does the staging area give you that a direct save wouldn't?",o:["Faster commits","Control over exactly which changes go into the next commit","Automatic bug fixing"],a:1,e:"git add lets you choose precisely what to include, so one commit can be a clean, logical unit of change rather than 'everything I happened to touch'."}]},
+{id:"l2e2",t:"🧪 Lab: Seeing history and changes — log and diff",min:8,lab:true,src:"LEH ch.2 §Tooling",body:`
+<p>Snapshots are only useful if you can look back at them. Two commands turn git from a black box into a time machine you can read.</p>
+<ul>
+<li><strong><code>git log</code></strong> — the list of past commits (who, when, what message). <code>git log --oneline</code> gives a compact one-line-per-commit view.</li>
+<li><strong><code>git diff</code></strong> — the exact lines you've changed since your last commit, shown as <code>-</code> removed / <code>+</code> added. This is what you review <em>before</em> staging, to catch mistakes (and stray API keys!).</li></ul>
+<p>The professional rhythm: after editing, run <code>git status</code> (what changed?) and <code>git diff</code> (show me the lines), then <code>git add</code> and <code>git commit</code>. You never commit blind.</p>
+<pre><code class="frag">git status                 # which files changed?
+git diff                   # show the actual line changes
+git add hello.py           # stage the file you reviewed
+git commit -m "Add a friendlier greeting"
+git log --oneline          # see your growing history</code></pre>
+<div class="callout"><div class="ct">Why this matters for AI work</div>You'll change prompts constantly. Committing each meaningful prompt version (with a message like "Prompt v3: add few-shot examples") gives you a labeled history you can roll back to when v4 turns out worse. This is the foundation of the prompt-versioning discipline you'll meet later this level.</div>
+<p>Practice below — you've just edited <code>hello.py</code>, so walk the review-and-commit rhythm.</p>`,
+term:{
+intro:"You just edited hello.py. Review the change and commit it. Tasks are listed above.",
+tasks:[
+{desc:"Check which files have changed", expect:"^git\\s+status$", out:"On branch main\nChanges not staged for commit:\n  (use \"git add &lt;file&gt;...\" to update what will be committed)\n        modified:   hello.py\n\nno changes added to commit (use \"git add\")", hint:"type: git status"},
+{desc:"Show the exact line changes", expect:"^git\\s+diff$", out:"diff --git a/hello.py b/hello.py\n@@ -1 +1 @@\n-print(\"hello\")\n+print(\"hello, AI engineer\")", hint:"type: git diff"},
+{desc:"Stage the reviewed file", expect:"^git\\s+add\\s+(hello\\.py|\\.|-A)$", out:"", hint:"type: git add hello.py"},
+{desc:"Commit with a descriptive message", expect:"^git\\s+commit\\s+-m\\s+.+$", out:"[main e4f5g6h] Add a friendlier greeting\n 1 file changed, 1 insertion(+), 1 deletion(-)", hint:'type: git commit -m "Add a friendlier greeting"'},
+{desc:"View the compact history", expect:"^git\\s+log\\s+--oneline$", out:"e4f5g6h Add a friendlier greeting\na1b2c3d Initial commit: first scripts", hint:"type: git log --oneline"}
+]},
+quiz:[
+{q:"Before staging a change, why run git diff?",o:["It speeds up the commit","To review the exact lines you changed — catching mistakes and accidental secrets before they're committed","It uploads your code"],a:1,e:"git diff shows added/removed lines. Reviewing it is how you avoid committing a debug line, a broken edit, or a pasted API key. Never commit blind."},
+{q:"You committed a prompt change that made quality worse. What did keeping a commit history buy you?",o:["Nothing — commits can't be undone","A labeled snapshot of the earlier, better prompt you can return to","Automatic rollback with no action needed"],a:1,e:"Each commit is a recoverable point in time. With a message like 'Prompt v3', you can see and restore the version that worked — the whole point of version control for iterative AI work."}]},
+{id:"l2e3",t:"🧪 Lab: GitHub — back it up and protect your secrets",min:9,lab:true,src:"LEH ch.2 §Tooling",body:`
+<p>So far git lives only on your laptop. [[github|GitHub]] is a website that hosts [[repository|repositories]] in the cloud — your backup, your portfolio, and (later) how you collaborate and deploy. A hosted copy of your repo is called a <strong>[[remote]]</strong>, nicknamed <code>origin</code> by convention.</p>
+<h2>First: protect your secrets</h2>
+<p>Remember the <code>.env</code> file holding your API key? If you push it to a public GitHub repo, bots will steal the key within <em>minutes</em>. The defense is a <strong>[[gitignore|.gitignore]]</strong> file listing things git must never track:</p>
+<pre><code class="frag">.env
+venv/
+__pycache__/
+*.pyc</code></pre>
+<p>Create that file in your project, and git will pretend those paths don't exist — they'll never be staged, committed, or pushed. <strong>This is not optional.</strong></p>
+<h2>Then: connect and push</h2>
+<p>After creating an empty repo on github.com, you link it and upload:</p>
+<pre><code class="frag">git remote add origin https://github.com/you/ai-course.git   # link the cloud repo
+git branch -M main                                           # name your branch "main"
+git push -u origin main                                       # upload your commits</code></pre>
+<p>From then on, the loop gains one optional final step: <strong>edit → add → commit → <code>git push</code></strong> to back up to the cloud.</p>
+<div class="callout fail"><div class="ct">Real-world failure</div>In 2022 researchers scanning public GitHub found <em>thousands</em> of live API keys and cloud credentials committed by accident — some racking up tens of thousands of dollars in fraudulent charges before the owners noticed. Every one was preventable with a one-line <code>.gitignore</code>. Treat <code>.env</code> like a password, because it is one.</div>
+<p>Practice the protect-then-push sequence below.</p>`,
+term:{
+intro:"Protect your .env, then connect to GitHub and push. Tasks listed above.",
+tasks:[
+{desc:"Create a .gitignore that ignores your .env file (echo \".env\" into .gitignore)", expect:"^echo\\s+[\"']?\\.env[\"']?\\s*>>?\\s*\\.gitignore$", out:"", hint:'type: echo ".env" > .gitignore'},
+{desc:"Stage and... first stage the .gitignore", expect:"^git\\s+add\\s+(\\.gitignore|\\.|-A)$", out:"", hint:"type: git add .gitignore"},
+{desc:"Commit it", expect:"^git\\s+commit\\s+-m\\s+.+$", out:"[main 7a8b9c0] Add .gitignore to protect secrets\n 1 file changed, 4 insertions(+)", hint:'type: git commit -m "Add .gitignore"'},
+{desc:"Link the cloud repository as 'origin'", expect:"^git\\s+remote\\s+add\\s+origin\\s+https?://\\S+$", out:"", hint:"type: git remote add origin https://github.com/you/ai-course.git"},
+{desc:"Push your commits to GitHub", expect:"^git\\s+push(\\s+-u)?\\s+origin\\s+main$", out:"Enumerating objects: 9, done.\nCounting objects: 100% (9/9), done.\nWriting objects: 100% (9/9), 1.21 KiB, done.\nTo https://github.com/you/ai-course.git\n * [new branch]      main -> main", hint:"type: git push -u origin main"}
+]},
+quiz:[
+{q:"What is the single most important reason to add .env to .gitignore before pushing?",o:["It keeps the repo tidy","It stops your secret API key from being uploaded where bots will steal it within minutes","GitHub charges for .env files"],a:1,e:"Public repos are scanned constantly. A committed .env key gets exploited almost immediately. .gitignore makes git ignore the file entirely — the one-line fix for a very expensive mistake."},
+{q:"What is a 'remote' named origin?",o:["A backup branch on your laptop","The hosted copy of your repository (e.g. on GitHub) that push uploads to and pull downloads from","A type of commit message"],a:1,e:"origin is the conventional nickname for your cloud repository. git push sends commits up to it; git pull brings changes down. Git stays local; the remote is the shared copy."}]}
+]},
 {title:"The OpenAI API",lessons:[
 {id:"l2b1",t:"🧪 Lab: Your first API call",min:8,lab:true,sim:"playground",body:`
 <p>The moment everything becomes real. An [[api|API]] call sends text to a model running in a datacenter and returns its response to your code. Create <code>first_call.py</code>:</p>
