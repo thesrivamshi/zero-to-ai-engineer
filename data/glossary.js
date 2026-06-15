@@ -188,5 +188,7 @@ window.GLOSSARY = {
 "sqlite": "A tiny, file-based SQL database built right into Python (the sqlite3 module). No server to install or run — which makes it the perfect local memory store for an agent while you learn.",
 "primary key": "A column whose value uniquely identifies each row in a table (commonly an auto-incrementing id). It lets you reference a specific row and join tables together unambiguously.",
 "sql query": "A request to a database for data, written in SQL — most often a SELECT statement that returns just the rows matching the conditions you specify in a WHERE clause.",
-"sql join": "A SQL operation that stitches rows from two tables together by a shared column (e.g. link each saved memory to the session it came from), so related data can be read in a single query."
+"sql join": "A SQL operation that stitches rows from two tables together by a shared column (e.g. link each saved memory to the session it came from), so related data can be read in a single query.",
+"mcp": "Model Context Protocol — an open standard that lets any AI client (Claude, an IDE, your agent) connect to any tool server in a uniform way. You build one MCP server exposing tools, resources, and prompts, and every MCP-aware client can use it — no re-wiring tools per app.",
+"json-rpc": "A simple convention for calling a remote function by sending a JSON message with a method name and parameters, and getting a JSON result back. MCP speaks JSON-RPC under the hood — e.g. a 'tools/call' method with the tool name and arguments."
 };

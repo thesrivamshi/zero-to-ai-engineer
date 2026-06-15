@@ -269,6 +269,61 @@ quiz:[
 {q:"What's typically the single biggest app-level cost lever for an LLM product?",o:["Switching cloud providers","Model cascades — routing the easy majority of requests to a cheap model and escalating to the frontier model only when needed","Turning off logging"],a:1,e:"Most requests don't need the most expensive model. A cascade serves the easy ones cheaply and reserves the frontier model for hard cases — frequently several-fold cheaper at negligible quality cost."},
 {q:"Why frame cost as 'per request' rather than the monthly total?",o:["The monthly bill doesn't matter","Per-request cost tells you whether the product scales economically and which lever to pull; total bill alone hides that and the volume that drives it","Providers only report per-request"],a:1,e:"Unit economics (cost per request/task) reveal viability at scale and pinpoint the expensive component to optimize. The total is just per-request × volume — actionable insight lives in the per-request number."}]}
 ]},
+{title:"MCP — share your agent's tools",lessons:[
+{id:"l5d1",t:"MCP: one protocol so any client can use your tools",min:6,src:"AIE ch.6 §Tools (MCP)",body:`
+<p>Back in Level 3 you gave a model tools with [[function calling]] — but those tools were welded to <em>your</em> program. If a teammate's app, or Claude Desktop, or your IDE wanted the same "search our orders" tool, they'd each re-implement the wiring. That's the N×M problem: every client re-glues every tool. [[mcp|MCP — the Model Context Protocol]] is the fix: a single open standard so <strong>any</strong> AI client can use <strong>any</strong> tool server, the way USB-C lets any charger fit any laptop.</p>
+<p>You build one <strong>MCP server</strong> that exposes capabilities; every MCP-aware client (Claude, Cursor, your own agent) speaks the same protocol to it. A server offers three things:</p>
+<ul>
+<li><strong>Tools</strong> — actions the model can call (the function-calling you know, now standardized): <code>search_orders</code>, <code>send_email</code>.</li>
+<li><strong>Resources</strong> — readable data the client can pull in as context: files, database rows, docs.</li>
+<li><strong>Prompts</strong> — reusable prompt templates the server offers to clients.</li></ul>
+<p>Under the hood it's [[json-rpc|JSON-RPC]] (JSON messages: a method name like <code>tools/call</code> plus parameters, and a JSON result) over a <strong>transport</strong> — <code>stdio</code> for a local server the client launches, or HTTP for a remote one. You already know every piece: it's function calling ([[json|JSON]] in, JSON out) given a standard envelope so it's reusable across apps.</p>
+<div class="callout"><div class="ct">Why this is the agent spine's payoff</div>Your agent already has <code>remember</code>/<code>recall</code> (SQL memory) and other tools. Wrap them in an MCP server and they stop being private functions — they become capabilities any client can plug into. That's how a personal agent becomes infrastructure other tools build on.</div>`,
+quiz:[
+{q:"What problem does MCP solve that plain function calling doesn't?",o:["It makes models faster","It standardizes tool access so any MCP client can use any MCP server — no re-wiring tools per app (the N×M problem)","It replaces JSON with a binary format"],a:1,e:"Function calling wires tools into one program. MCP defines a shared protocol, so one server's tools work across every MCP-aware client — Claude, IDEs, your agent — without re-implementation."},
+{q:"An MCP server exposes tools, resources, and prompts. What's a 'resource'?",o:["A GPU the server rents","Readable data the client can pull in as context — files, database rows, docs","A billing plan"],a:1,e:"Tools are actions; resources are readable context the client can fetch; prompts are reusable templates. Together they cover act, read, and instruct."}]},
+{id:"l5d2",t:"🧪 Lab: build an MCP-style tool server by hand",min:9,lab:true,src:"AIE ch.6 §Tools (MCP)",body:`
+<p>The real MCP SDK wraps a server over JSON-RPC and a transport — but the <em>mechanic</em> underneath is small enough to build yourself, and building it once makes the SDK obvious. An MCP server is really two request handlers: <strong>list the tools</strong> (so the client/model knows what's available) and <strong>call a tool</strong> (run it, return the result). That's it.</p>
+<pre><code># the heart of any tool server — a registry + a dispatcher
+TOOLS = {}
+def tool(fn): TOOLS[fn.__name__] = fn; return fn      # register by name
+
+@tool
+def add(a, b): return a + b
+
+def handle(method, params):
+    if method == "tools/list":
+        return list(TOOLS)                            # names the client can call
+    if method == "tools/call":
+        fn = TOOLS[params["name"]]
+        return fn(**params["arguments"])              # dispatch + run</code></pre>
+<p>The MCP SDK adds the JSON-RPC envelope, schemas, and the stdio/HTTP transport — but this <code>list</code>/<code>call</code> pair is the soul of it. Build your own below; then the video shows the same shape with the real SDK.</p>
+<div class="callout tip"><div class="ct">From toy to real</div>Swap this dict-dispatch for the <code>mcp</code> Python package and you have a server Claude Desktop can launch over stdio. The concepts — register tools, list them, call them by name with JSON arguments — don't change. You're not learning a framework; you're learning the protocol.</div>`,
+py:{
+task:"Build a tiny MCP-style tool server. (1) Make a TOOLS registry (a dict). Register two tools: add(a,b) returning a+b, and greet(name) returning 'hi '+name. (2) Write handle(method, params): for method 'tools/list' return the list of tool names; for method 'tools/call' look up TOOLS[params['name']] and call it with **params['arguments']. (3) print handle('tools/list', {}); then print handle('tools/call', {'name':'add','arguments':{'a':3,'b':5}}).",
+starter:"TOOLS = {}\n\n# 1) register add(a,b) and greet(name) into TOOLS (keyed by name)\n\n# 2) def handle(method, params): handle 'tools/list' and 'tools/call'\n\n# 3) print the tool list, then call add(3,5) and print the result (should be 8)\n",
+check:{stdoutIncludes:["add","greet","8"],codeIncludes:["tools/list","tools/call","TOOLS"],failMsg:"handle('tools/list') must return names including add and greet; handle('tools/call', add with a=3,b=5) must return 8."},
+hint:"def handle(method, params):\n    if method=='tools/list': return list(TOOLS)\n    if method=='tools/call': return TOOLS[params['name']](**params['arguments'])"},
+quiz:[
+{q:"What two request types are the core of an MCP server?",o:["login and logout","tools/list (what can I call?) and tools/call (run this one with these arguments)","train and infer"],a:1,e:"List advertises the available tools to the client/model; call dispatches a named tool with JSON arguments and returns the result. The SDK adds JSON-RPC + transport around exactly this."},
+{q:"You built the dispatcher with a plain dict. What does the real MCP SDK add on top?",o:["Nothing — it's identical","The JSON-RPC message envelope, tool schemas, and a transport (stdio/HTTP) so real clients can connect","It removes the need for tools"],a:1,e:"The mechanic (register → list → call by name) is what you built. The SDK standardizes the wire format and connection so Claude, IDEs, and other clients can talk to your server."}]},
+{id:"l5d3",t:"Consuming MCP servers, transports, and keeping it safe",min:5,src:"INF ch.7 §Client Code (MCP)",body:`
+<p>MCP runs both directions: you <strong>publish</strong> a server (last lesson) and you <strong>consume</strong> others. Point an MCP client at a community server — filesystem, GitHub, Postgres, a browser — and your agent instantly gains those tools without you writing any of them. This is the practical superpower: most tools your agent needs probably already exist as MCP servers.</p>
+<h2>Transports</h2>
+<ul>
+<li><strong>stdio</strong> — the client launches the server as a local subprocess and talks over standard in/out. Simplest; great for local tools (files, your SQL memory).</li>
+<li><strong>HTTP</strong> — the server runs as a remote service the client connects to over the network. This is the FastAPI/deploy world from this level: an MCP server reachable over HTTP is just <em>an [[api|API]] with a standard shape</em>.</li></ul>
+<h2>Security — because it's an API the model can drive</h2>
+<p>An MCP server hands tools to a model, and the model can be steered by [[prompt injection]]. So every guardrail from Level 3 applies, hard:</p>
+<ul>
+<li><strong>Least privilege</strong> — expose only the tools a client genuinely needs; reading rows ≠ deleting them.</li>
+<li><strong>Auth on remote servers</strong> — an HTTP MCP server is internet-reachable; require credentials and validate every argument.</li>
+<li><strong>Approval gates</strong> — consequential tools (pay, send, delete) confirm before acting, never auto-fire on a model's say-so.</li></ul>
+<div class="callout warn"><div class="ct">The maximum-risk shape, again</div>An agent that reads external content AND holds an MCP server's tools is exactly the injection danger from Level 3 — now with a standardized, easy-to-share attack surface. Convenience cuts both ways: the same protocol that makes tools easy to plug in makes a poisoned tool easy to plug in. Vet servers; cap permissions.</div>`,
+quiz:[
+{q:"Your agent needs to read the local filesystem and query Postgres. With MCP, what's the fast path?",o:["Write both integrations from scratch","Consume existing MCP servers for filesystem and Postgres — your agent gains the tools without you building them","Fine-tune the model on file contents"],a:1,e:"MCP is bidirectional: publish your own servers and consume others'. Community servers already cover filesystem, GitHub, databases, browsers — plug them in instead of reinventing them."},
+{q:"Why does a remote (HTTP) MCP server need the same discipline as any production API?",o:["It doesn't — MCP is automatically safe","It's internet-reachable and hands tools to a model that prompt injection can steer, so it needs auth, argument validation, least privilege, and approval gates","HTTP is slower than stdio"],a:1,e:"An HTTP MCP server is an API with a standard shape, exposed to the network and drivable by a manipulable model. All the guardrails — auth, least privilege, validation, approval gates — apply."}]}
+]},
 {title:"Twin Track — Stage 3",lessons:[
 {id:"l5twin3",t:"🧪 Twin Stage 3: serve your twin",min:14,lab:true,src:"LEH ch.9 §RAG Inference · ch.10–11",body:`
 <p>The finale of the running build. You have your writing retrievable (Stage 1) and a model tuned to your voice (Stage 2). Stage 3 combines them into a deployed, monitored service — the <strong>inference pipeline</strong> of your [[fti|FTI]] system, live on the internet. This is your Twin, fully assembled.</p>

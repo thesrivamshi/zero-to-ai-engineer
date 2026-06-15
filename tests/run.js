@@ -164,6 +164,21 @@ allLessons.forEach(({ l, gate }) => {
 });
 console.log(`  ${Object.keys(READS || {}).length} lessons referenced, ${readsEntries} book pointers`);
 
+/* ----- curated videos merged by lesson id (data/videos.js) ----- */
+const VIDEOS = W.VIDEOS;
+ok(VIDEOS && typeof VIDEOS === 'object', 'VIDEOS loaded');
+let vidCount = 0;
+Object.keys(VIDEOS || {}).forEach(id => {
+  ok(ids.has(id), `VIDEOS key "${id}" is a real lesson id`);
+  ok(Array.isArray(VIDEOS[id]) && VIDEOS[id].length, `VIDEOS["${id}"] is a non-empty array`);
+  (VIDEOS[id] || []).forEach((v, i) => {
+    vidCount++;
+    ok(typeof v.title === 'string' && v.title, `VIDEOS["${id}"][${i}] has title`);
+    ok(typeof v.url === 'string' && /^https?:\/\//.test(v.url), `VIDEOS["${id}"][${i}] has http url`);
+  });
+});
+console.log(`  ${Object.keys(VIDEOS || {}).length} lessons with curated videos, ${vidCount} videos`);
+
 /* ================= 2. app boots & views render ================= */
 section('2. Views render');
 const doc = W.document;

@@ -129,6 +129,9 @@ window.READS = {
 "l5b5":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"DevOps→MLOps→LLMOps; registries and artifacts"}],
 "l5c1":[{b:"AIE",c:"10 · AI Engineering Architecture and User Feedback",p:"470-499",f:"User Feedback and the data flywheel"}],
 "l5c2":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference Optimization — system-level cost"}],
+"l5d1":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — the function-calling MCP standardizes (MCP itself is post-books: see the video)"}],
+"l5d2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — registering and dispatching tools (the MCP mechanic)"}],
+"l5d3":[{b:"INF",c:"7 · Production",p:"204-208",f:"Client Code — an MCP server is an API: transports, latency, protocols"}],
 "l5twin3":[{b:"LEH",c:"9 · RAG Inference Pipeline",p:"317-354",f:"Twin Stage 3 — serve the RAG inference pipeline"},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the twin"}],
 "l5gate":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the inference pipeline"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-450",f:"Tracing & monitoring the deployed service"}],
 
