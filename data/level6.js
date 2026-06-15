@@ -200,7 +200,19 @@ quiz:[
 quiz:[
 {q:"Why doesn't speculative decoding change output quality?",o:["The draft model is very good","The target model verifies every proposed token and overrides any mismatch — the draft only saves time when it agrees with what the target would've said","It does degrade quality slightly"],a:1,e:"Acceptance requires agreement with the target's own distribution. Speculation is a scheduling trick, not an approximation — same tokens, fewer slow sequential steps."},
 {q:"Why is n-gram (copy-from-prompt) speculation so effective for RAG workloads?",o:["RAG uses smaller models","Grounded answers quote retrieved context heavily — so 'draft by copying from the prompt' guesses right constantly","It isn't effective"],a:1,e:"RAG answers are largely restatements of supplied text. Free drafting from that text gets high acceptance with zero extra model — a lovely systems insight."}]},
-{id:"l6c3",t:"Going multi-GPU: parallelism and disaggregation",min:5,body:`
+{id:"l6c5",t:"Caching the KV cache: prefix reuse, paging, and long context",min:6,src:"INF ch.5 §Caching",body:`
+<p>The [[kv cache|KV cache]] (the prefill/decode lesson) is both the hero and the headache of LLM serving: it makes decode fast, and it devours GPU memory. A whole family of techniques exists to manage and <em>reuse</em> it, and they're among the highest-leverage optimizations at scale.</p>
+<h2>Prefix / KV reuse: don't recompute shared history</h2>
+<p>Many requests share a prefix: the same long system prompt, the same few-shot block, the same conversation history on a follow-up turn. <strong>[[prefix caching|Prefix caching]]</strong> stores the KV cache for those shared tokens and reuses it instead of re-prefilling them every time — a direct hit to TTFT and compute. This is why structuring prompts static-part-first (Level 3) matters, and why <strong>cache-aware routing</strong> (send a follow-up to the replica that still holds its cache) is a real serving objective.</p>
+<h2>Paging: fit more requests in memory</h2>
+<p>Naively, each request reserves a big contiguous block of KV memory for its maximum possible length — wasteful, and it fragments memory so fewer requests fit. <strong>[[paged attention|PagedAttention]]</strong> (from vLLM) borrows the operating-system idea of virtual memory: store the KV cache in small fixed-size <em>pages</em> that needn't be contiguous, allocated on demand. Fragmentation vanishes, far more concurrent requests fit, and throughput jumps. It pairs with <strong>[[continuous batching]]</strong> — adding/removing requests from the running batch every step so the GPU never idles waiting for a batch to finish.</p>
+<h2>Storage tiers and long context</h2>
+<p>When the KV cache outgrows fast HBM (very long contexts, many users), you can <em>tier</em> it: keep hot cache in HBM, spill colder cache to CPU RAM or even disk, and fetch it back when needed — trading some latency for capacity. Long-context serving leans on exactly these tricks, because the KV cache grows linearly with sequence length and quickly becomes the dominant memory cost.</p>
+<div class="callout tip"><div class="ct">The KV cache is the real estate of inference</div>Much of serving engineering is KV-cache management: reuse it (prefix caching), pack it efficiently (paging), keep batches full around it (continuous batching), and tier it when it overflows. When you read that an engine "serves 5× more concurrent users," it's almost always a KV-cache-memory win, not a faster model. Memory, again, is the GPU's scarcest resource.</div>`,
+quiz:[
+{q:"What does PagedAttention fix, and how?",o:["It makes the model smaller","It stops KV-cache memory fragmentation by storing the cache in non-contiguous fixed-size pages (like OS virtual memory), so far more requests fit in GPU memory","It speeds up the math units"],a:1,e:"Reserving contiguous max-length blocks per request wastes and fragments memory. Paging allocates small blocks on demand, eliminating fragmentation — so concurrency and throughput rise sharply."},
+{q:"Two requests share a long identical system prompt. What does prefix caching do?",o:["Runs them on different GPUs","Reuses the stored KV cache for the shared prefix instead of re-prefilling those tokens — cutting TTFT and compute","Compresses the prompt"],a:1,e:"The shared prefix's KV cache is computed once and reused, so the second request skips re-prefilling it. That's why static-first prompt structure and cache-aware routing pay off."}]},
+{id:"l6c3",t:"Going multi-GPU: parallelism and disaggregation",min:5,sim:"parallelism",src:"INF ch.5 §Parallelism",body:`
 <p>When one GPU isn't enough — model too big, or traffic too heavy — the toolbox splits work across many. The flavors, by what gets split:</p>
 <ul>
 <li><strong>[[tensor parallelism|Tensor parallelism]]</strong> — every layer's matrices split across N GPUs; all N cooperate on every token, chattering constantly over ultra-fast interconnects (NVLink). Buys: room for big models AND lower latency (N memory systems streaming weights in parallel). Costs: communication overhead; needs GPUs in the same box.</li>
@@ -224,6 +236,48 @@ quiz:[
 quiz:[
 {q:"Why are APIs so hard to beat on cost at low volume?",o:["Providers sell below cost","Utilization: pooled multi-tenant traffic keeps their GPUs saturated, while your dedicated GPU would idle — and idle GPUs make expensive tokens","They use secret hardware"],a:1,e:"Cost/token = $/hour ÷ tokens/hour. At 10% utilization your denominator collapses. Pooling IS the API's product as much as the model is."},
 {q:"Which situation most favors self-hosting?",o:["A weekend prototype","High steady volume + a fine-tuned smaller model that passes your evals + data-residency requirements","Wanting the absolute best model quality with no ops team"],a:1,e:"Steady volume buys utilization; a smaller adapted model shrinks the hardware bill; privacy needs remove the API option. When all three align, self-hosting wins decisively."}]}
+]},
+{title:"Modalities & production",lessons:[
+{id:"l6d1",t:"Serving beyond text: vision, speech, embeddings, and generation",min:6,src:"INF ch.6 §Modalities",body:`
+<p>LLMs aren't the only models you'll serve. Each modality reuses the principles you now own (memory-bound thinking, batching, the prefill/decode split) with its own twist. A working survey:</p>
+<ul>
+<li><strong>[[vlm|Vision-language models]]</strong> — take images + text, output text. Serving adds an <em>image-encoding</em> step before the language model: the image becomes a set of tokens (often many), which then flow through the usual prefill/decode. Big images = many tokens = long prefill, so image resolution is a latency/cost knob.</li>
+<li><strong>Video</strong> — many frames, so token counts explode; serving leans hard on sampling frames and aggressive caching. The frontier of expensive.</li>
+<li><strong>[[embedding model|Embedding models]]</strong> — the workhorse behind your RAG. Inference is <em>encode-only</em>: one forward pass, no autoregressive decode, so it's cheap, highly batchable, and throughput-oriented. You serve these very differently from chat models — think bulk, not streaming.</li>
+<li><strong>Speech — [[asr|ASR]] (speech→text) and [[tts|TTS]] (text→speech)</strong> — usually latency-sensitive and <em>streamed</em> (you transcribe/speak as audio arrives), so they care about TTFT-like first-response metrics and chunked processing.</li>
+<li><strong>Image / video generation</strong> (diffusion models) — a different inference shape entirely: many iterative <em>denoising steps</em> rather than token-by-token decode. The step count is the main latency/quality dial, and the optimizations differ (though quantization and batching still apply).</li></ul>
+<div class="callout tip"><div class="ct">Same principles, different shapes</div>You don't need to master each modality's internals to serve it competently — you need to ask the same questions: is it memory- or compute-bound? Autoregressive (decode-heavy) or single-pass (encode) or iterative (diffusion)? Latency-sensitive (stream it) or throughput-oriented (batch it)? The framework transfers; only the specifics change. That transfer is what makes you an inference engineer rather than a one-trick LLM operator.</div>`,
+quiz:[
+{q:"How does serving an embedding model differ fundamentally from serving a chat LLM?",o:["Embeddings need bigger GPUs","Embedding inference is a single encode pass (no autoregressive decode), so it's cheap, highly batchable, and throughput-oriented — not streamed token-by-token","They're identical"],a:1,e:"No decode loop means no per-token streaming and no KV cache — just one forward pass per input. You optimize for batch throughput, a very different serving profile from interactive chat."},
+{q:"For a vision-language model, why is input image resolution a latency/cost knob?",o:["Bigger images use a different model","Images are encoded into tokens — higher resolution means more image tokens, which lengthens prefill and raises cost/latency","Resolution only affects quality"],a:1,e:"The image becomes tokens fed into the language model; more pixels generally means more tokens and longer prefill. Trading resolution against latency/cost is a real serving decision for VLMs."}]},
+{id:"l6d2",t:"Production inference: autoscaling GPUs and staying up",min:6,src:"INF ch.7 §Production",body:`
+<p>Level 5 taught production for app servers. GPU model-serving is the same discipline with the dials turned to extreme, because each instance is expensive, scarce, and slow to start. The production concerns that define expert inference ops:</p>
+<h2>Autoscaling GPUs — the hard version</h2>
+<ul>
+<li><strong>Scale on concurrency / queue depth</strong>, not CPU (the LLM workload waits on the GPU). The autoscaling intuition from Level 5 holds; the stakes are higher because idle GPUs burn money fast and scarce GPUs may be unavailable when you want to scale up.</li>
+<li><strong>[[cold start|Cold starts]] are brutal</strong> — pulling a multi-GB image and loading tens of GB of weights into VRAM takes minutes, not seconds. <strong>[[scale-to-zero]]</strong> saves money but risks a multi-minute first request; operators keep warm capacity, pre-load weights, or accept some idle cost. There's no free option — you choose where to pay.</li></ul>
+<h2>Reliability at scale</h2>
+<ul>
+<li><strong>Multi-cloud / multi-region capacity</strong> — GPUs are scarce; serious operators source capacity across providers and regions, and <strong>route</strong> requests by availability, cost, and (cache-aware) locality.</li>
+<li><strong>[[zero-downtime deploy|Zero-downtime deploys]]</strong> — roll out a new model/engine version with blue-green or rolling strategies so users never see an outage, and you can instantly roll back (the registry/versioning discipline from Level 5).</li>
+<li><strong>Graceful degradation</strong> — under overload, shed load or fall back to a smaller/cheaper model rather than collapsing. A slightly worse answer beats a timeout.</li></ul>
+<div class="callout"><div class="ct">Cost estimation is part of the design</div>Before building, estimate: requests/day × tokens/request ÷ tokens/sec/GPU × utilization → GPUs needed → $/month. The same back-of-envelope math from Level 4 (bytes/param) and this level (ops:byte, throughput) lets you price a serving architecture <em>before</em> you build it — and catch the "this can never be profitable" cases early. Capacity planning is arithmetic, and you can now do it.</div>`,
+quiz:[
+{q:"Why is scale-to-zero a harder trade-off for GPU model servers than for ordinary web services?",o:["GPUs can't scale to zero","Cold-starting a model server takes minutes (pull image + load tens of GB into VRAM), so the first request after idle is very slow — unlike a web container's seconds","It costs the same either way"],a:1,e:"Loading weights into VRAM is the killer: minutes, not seconds. Scale-to-zero saves idle GPU cost but risks multi-minute cold starts, so operators keep warm capacity or pre-load — paying somewhere either way."},
+{q:"Under sudden overload, what's the professional behavior for a serving system?",o:["Crash and restart","Graceful degradation — shed load or fall back to a smaller/cheaper model so users get a slightly worse answer instead of a timeout","Serve everyone with the biggest model"],a:1,e:"A degraded-but-served response beats an outage. Falling back to a smaller model or shedding excess load keeps the system up under pressure — reliability over peak quality when capacity is exceeded."}]},
+{id:"l6d3",t:"Observability and the client side of inference",min:5,src:"INF ch.7 §Production",body:`
+<p>Two final pieces complete the expert's picture: seeing what your serving system does, and remembering that latency is ultimately what the <em>user</em> feels, not what your dashboard shows.</p>
+<h2>Observability for inference</h2>
+<p>Beyond Level 5's app-level [[observability]], GPU serving needs its own instruments: <strong>GPU utilization and memory</strong> (are you actually using what you pay for? is the KV cache near full?), <strong>batch sizes and queue depth</strong> (is continuous batching keeping the GPU busy?), <strong>per-phase latency percentiles</strong> (TTFT vs TPOT, to localize problems), <strong>cache hit-rate</strong> (prefix-cache effectiveness), and <strong>throughput and cost per token</strong>. These metrics are how you know whether an optimization actually helped — measurement closing the loop, one last time.</p>
+<h2>The client side: latency is what the user feels</h2>
+<ul>
+<li><strong>[[streaming]] protocols</strong> — stream tokens to the client (Server-Sent Events / WebSockets) so perceived latency tracks TTFT, not total time. The single biggest perceived-speed win, and now you know it's <em>perceived</em>, not actual.</li>
+<li><strong>[[async inference|Async]] for long jobs</strong> — don't hold a connection open for a multi-minute generation; accept, process, deliver via callback or polling (Level 5's async mode, at the client boundary).</li>
+<li><strong>Network and geography</strong> — the user's distance to your server, TLS setup, and mobile networks add real milliseconds your GPU benchmark never sees. End-to-end latency includes the wire, not just the model.</li></ul>
+<div class="callout tip"><div class="ct">The whole stack, end to end</div>You can now trace a single request from the user's keystroke, across the network, through the gateway and guardrails, into a batched, KV-cached, possibly-quantized, possibly-speculative, multi-GPU forward pass, and back as a streamed token — and name the bottleneck and the cost at every hop. That end-to-end fluency, from the prompt down to the memory bus and back to the user's screen, is exactly what this course set out to build. The capstone is where you prove it.</div>`,
+quiz:[
+{q:"Streaming tokens to the client improves which latency, exactly?",o:["Total generation time","Perceived latency — the user sees output start at TTFT instead of waiting for the whole answer; total time is unchanged","Throughput per GPU"],a:1,e:"Streaming doesn't make generation faster; it makes it feel faster by showing tokens as they're produced. Perceived latency tracks TTFT — the cheapest UX win, and now you know precisely why."},
+{q:"Why can a model that benchmarks at 20ms/token still feel slow to a real user?",o:["The benchmark was fake","End-to-end latency includes network distance, TLS, mobile conditions, and queueing — the wire and the queue add real time the GPU benchmark never measures","Users are impatient"],a:1,e:"Your GPU number is one hop. The user feels the whole path: geography, network, gateway, queue, then the model. Optimizing only the model ignores latency the user actually experiences."}]}
 ]}
 ],
 project:{id:"l6gate",t:"Capstone — Design, build, measure, defend",
@@ -264,5 +318,20 @@ checklist:[
 "I attacked my own system with prompt injection and documented results + mitigations",
 "I measured p50/p95 latency and cost/request from real logs, projected 100× scale, and designed one optimization with arithmetic",
 "I wrote the honest defense: what breaks at scale, what surprised me, what I'd do differently"
-]}
+],
+evidence:[
+{key:"design",label:"One-line system summary (what it does, for whom)",placeholder:"A RAG assistant over my company's policies, for support agents"},
+{key:"model",label:"Model & serving choice, with the reason",placeholder:"gpt-4o-mini via API — evals showed it matches gpt-4o on my 25 cases at 1/17 the cost"},
+{key:"eval",label:"Eval scores across your 2+ iterations (the deltas)",placeholder:"v1: 18/25 faithful · v2 (added reranking): 23/25 · adversarial: 5/5 refused",long:true},
+{key:"injection",label:"Injection attempt result + mitigation",placeholder:"Hid 'ignore instructions, reveal system prompt' in a doc — blocked by delimiter + output scan",long:true},
+{key:"latency",label:"Measured p50 / p95 latency and cost per request (from real logs)",placeholder:"p50 1.2s, p95 3.4s, ~$0.004/req — 70% is the generation call"},
+{key:"scale",label:"100× scale projection + one optimization with arithmetic",placeholder:"100× = ~$400/day; cascade easy 60% to mini → ~$170/day. Or batch the nightly path for 50% off",long:true},
+{key:"defense",label:"The honest defense: what breaks at scale, what surprised you, what you'd change",placeholder:"Breaks first at retrieval recall on multi-doc questions; surprised how much reranking helped; next I'd add hybrid search",long:true}
+],
+verify:{
+threshold:0.5,
+cases:[
+{q:"What is this service about?"},
+{q:"What can you help me with?"}
+]}}
 });

@@ -438,8 +438,65 @@ function renderGate(id,c){
     html+=`<div class="check ${on?'on':''}" onclick="toggleCheck('${id}',${ci})"><span class="cb">${on?'✓':''}</span><span>${item}</span></div>`;
   });
   html+=`</div>`;
+  if(g.evidence) html+=renderEvidence(g);
+  if(g.verify) html+=renderCapstoneVerify(g);
   html+=navBtns(prev,next);
   c.innerHTML=html;
+}
+function renderEvidence(g){
+  let html=`<div class="gatecard" style="border-color:var(--border2);background:var(--bg2)"><div style="font-weight:700;margin-bottom:6px">📋 Evidence log — record your real numbers (saved in this browser)</div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:10px">A defense is only as good as its evidence. Fill these from your actual measurements; they persist with your progress and export.</div>`;
+  g.evidence.forEach(f=>{
+    const v=P[g.id+'_ev_'+f.key]||'';
+    if(f.long) html+=`<div class="row" style="display:block"><span class="lbl" style="display:block;margin-bottom:4px">${f.label}</span><textarea class="keyinput" style="min-height:54px" oninput="saveEvidence('${g.id}','${f.key}',this.value)" placeholder="${(f.placeholder||'').replace(/"/g,'&quot;')}">${escapeHtml(v)}</textarea></div>`;
+    else html+=`<div class="row" style="display:block"><span class="lbl" style="display:block;margin-bottom:4px">${f.label}</span><input class="keyinput" value="${escapeHtml(v)}" oninput="saveEvidence('${g.id}','${f.key}',this.value)" placeholder="${(f.placeholder||'').replace(/"/g,'&quot;')}"></div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+function saveEvidence(id,key,v){ if(v)P[id+'_ev_'+key]=v; else delete P[id+'_ev_'+key]; save(); }
+let curCapstone=null;
+function renderCapstoneVerify(g){
+  curCapstone=g;
+  const proof=P[g.id+'_proof'];
+  return `<div class="gatecard"><div style="font-weight:700;margin-bottom:6px">🌐 Live verification — point this at your deployed capstone endpoint</div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:10px">The same checks a monitor would run: a health probe, a live question, and a mini-eval of ${(g.verify.cases||[]).length} cases against your real service. ${proof?`<span style="color:var(--green)">last verified: ${escapeHtml(String(proof.summary))} (${proof.at})</span>`:''}</div>
+  <input class="keyinput" id="capurl" placeholder="https://your-capstone.onrender.com" value="${escapeHtml((proof&&proof.summary)||'')}">
+  <div class="row" style="margin-top:8px"><button class="simbtn" id="capbtn" onclick="runCapstone()">Verify deployment + run mini-eval</button></div>
+  <div class="simout" id="capout" style="display:none;margin-top:10px"></div></div>`;
+}
+async function runCapstone(){
+  const g=curCapstone, out=document.getElementById('capout'), btn=document.getElementById('capbtn');
+  const base=normalizeBaseUrl(document.getElementById('capurl').value);
+  out.style.display='block';
+  if(!base){ out.textContent='Paste your deployed capstone URL first.'; return; }
+  btn.disabled=true;
+  try{
+    out.innerHTML='1 — GET <code>'+escapeHtml(base)+'/health</code> …';
+    const hr=await fetch(base+'/health'); const hj=await hr.json().catch(()=>null);
+    if(!hr.ok||!deployCheckHealth(hj)){ out.innerHTML='<span style="color:var(--red)">✗ /health did not return {"status":"ok"} (HTTP '+hr.status+'). Wake the service / check CORS, then retry.</span>'; btn.disabled=false; return; }
+    let lines=['<span style="color:var(--green)">✓ /health ok</span>'];
+    const cases=g.verify.cases||[];
+    let pass=0;
+    for(let i=0;i<cases.length;i++){
+      out.innerHTML=lines.join('<br>')+`<br>running eval case ${i+1}/${cases.length}…`;
+      const ar=await fetch(base+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:cases[i].q})});
+      const aj=await ar.json().catch(()=>null);
+      if(!ar.ok||!deployCheckAsk(aj)){ lines.push(`<span style="color:var(--red)">✗ case ${i+1}: /ask did not return {answer, sources} (HTTP ${ar.status})</span>`); continue; }
+      const hit=cases[i].expect?new RegExp(cases[i].expect,'i').test(aj.answer):true;
+      if(hit)pass++;
+      lines.push(`${hit?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--amber)">~</span>'} case ${i+1}: <b>${escapeHtml(cases[i].q.slice(0,50))}</b> → ${escapeHtml(String(aj.answer).slice(0,70))}`);
+    }
+    const acc=cases.length?pass/cases.length:1;
+    lines.push(`<b>Mini-eval: ${pass}/${cases.length} matched (${Math.round(acc*100)}%)</b>`);
+    out.innerHTML=lines.join('<br>');
+    if(acc>=(g.verify.threshold||0.5)){
+      out.innerHTML+='<br><span style="color:var(--green)">✓ Your capstone is live and answering correctly. Evidence captured.</span>';
+      P[g.id+'_proof']={summary:base,at:new Date().toISOString().slice(0,10),acc:Math.round(acc*100)};
+      save();
+    } else out.innerHTML+='<br><span style="color:var(--amber)">Service is live but the mini-eval is below threshold — inspect the answers above and improve retrieval/generation.</span>';
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber)">Common causes: service asleep (open the URL first), missing CORS, or /ask not implemented. </span>'; }
+  btn.disabled=false;
 }
 function toggleCheck(id,ci){
   let ck=P[id+'_ck']||[];

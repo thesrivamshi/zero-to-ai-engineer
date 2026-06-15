@@ -396,6 +396,43 @@ section('5b. Sims render');
   host.remove();
 });
 
+/* ================= 5c. capstone evidence + live verify (mocked) ================= */
+section('5c. Capstone evidence & verification');
+{
+  // find a gate with evidence/verify (the capstone)
+  const cap = allLessons.find(x => x.l.evidence || x.l.verify);
+  if (!cap) { ok(false, 'a capstone gate with evidence/verify exists'); }
+  else {
+    const g = cap.l;
+    ok(Array.isArray(g.evidence) && g.evidence.length >= 3, 'capstone has evidence fields');
+    g.evidence.forEach((f, fi) => {
+      ok(typeof f.key === 'string' && f.key, `evidence#${fi} has key`);
+      ok(typeof f.label === 'string' && f.label, `evidence#${fi} has label`);
+    });
+    ok(g.verify && Array.isArray(g.verify.cases) && g.verify.cases.length, 'capstone verify has cases');
+    W.location.hash = 'gate/' + g.id; W.render();
+    ok(doc.getElementById('capurl'), 'capstone renders the live-verify URL input');
+    const evInputs = doc.querySelectorAll('#content .keyinput');
+    ok(evInputs.length >= g.evidence.length, 'capstone renders an input per evidence field');
+    // evidence persistence
+    W.saveEvidence(g.id, g.evidence[0].key, 'my summary');
+    ok(W.eval(`P[${JSON.stringify(g.id + '_ev_' + g.evidence[0].key)}]`) === 'my summary', 'evidence persists to progress');
+    W.saveEvidence(g.id, g.evidence[0].key, '');
+    ok(W.eval(`P[${JSON.stringify(g.id + '_ev_' + g.evidence[0].key)}]`) === undefined, 'clearing evidence removes key');
+    // mocked live verify: health ok + ask returns matching answers
+    doc.getElementById('capurl').value = 'my-capstone.onrender.com';
+    W.eval(`fetch = async (url, opts) => {
+      if (url.endsWith('/health')) return { ok:true, status:200, json: async()=>({status:'ok'}) };
+      if (url.endsWith('/ask')) return { ok:true, status:200, json: async()=>({answer:'This service answers questions about your docs', sources:['d1'] }) };
+      return { ok:false, status:404, json: async()=>null };
+    }`);
+    await W.runCapstone();
+    ok(doc.getElementById('capout').innerHTML.includes('Evidence captured') || doc.getElementById('capout').innerHTML.includes('Mini-eval'), 'capstone live verification runs the mini-eval');
+    ok(W.eval(`P[${JSON.stringify(g.id + '_proof')}]`) && W.eval(`P[${JSON.stringify(g.id + '_proof')}].summary`).includes('my-capstone'), 'capstone proof stored on success');
+    W.eval(`delete P[${JSON.stringify(g.id + '_proof')}]`);
+  }
+}
+
 /* ================= 6. progress save/load round-trip ================= */
 section('6. Progress persistence');
 W.eval("P['__test_marker']=true; save();");
