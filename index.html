@@ -499,7 +499,7 @@ function filterGl(v){
 
 /* ================= simulations ================= */
 function renderSim(name){
-  const titles={playground:'LIVE LAB: real API call — your key, your tokens',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
+  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
   return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
 }
 function initSim(name){
@@ -836,6 +836,20 @@ async function llm(messages,opts={}){
 function costOf(usage,model){
   const p=model==='gpt-4o'?[2.5,10]:[0.15,0.6];
   return (usage.prompt_tokens*p[0]+usage.completion_tokens*p[1])/1e6;
+}
+async function embedText(texts,opts={}){
+  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const res=await fetch('https://api.openai.com/v1/embeddings',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+    body:JSON.stringify({model:opts.model||'text-embedding-3-small',input:texts})});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error('API error '+res.status+': '+(e.error&&e.error.message||res.statusText));}
+  const j=await res.json();
+  return {vectors:j.data.map(d=>d.embedding),usage:j.usage};
+}
+function cosineSim(a,b){
+  let dot=0,na=0,nb=0;
+  for(let i=0;i<a.length;i++){ dot+=a[i]*b[i]; na+=a[i]*a[i]; nb+=b[i]*b[i]; }
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
 }
 
 /* ================= terminal exercise ================= */
@@ -1345,6 +1359,48 @@ function renderSearchResults(){
   box.style.display='';
   box.innerHTML=hits.length?hits.map(l=>`<button class="lessonlink ${isDone(l.id)?'done':''}" onclick="openLevels.add(${l._lv});go('${l._gate?'gate':'lesson'}','${l.id}')"><span class="st">${isDone(l.id)?'✓':''}</span><span>${l.t} <span style="color:var(--dim);font-size:11px">· L${l._lv+1}</span></span></button>`).join(''):'<div style="padding:8px;font-size:12.5px;color:var(--dim)">No lessons match.</div>';
 }
+
+/* real embeddings mini-RAG */
+SIMS.ragreal=function(b){
+  if(!getKey()){
+    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab — it calls the real embeddings API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+    return;
+  }
+  const corpus=[
+    "Our return policy allows refunds within 30 days of purchase with a receipt.",
+    "Standard shipping takes 3 to 5 business days; express ships next day.",
+    "All electronics carry a two-year manufacturer warranty against defects.",
+    "Customer support is available Monday through Friday, 9am to 6pm Eastern.",
+    "Loyalty members earn 2 points per dollar and redeem them at checkout.",
+    "We accept Visa, Mastercard, and PayPal; we do not accept cryptocurrency.",
+    "Gift cards never expire and can be reloaded at any store location."
+  ];
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">A real retriever. Your query and these 7 documents get embedded by the live API, then ranked by <b>cosine similarity</b> — exactly how RAG finds context. Notice it matches <em>meaning</em>, not shared words.</p>
+  <div style="font-size:12px;color:var(--dim);margin:8px 0">Corpus: ${corpus.length} docs about a store's policies.</div>
+  <input type="text" id="rr_q" value="how long do I have to send something back?" style="margin-bottom:8px">
+  <div class="row"><button class="simbtn" id="rr_btn" onclick="SIMS._rr()">Embed & retrieve</button><span class="pgmeta" id="rr_meta"></span></div>
+  <div class="simout" id="rr_out">Top matches appear here, ranked by real cosine similarity.</div>`;
+  SIMS._rrCorpusVecs=null;
+  SIMS._rr=async function(){
+    const btn=document.getElementById('rr_btn'),out=document.getElementById('rr_out'),meta=document.getElementById('rr_meta');
+    const q=document.getElementById('rr_q').value.trim();
+    if(!q){out.textContent='Type a query first.';return;}
+    btn.disabled=true; out.textContent='…embedding query'+(SIMS._rrCorpusVecs?'':' and corpus')+' via the live API…';
+    try{
+      let usageNote='';
+      if(!SIMS._rrCorpusVecs){
+        const e=await embedText(corpus); SIMS._rrCorpusVecs=e.vectors; usageNote=' (corpus embedded once and cached)';
+      }
+      const qe=await embedText([q]);
+      const qv=qe.vectors[0];
+      const ranked=corpus.map((d,i)=>({d,s:cosineSim(qv,SIMS._rrCorpusVecs[i])})).sort((a,b)=>b.s-a.s);
+      const max=ranked[0].s;
+      out.innerHTML=ranked.map((r,i)=>`<div class="barrow" style="align-items:flex-start"><div class="bv" style="width:${Math.max(r.s/max*90,3)}px;background:${i===0?'var(--green)':'var(--accent)'}"></div><span style="font-size:12.5px;color:${i===0?'var(--text)':'var(--dim)'}">${r.d} <b style="color:var(--accent2)">${r.s.toFixed(3)}</b></span></div>`).join('')+`<div style="margin-top:8px;font-size:12.5px;color:var(--green)">→ The top chunk gets pasted into the prompt as context. This is retrieval, for real.${usageNote}</div>`;
+      meta.textContent='real embeddings · text-embedding-3-small';
+    }catch(e){ out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>'; }
+    btn.disabled=false;
+  };
+};
 
 /* boot */
 if(!LEVELS.length){

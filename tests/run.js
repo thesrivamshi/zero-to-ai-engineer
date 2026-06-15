@@ -54,7 +54,7 @@ ok(Array.isArray(W.COURSE_LEVELS) && W.COURSE_LEVELS.length >= 6, 'COURSE_LEVELS
 ok(W.GLOSSARY && Object.keys(W.GLOSSARY).length > 30, 'GLOSSARY loaded');
 
 const LEVELS = W.COURSE_LEVELS, GLOSSARY = W.GLOSSARY;
-const VALID_SIMS = ['playground','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
+const VALID_SIMS = ['playground','ragreal','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
 const ids = new Set();
 const allLessons = [];
 LEVELS.forEach((lv, li) => {
@@ -250,6 +250,10 @@ ok(W.looksLikeFinetuneId('ft:gpt-4o-mini-2024-07-18:personal::abc') === true && 
   ok(W.colabParseScores('not json', spec).ok === false, 'colabParseScores rejects non-json');
 }
 ok(JSON.stringify(W.parseSSE('data: {"a":1}\ndata: [DONE]\ndata: {"b"')) === JSON.stringify({events:['{"a":1}'],rest:'data: {"b"'}), 'parseSSE splits events, keeps partial');
+ok(Math.abs(W.cosineSim([1,0,0],[1,0,0]) - 1) < 1e-9, 'cosineSim identical vectors = 1');
+ok(Math.abs(W.cosineSim([1,0],[0,1])) < 1e-9, 'cosineSim orthogonal = 0');
+ok(Math.abs(W.cosineSim([1,1,0],[2,2,0]) - 1) < 1e-9, 'cosineSim is scale-invariant (same direction)');
+ok(W.cosineSim([1,0],[-1,0]) < 0, 'cosineSim opposite vectors negative');
 
 /* --- live: exercise UI flow with mocked llmStream --- */
 const fakeLive = { id:'__t_live', t:'fake', body:'<p>x</p>', live:{ goal:'Get JSON', system:'sys', starter:'user prompt', check:{mustParse:'json', schemaKeys:['city']}, hint:'ask for JSON' } };
