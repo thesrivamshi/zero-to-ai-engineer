@@ -133,5 +133,23 @@ window.VIDEOS = {
 "l3e3":[{title:"Corey Schafer — Python SQLite Tutorial: Complete Overview",url:"https://www.youtube.com/watch?v=pd-0G0MigUA",why:"sqlite3 from Python end to end — your agent's memory store."}],
 "l4b2":[{title:"Meta Developers — How to Create Synthetic Datasets for Fine-Tuning Llama",url:"https://www.youtube.com/watch?v=Cb8DZraP9n0",why:"Models teaching models — generating training data."}],
 "l4c5":[{title:"David Ondrej — Fine-tune your own LLM in 13 minutes",url:"https://www.youtube.com/watch?v=g80Q1sVtikE",why:"Seeing the dataset format and chat templates in practice."}],
-"l4d1":[{title:"AI Engineer — Strategies for LLM Evals (lm-eval-harness, OpenAI Evals)",url:"https://www.youtube.com/watch?v=89NuzmKokIk",why:"Comparing base vs SFT vs DPO with a real harness."}]
+"l4d1":[{title:"AI Engineer — Strategies for LLM Evals (lm-eval-harness, OpenAI Evals)",url:"https://www.youtube.com/watch?v=89NuzmKokIk",why:"Comparing base vs SFT vs DPO with a real harness."}],
+/* ---- Multi-agent & frameworks (L3) ---- */
+"l3f1":[
+ {title:"LangChain — Conceptual Guide: Multi-Agent Architectures",url:"https://www.youtube.com/watch?v=4nZl32FwU-o",why:"Supervisor, swarm, hierarchical — the patterns, from the LangGraph team."},
+ {title:"Anthropic (AI Engineer) — How We Build Effective Agents (Barry Zhang)",url:"https://www.youtube.com/watch?v=D7_ipDqhtwk",why:"When NOT to go multi-agent — the discipline that matters most."}],
+"l3f2":[
+ {title:"IBM Technology — LangChain vs LangGraph: A Tale of Two Frameworks",url:"https://www.youtube.com/watch?v=qAF1NjEVHhY",why:"Where each framework fits."},
+ {title:"Hugging Face — OpenAI Agents SDK Crash Course",url:"https://www.youtube.com/watch?v=kKc0FwiuRg8",why:"The lightweight agents/tools/handoffs SDK."},
+ {title:"Google for Developers — Getting started with Agent Development Kit (ADK)",url:"https://www.youtube.com/watch?v=44C8u0CDtSo",why:"Google's open agent framework."},
+ {title:"LangChain — What Is LangSmith? Explained in 5 Minutes",url:"https://www.youtube.com/watch?v=kYtnLaJeia8",why:"Tracing and observability for agent runs."}],
+"l3f3":[
+ {title:"Analytics Vidhya — LangGraph: Building a Multi-Agent AI Research Assistant",url:"https://www.youtube.com/watch?v=mRkLvqFMkyI",why:"The same supervisor idea, in LangGraph."},
+ {title:"Cole Medin — OpenAI's Agents SDK (Crash Course)",url:"https://www.youtube.com/watch?v=e7qvd2bOITc",why:"Multi-agent handoffs with the OpenAI SDK."}],
+"l3f4":[
+ {title:"Youri van Hofwegen — n8n Tutorial for Beginners: Build AI Agents",url:"https://www.youtube.com/watch?v=TKnaDGpN7Ns",why:"Wiring agents to triggers and schedules, no-code."},
+ {title:"n8n — Quick Start: Build Your First AI Agent",url:"https://www.youtube.com/watch?v=GuaKeDS6UKU",why:"The official quick path to an automation."}],
+/* ---- AI dev tools (L2) ---- */
+"l2g1":[{title:"WorldofAI — Claude Code's Agent Teams: Deploy an AI Engineering Team",url:"https://www.youtube.com/watch?v=6UKUQNcRk2k",why:"Agentic coding in action — the loop you learned, pointed at software."}],
+"l2g2":[{title:"Anthropic — Building more effective agents",url:"https://www.youtube.com/watch?v=uhJJgc-0iTQ",why:"Straight from the source: the patterns and the must-read guide."}]
 };

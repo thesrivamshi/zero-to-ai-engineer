@@ -241,7 +241,13 @@ while not done:
 <li><strong>Loops and wandering</strong> — agents retry failed approaches forever or drift off-task. Always cap iterations and budget.</li>
 <li><strong>Context bloat</strong> — every step's results pile into the window; long tasks drown. Summarize or prune as you go.</li>
 <li><strong>Injection amplification</strong> — an agent that <em>reads</em> external content and <em>holds</em> tools is the maximum-risk configuration: a poisoned webpage can steer real actions. Least privilege + approval gates are non-negotiable here.</li></ul>
-<div class="callout tip"><div class="ct">The autonomy dial</div>Treat autonomy as a dial, not a binary. Fixed workflow with LLM steps → model picks branches → full agent loop. Use the LEAST autonomy that solves the problem: more autonomy = more capability = less predictability = harder evaluation. Many "agent" products in production are mostly workflows — on purpose, and wisely.</div>`,
+<div class="callout tip"><div class="ct">The autonomy dial</div>Treat autonomy as a dial, not a binary. Fixed workflow with LLM steps → model picks branches → full agent loop. Use the LEAST autonomy that solves the problem: more autonomy = more capability = less predictability = harder evaluation. Many "agent" products in production are mostly workflows — on purpose, and wisely.</div>
+<p><strong>Build the loop yourself below.</strong> The "model" is stubbed so it runs offline, but the control flow — reason, act, observe, repeat — is exactly what a real agent does. Wire it up and you understand agents from the inside.</p>`,
+py:{
+task:"Implement the agent loop. You're given model_step(history) (the stand-in 'brain') and a TOOLS dict. Write a loop that: calls model_step(history); if it returns a dict with a 'tool' key, run TOOLS[step['tool']](*step['args']), append {'role':'tool','content':result} to history, and loop again; if it returns a dict with a 'final' key, print step['final'] and stop. Start history with the user question and run it.",
+starter:"def model_step(history):\n    # provided stand-in for the model's decision (don't edit)\n    if not any(h.get('role') == 'tool' for h in history):\n        return {'tool': 'add', 'args': [2, 3]}\n    return {'final': 'The answer is 5'}\n\nTOOLS = {'add': lambda a, b: a + b}\nhistory = [{'role': 'user', 'content': 'what is 2 + 3?'}]\n\n# your loop: reason (model_step) -> act (run tool) -> observe (append result) -> repeat\n",
+check:{stdoutIncludes:["The answer is 5"],codeIncludes:["while","model_step","TOOLS["],failMsg:"Loop until model_step returns a 'final', running the requested tool each time and appending the result to history. It should print 'The answer is 5'."},
+hint:"while True:\n    step = model_step(history)\n    if 'final' in step:\n        print(step['final']); break\n    result = TOOLS[step['tool']](*step['args'])\n    history.append({'role':'tool','content':result})"},
 quiz:[
 {q:"Why do long agent task chains fail so often even when each step is good?",o:["APIs limit chain length","Errors compound — 95% per-step reliability is only ~60% over ten dependent steps","Models refuse long tasks"],a:1,e:"Multiplication is brutal. Production agents fight it with validation between steps, retries, checkpoints — and by keeping chains short."},
 {q:"Which configuration is the highest injection risk?",o:["A chatbot with no tools","An agent that reads external content AND holds consequential tools","A classifier with structured output"],a:1,e:"Reading external content = attacker input channel. Holding tools = attacker capabilities. Together they turn a hijacked model into a hijacked actor. Cap each side."}]},
@@ -279,6 +285,67 @@ quiz:[
 quiz:[
 {q:"On a long task, an agent starts losing track of earlier steps and its context overflows. Best fix?",o:["Switch to a smaller model","Manage short-term memory: summarize older steps and prune irrelevant tool outputs to keep the working context tight","Disable tools"],a:1,e:"Long runs bloat the window (context bloat / lost-in-the-middle). Summarizing and pruning the working transcript keeps the essential state in context — the core skill for reliable long agent runs."},
 {q:"How do agents typically implement long-term memory across sessions?",o:["By fine-tuning the model after every chat","By writing facts to an external store and retrieving the relevant ones back into context when needed — RAG aimed at the agent's own memories","By increasing the context window to infinity"],a:1,e:"Long-term memory is retrieval over a store of saved facts/summaries, pulled back in by relevance — the same embedding/retrieval machinery as document RAG, applied to the agent's history."}]}
+]},
+{title:"Multi-agent systems & frameworks",lessons:[
+{id:"l3f1",t:"Multi-agent architectures: supervisor, swarm, pipeline",min:6,src:"AIE ch.6 §Agents",body:`
+<p>One agent in a loop is powerful, but some problems are cleaner when you split the work across several specialized agents. You met the idea in the planning lesson; here are the actual <strong>architectures</strong> teams use, and when each fits.</p>
+<ul>
+<li><strong>[[supervisor pattern|Supervisor]] (orchestrator → workers)</strong> — one [[orchestrator]] agent receives the task, routes sub-tasks to specialist workers (researcher, coder, writer), and assembles the result. Easy to reason about and control; the supervisor is a single place to enforce policy. The most common production shape.</li>
+<li><strong>Swarm (peer handoffs)</strong> — agents hand the conversation directly to each other ("this is a billing question → handoff to BillingAgent"). No central boss; good when the work is really a routing-between-specialists problem (think customer support triage).</li>
+<li><strong>Sequential pipeline</strong> — a fixed chain: agent A's output feeds agent B feeds agent C (outline → draft → edit). Predictable and inspectable; barely "agentic" — and that's often a feature.</li>
+<li><strong>Hierarchical</strong> — supervisors of supervisors, for large tasks split into sub-teams. Powerful, but the failure surface grows fast.</li></ul>
+<div class="callout warn"><div class="ct">The caution that still governs everything</div>Every extra agent multiplies cost, latency, and the failure surface (error compounding from the agents lesson), and makes evaluation harder. Anthropic's own guidance is blunt: most "agent" problems are best solved by a single well-prompted agent or a fixed workflow — reach for multi-agent only when evals show one agent genuinely can't do the job. Use the simplest architecture that passes your tests.</div>`,
+quiz:[
+{q:"In the supervisor (orchestrator) pattern, what does the supervisor do?",o:["Runs on a separate GPU","Receives the task, routes sub-tasks to specialist worker agents, and assembles their results — a single place to enforce control","Replaces all the workers"],a:1,e:"A supervisor coordinates specialists and combines outputs, giving you one chokepoint for policy and assembly. It's the most common and most controllable multi-agent shape."},
+{q:"When should you reach for a multi-agent system?",o:["Always — more agents are always better","Only when evals show a single well-prompted agent or a fixed workflow genuinely can't do the job; extra agents multiply cost, latency, and failure surface","Whenever the task has more than one step"],a:1,e:"Multi-agent amplifies error compounding and evaluation difficulty. Escalate from one agent to many only on evidence, using the simplest architecture that passes your tests."}]},
+{id:"l3f2",t:"The agent-framework landscape (and when to use one)",min:6,src:"AIE ch.6 §Agents",body:`
+<p>You built the agent loop and a tool server by hand — so now frameworks will make sense instead of being magic. An [[agent framework]] handles the repetitive plumbing (the tool-call loop, state, memory, multi-agent coordination, retries) so you write less boilerplate. The major options as of 2026:</p>
+<ul>
+<li><strong>[[langgraph|LangGraph]]</strong> (with [[langchain|LangChain]]) — model your agent/multi-agent app as an explicit <em>graph</em> of nodes and edges, with inspectable state. The most popular choice for stateful, multi-agent production apps. Pair with <strong>[[langsmith|LangSmith]]</strong> for tracing every step.</li>
+<li><strong>OpenAI Agents SDK</strong> — a lightweight, production-minded SDK (the successor to "Swarm") built around agents, tools, and handoffs. Minimal abstraction; quick to start.</li>
+<li><strong>Anthropic's approach</strong> — fewer heavy abstractions, more "compose the primitives yourself"; their <em>Building Effective Agents</em> guidance is the must-read, and the Claude Agent SDK / Claude Code show it in practice.</li>
+<li><strong>Google ADK (Agent Development Kit)</strong> — Google's open framework for building and deploying agents, with multi-agent and workflow support.</li></ul>
+<div class="callout tip"><div class="ct">Framework-free first, framework-light always</div>The reason this course made you build the loop, tools, and a tool server by hand is so a framework is a <em>convenience</em>, not a crutch — you can read its source, debug it, and leave it when it fights you. Pick one, learn it well, but never let it hide the mechanics from you. The same evaluation and guardrail discipline applies no matter whose SDK you use.</div>`,
+quiz:[
+{q:"What does an agent framework like LangGraph actually give you?",o:["A smarter model","Plumbing — the tool-call loop, state, memory, and multi-agent coordination — so you write less boilerplate around the same mechanics you built by hand","A way to avoid evaluation"],a:1,e:"Frameworks package the loop/state/coordination you already understand. They don't change the fundamentals or remove the need for evals and guardrails — they save typing."},
+{q:"Why build the agent loop and a tool server by hand before adopting a framework?",o:["Frameworks are forbidden in production","So the framework is a convenience you can read, debug, and leave — not a crutch that hides the mechanics","Hand-built agents are always better"],a:1,e:"Understanding the primitives means you can choose a framework wisely, debug it when it breaks, and drop it when it fights you. Magic you can't see is magic you can't fix."}]},
+{id:"l3f3",t:"🧪 Lab: build a supervisor multi-agent flow by hand",min:8,lab:true,src:"AIE ch.6 §Agents",body:`
+<p>Before any framework, build the [[supervisor pattern|supervisor]] pattern yourself — it's just functions calling functions. A supervisor delegates to two specialist workers and combines their output. This is the skeleton every multi-agent framework wraps; once you've written it, LangGraph's graph and the OpenAI SDK's handoffs are just nicer syntax for the same idea.</p>
+<pre><code># the supervisor pattern, stripped to its essence
+def research(topic):  return f"facts about {topic}"          # worker 1
+def write(notes):     return "Summary: " + notes             # worker 2
+
+def supervisor(task):
+    notes = research(task)        # delegate step 1
+    return write(notes)           # delegate step 2 (could loop, branch, or add a critic)</code></pre>
+<p>In a real system each worker is its own LLM call (or its own agent loop) with its own prompt and tools, and the supervisor decides routing dynamically. The control structure is identical. Build it below.</p>
+<div class="callout tip"><div class="ct">From here to production</div>Swap each plain function for an agent (a model call with tools), let the supervisor <em>choose</em> which worker to call based on the task, add a critic worker that reviews before returning — and you have a real multi-agent system. The leap from this lab to LangGraph is syntax, not concept.</div>`,
+py:{
+task:"Build a supervisor multi-agent flow. (1) Define research(topic) returning 'facts about ' + topic. (2) Define write(notes) returning 'Summary: ' + notes. (3) Define supervisor(task) that calls research(task), passes its output to write(...), and returns the result. (4) print supervisor('cats').",
+starter:"# worker 1\ndef research(topic):\n    ...\n\n# worker 2\ndef write(notes):\n    ...\n\n# the supervisor coordinates the workers\ndef supervisor(task):\n    ...\n\nprint(supervisor('cats'))\n",
+check:{stdoutIncludes:["Summary","cats"],codeIncludes:["def research","def write","def supervisor"],failMsg:"supervisor('cats') should research then write, printing something like 'Summary: facts about cats'."},
+hint:"def supervisor(task):\n    notes = research(task)\n    return write(notes)"},
+quiz:[
+{q:"In this lab, what makes the supervisor a 'supervisor'?",o:["It uses a bigger model","It coordinates the workers — delegating to research, then passing that to write, and returning the combined result","It runs the workers in parallel on a GPU"],a:1,e:"The supervisor owns the routing and assembly: it decides who does what and combines the outputs. Replace each worker with an LLM-powered agent and the structure is a real multi-agent system."},
+{q:"How far is this lab from a production LangGraph/OpenAI-SDK multi-agent app?",o:["A complete rewrite","Mostly syntax — each function becomes an agent (a model call with tools), the supervisor routes dynamically, but the coordinate-and-combine structure is the same","Impossibly far"],a:1,e:"Frameworks add dynamic routing, state, and tracing, but the core — a coordinator delegating to specialists — is exactly what you built. That's why building it by hand makes the frameworks legible."}]},
+{id:"l3f4",t:"Automations: agents that run themselves",min:5,src:"AIE ch.6 §Agents",body:`
+<p>So far your agent runs when <em>you</em> type. An [[agentic automation]] runs when something <em>else</em> happens — a schedule, an incoming email, a webhook, a new row in a database. This is where agents stop being a chat toy and start doing real work unattended.</p>
+<h2>Triggers</h2>
+<ul>
+<li><strong>Schedule (cron)</strong> — "every morning, summarize yesterday's support tickets."</li>
+<li><strong>Webhook / event</strong> — "when a GitHub issue is opened, triage it." Your FastAPI service (Level 5) receives the event and kicks off the agent.</li>
+<li><strong>Queue</strong> — work piles into a queue; workers pull and process, so bursts don't drop tasks.</li></ul>
+<p>Tools like <strong>n8n</strong>, Zapier, or just a cron job + your code wire these up. Many "AI automations" are a trigger → a short agent run → an action (send, post, file).</p>
+<h2>The discipline that keeps unattended agents safe</h2>
+<ul>
+<li><strong>Idempotency</strong> — running twice shouldn't send the email twice. Track what's already done.</li>
+<li><strong>Retries with caps</strong> — transient failures retry; permanent ones alert a human instead of looping forever.</li>
+<li><strong>Cost &amp; iteration limits</strong> — an unattended agent with no cap is a way to wake up to a huge bill (the agent-failure lesson, now with your credit card).</li>
+<li><strong>Human-in-the-loop for consequence</strong> — anything irreversible (payment, public post, deletion) waits for approval. No exceptions for "it's automated."</li></ul>
+<div class="callout warn"><div class="ct">Unattended means the guardrails do the watching</div>When a human is in the chat, they catch the agent doing something dumb. In an automation, nobody's watching in real time — so the guardrails, caps, idempotency, and approval gates ARE the supervision. Build them first, automate second.</div>`,
+quiz:[
+{q:"Why is idempotency critical for an automated agent?",o:["It makes the model smarter","Because the trigger may fire more than once (retries, duplicate events) and the agent must not repeat side effects like sending the same email twice","It reduces token cost"],a:1,e:"Automations get triggered redundantly in the real world. Idempotency — tracking what's already done so a re-run is safe — prevents double-sends, double-charges, and duplicate posts."},
+{q:"What's the right rule for irreversible actions in an unattended automation?",o:["Let the agent act freely — it's automated","Gate consequential/irreversible actions (payment, public post, deletion) behind human approval; automation doesn't remove the need for a human on risky steps","Disable all tools"],a:1,e:"No real-time human is watching an automation, so the guardrails are the supervision. Irreversible actions wait for explicit approval — 'it's automated' is never a reason to skip that."}]}
 ]},
 {title:"Guardrails & polish",lessons:[
 {id:"l3d1",t:"Guardrails: the safety sandwich",min:4,body:`

@@ -65,6 +65,8 @@ window.READS = {
 "l2d7":[{b:"AIE",c:"3 · Evaluation Methodology",p:"136-148",f:"AI as a Judge — running a live eval"}],
 "l2f1":[{b:"AIE",c:"4 · Evaluate AI Systems",p:"160-179",f:"Evaluation Criteria & Design Your Evaluation Pipeline"}],
 "l2f2":[{b:"AIE",c:"4 · Evaluate AI Systems",p:"179-208",f:"Model Selection — benchmarks, contamination, build vs buy"}],
+"l2g1":[{b:"LEH",c:"2 · Tooling and Installation",p:"25-30",f:"Tooling & the dev workflow (Claude Code is post-books — see the video + provider docs)"}],
+"l2g2":[{b:"LEH",c:"2 · Tooling and Installation",p:"25-30",f:"Tooling — the reference shelf (cookbooks/docs are online primary sources)"}],
 "l2gate":[{b:"AIE",c:"4 · Evaluate AI Systems",p:"200-208",f:"Design Your Evaluation Pipeline — the gate's blueprint"}],
 
 /* ===================== LEVEL 3 — Building Applications (AIE ch.6, LEH ch.4/9) ===================== */
@@ -88,6 +90,10 @@ window.READS = {
 "l3d1":[{b:"AIE",c:"5 · Prompt Engineering",p:"248-251",f:"Defenses Against Prompt Attacks (guardrails)"}],
 "l3d2":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference optimization at the app level — latency, cost, caching"}],
 "l3d3":[{b:"AIE",c:"5 · Prompt Engineering",p:"243-251",f:"Information Extraction & Defenses (moderation, PII)"}],
+"l3f1":[{b:"AIE",c:"6 · RAG and Agents",p:"281-300",f:"Planning & Agent Failure Modes — multi-agent architectures"}],
+"l3f2":[{b:"AIE",c:"6 · RAG and Agents",p:"275-300",f:"Agents — frameworks (LangGraph/OpenAI SDK/ADK are post-books: see the videos)"}],
+"l3f3":[{b:"AIE",c:"6 · RAG and Agents",p:"275-281",f:"Agent Overview & Tools — the supervisor pattern, by hand"}],
+"l3f4":[{b:"AIE",c:"6 · RAG and Agents",p:"298-305",f:"Agent Failure Modes & Memory — running agents unattended (automations)"}],
 "l3e1":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases for storing unstructured and vector data (SQL itself: see the video — the books assume it)"}],
 "l3e2":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases — querying the agent's memory store"}],
 "l3e3":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases — wiring storage into Python"}],
