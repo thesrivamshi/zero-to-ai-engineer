@@ -179,6 +179,25 @@ Object.keys(VIDEOS || {}).forEach(id => {
 });
 console.log(`  ${Object.keys(VIDEOS || {}).length} lessons with curated videos, ${vidCount} videos`);
 
+/* ----- reading-progress tracker (books view) ----- */
+ok(typeof W.bookStats === 'function', 'bookStats() exists');
+ok(typeof W.toggleRead === 'function', 'toggleRead() exists');
+const bs0 = W.bookStats();
+ok(bs0.AIE && bs0.LEH && bs0.INF, 'bookStats covers all three books');
+ok(bs0.AIE.t > 0 && bs0.LEH.t > 0 && bs0.INF.t > 0, 'each book has references counted');
+const totalRefs = Object.values(READS).reduce((a, arr) => a + arr.length, 0);
+ok(bs0.AIE.t + bs0.LEH.t + bs0.INF.t === totalRefs, 'bookStats totals equal all reads references');
+const sampleId = Object.keys(READS).find(id => READS[id][0].b === 'AIE');
+const beforeD = W.bookStats().AIE.d;
+W.toggleRead(sampleId, 0);
+ok(W.eval(`P['read_${sampleId}_0']`) === true, 'toggleRead marks a reference read (persists to P)');
+ok(W.bookStats().AIE.d === beforeD + 1, 'bookStats reflects a newly-marked reference');
+W.toggleRead(sampleId, 0);
+ok(W.eval(`P['read_${sampleId}_0']`) === undefined, 'toggleRead un-marks (toggle off)');
+W.location.hash = '#books'; W.eval('render()');
+ok(/references/i.test(W.document.getElementById('content').innerHTML), 'books view renders progress');
+W.location.hash = ''; W.eval('render()'); // restore home for later view tests
+
 /* ================= 2. app boots & views render ================= */
 section('2. Views render');
 const doc = W.document;

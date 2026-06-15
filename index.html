@@ -254,6 +254,7 @@ function render(){
   else if(view==='glossary') renderGlossary(c);
   else if(view==='settings') renderSettings(c);
   else if(view==='review') renderReview(parseInt(arg),c);
+  else if(view==='books') renderBooks(c);
   else renderHome(c);
   window.scrollTo(0,0);
 }
@@ -286,7 +287,8 @@ function renderSidebar(){
       }
     }
   });
-  html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
+  html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('books')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📚</span> Book progress <span class="pc">${bookPct()}%</span></button>`;
+  html+=`<button class="lvlhead" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
   html+='</div>';
   sb.innerHTML=html;
@@ -334,7 +336,7 @@ function renderLesson(id,c){
   <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>
   <div class="body">${gloss(l.body)}</div>`;
   {const _vids=(l.videos||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); if(_vids.length) html+=renderVideos(_vids);}
-  if(window.READS&&READS[l.id]&&READS[l.id].length) html+=renderReads(READS[l.id]);
+  if(window.READS&&READS[l.id]&&READS[l.id].length) html+=renderReads(READS[l.id],l.id);
   if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
   if(l.term) html+=renderTermEx(l);
   if(l.py) html+=renderPyEx(l);
@@ -370,10 +372,43 @@ function renderVideos(videos){
     videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
   `</ul></div>`;
 }
-function renderReads(reads){
-  return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books — your path to finishing all three</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">These page references are the depth behind this lesson. Read every lesson's box across the course and you will have read all three books cover to cover — the goal.</p><ul style="margin:6px 0 2px 18px">`+
-    reads.map(r=>`<li style="margin:6px 0"><b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}${r.f?` <span style="color:var(--muted)">— ${r.f}</span>`:''}</li>`).join('')+
-  `</ul></div>`;
+function renderReads(reads,lid){
+  const n=reads.length, done=reads.filter((_,i)=>P['read_'+lid+'_'+i]).length;
+  return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books — ${done}/${n} marked read</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">The depth behind this lesson. Tick each one as you read it — across the whole course these references cover all three books cover to cover. Page numbers only; buy the books.</p><ul style="margin:6px 0 2px;list-style:none;padding-left:0">`+
+    reads.map((r,i)=>{ const k='read_'+lid+'_'+i, d=!!P[k];
+      return `<li style="margin:8px 0;display:flex;gap:9px;align-items:flex-start"><button onclick="toggleRead('${lid}',${i})" title="Mark as read" style="flex:0 0 auto;cursor:pointer;background:${d?'var(--green)':'transparent'};border:1px solid ${d?'var(--green)':'var(--border)'};color:${d?'#06240f':'var(--muted)'};border-radius:5px;width:22px;height:22px;font-size:13px;line-height:20px;padding:0">${d?'✓':''}</button><span style="${d?'opacity:.55':''}"><b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}${r.f?` <span style="color:var(--muted)">— ${r.f}</span>`:''}</span></li>`;
+    }).join('')+
+  `</ul><div style="margin-top:8px"><span onclick="go('books')" style="cursor:pointer;color:var(--muted);font-size:13px;text-decoration:underline">📚 See your progress across all three books →</span></div></div>`;
+}
+function toggleRead(id,i){ const k='read_'+id+'_'+i; if(P[k]) delete P[k]; else P[k]=true; save(); render(); }
+function bookStats(){
+  const s={AIE:{t:0,d:0,ch:{}},LEH:{t:0,d:0,ch:{}},INF:{t:0,d:0,ch:{}}}, R=window.READS||{};
+  Object.keys(R).forEach(id=>R[id].forEach((r,i)=>{
+    const b=s[r.b]; if(!b) return; const d=!!P['read_'+id+'_'+i];
+    b.t++; if(d) b.d++;
+    if(!b.ch[r.c]) b.ch[r.c]={t:0,d:0}; b.ch[r.c].t++; if(d) b.ch[r.c].d++;
+  }));
+  return s;
+}
+function bookPct(){ const s=bookStats(),o=['AIE','LEH','INF']; const t=o.reduce((a,b)=>a+s[b].t,0),d=o.reduce((a,b)=>a+s[b].d,0); return t?Math.round(d/t*100):0; }
+function renderBooks(c){
+  const s=bookStats(), order=['AIE','LEH','INF'];
+  let html=`<h1 class="ltitle">📚 Your reading across the three books</h1>
+  <div class="body"><p>Tick each <b>📖 Read deeper</b> reference inside its lesson as you read it. Finish them all and you've read all three books — the goal you set. This tracks page references only; the books themselves you buy (nothing here reproduces their text).</p></div>`;
+  order.forEach(b=>{
+    const x=s[b], pct=x.t?Math.round(x.d/x.t*100):0, complete=x.t&&x.d===x.t;
+    html+=`<div style="margin:18px 0;border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg3)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:16px">${complete?'✅ ':''}${BOOK_NAMES[b]}</b><span style="color:var(--muted)">${x.d}/${x.t} references · ${pct}%</span></div>
+    <div class="bar" style="margin:9px 0 12px"><i style="width:${pct}%"></i></div>`;
+    Object.keys(x.ch).sort((a,b2)=>parseFloat(a)-parseFloat(b2)).forEach(ck=>{
+      const cc=x.ch[ck], cdone=cc.t&&cc.d===cc.t;
+      html+=`<div style="font-size:13px;color:${cdone?'var(--green)':'var(--muted)'};margin:3px 0">${cdone?'✓':'•'} Ch.${ck} <span style="opacity:.7">(${cc.d}/${cc.t})</span></div>`;
+    });
+    html+=`</div>`;
+  });
+  const t=order.reduce((a,b)=>a+s[b].t,0), d=order.reduce((a,b)=>a+s[b].d,0), tp=t?Math.round(d/t*100):0;
+  html+=`<div style="margin-top:12px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg2,var(--bg3))"><b style="font-size:15px">Overall: ${d}/${t} references read — ${tp}%</b><div class="bar" style="margin-top:8px"><i style="width:${tp}%"></i></div></div>`;
+  c.innerHTML=html;
 }
 function hasExercise(l){ return !!(l.term||l.py||l.live||l.evalrun||l.colab||l.deploy); }
 function exDone(id){ return !!P[id+'_ex']; }
