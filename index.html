@@ -1479,8 +1479,8 @@ async function runDeploy(){
 /* ================= notes ================= */
 function renderNotes(l){
   const note=P[l.id+'_note']||'';
-  return `<div class="sim" style="margin-top:26px"><div class="simtitle" style="color:var(--accent2)">📝 Your notes on this lesson</div>
-  <textarea id="notebox" placeholder="Write what clicked, what confused you, what you want to try — writing is how it sticks." style="min-height:64px;resize:vertical" oninput="saveNote('${l.id}',this.value)">${escapeHtml(note)}</textarea></div>`;
+  return `<div class="sim" style="margin-top:26px"><div class="simtitle" style="color:var(--accent2)">📌 Pin a note to this lesson</div>
+  <textarea id="notebox" placeholder="A note that stays attached to THIS lesson (e.g. what confused you here). For free-floating notes, use the 📝 pad in the corner — open from any page." style="min-height:64px;resize:vertical" oninput="saveNote('${l.id}',this.value)">${escapeHtml(note)}</textarea></div>`;
 }
 function saveNote(id,v){ if(v)P[id+'_note']=v; else delete P[id+'_note']; save(); }
 
