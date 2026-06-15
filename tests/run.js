@@ -179,6 +179,23 @@ Object.keys(VIDEOS || {}).forEach(id => {
 });
 console.log(`  ${Object.keys(VIDEOS || {}).length} lessons with curated videos, ${vidCount} videos`);
 
+/* ----- original SVG diagrams (data/diagrams.js) ----- */
+const DIAG = W.DIAGRAMS;
+ok(DIAG && typeof DIAG === 'object', 'DIAGRAMS loaded');
+let diagCount = 0;
+Object.keys(DIAG || {}).forEach(id => {
+  ok(ids.has(id), `DIAGRAMS key "${id}" is a real lesson id`);
+  ok(Array.isArray(DIAG[id]) && DIAG[id].length, `DIAGRAMS["${id}"] is non-empty`);
+  (DIAG[id] || []).forEach((d, i) => {
+    diagCount++;
+    ok(typeof d.svg === 'string' && /^<svg/.test(d.svg), `DIAGRAMS["${id}"][${i}] is inline SVG`);
+    // copyright safety: original vector only — never an embedded raster/book image
+    ok(!/<image[\s>]/i.test(d.svg) && !/base64/i.test(d.svg), `DIAGRAMS["${id}"][${i}] embeds no raster/book image`);
+    ok(['AIE', 'LEH', 'INF'].includes(d.book), `DIAGRAMS["${id}"][${i}] tagged with a book`);
+  });
+});
+console.log(`  ${Object.keys(DIAG || {}).length} lessons with a diagram, ${diagCount} SVGs (all original vector)`);
+
 /* ----- reading-progress tracker (books view) ----- */
 ok(typeof W.bookStats === 'function', 'bookStats() exists');
 ok(typeof W.toggleRead === 'function', 'toggleRead() exists');

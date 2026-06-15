@@ -217,6 +217,7 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
 <script src="data/level6.js"></script>
 <script src="data/reads.js"></script>
 <script src="data/videos.js"></script>
+<script src="data/diagrams.js"></script>
 <script>
 /* ================= state ================= */
 const LEVELS = window.COURSE_LEVELS || [];
@@ -335,6 +336,7 @@ function renderLesson(id,c){
   let html=`<div class="crumb"><b>Level ${l._lv+1}: ${lv.title}</b> · ${l._ch}</div>
   <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>
   <div class="body">${gloss(l.body)}</div>`;
+  if(window.DIAGRAMS&&DIAGRAMS[l.id]&&DIAGRAMS[l.id].length) html+=renderDiagrams(DIAGRAMS[l.id]);
   {const _vids=(l.videos||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); if(_vids.length) html+=renderVideos(_vids);}
   if(window.READS&&READS[l.id]&&READS[l.id].length) html+=renderReads(READS[l.id],l.id);
   if(l.sim) simList(l.sim).forEach(s=>{html+=renderSim(s);});
@@ -371,6 +373,14 @@ function renderVideos(videos){
   return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold</div><ul style="margin:6px 0 2px 18px">`+
     videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
   `</ul></div>`;
+}
+function renderDiagrams(arr){
+  return arr.map(d=>`<figure style="margin:20px 0;border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg3)">
+    <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">📐 Visual${d.term?' · '+d.term:''}</div>
+    ${d.title?`<div style="font-weight:700;margin:3px 0 12px">${d.title}</div>`:''}
+    <div style="overflow-x:auto;background:#fdfdfb;border:1px solid var(--border);border-radius:8px;padding:14px">${d.svg}</div>
+    ${d.caption?`<figcaption style="font-size:13px;color:var(--muted);margin-top:10px">${d.caption} <span style="opacity:.6">— original schematic (redrawn for clarity, not from the book)</span></figcaption>`:''}
+  </figure>`).join('');
 }
 function renderReads(reads,lid){
   const n=reads.length, done=reads.filter((_,i)=>P['read_'+lid+'_'+i]).length;
