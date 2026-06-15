@@ -54,7 +54,7 @@ ok(Array.isArray(W.COURSE_LEVELS) && W.COURSE_LEVELS.length >= 6, 'COURSE_LEVELS
 ok(W.GLOSSARY && Object.keys(W.GLOSSARY).length > 30, 'GLOSSARY loaded');
 
 const LEVELS = W.COURSE_LEVELS, GLOSSARY = W.GLOSSARY;
-const VALID_SIMS = ['playground','ragreal','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
+const VALID_SIMS = ['playground','ragreal','opsbyte','percentiles','parallelism','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
 const ids = new Set();
 const allLessons = [];
 LEVELS.forEach((lv, li) => {
@@ -382,6 +382,19 @@ ok(W.importValidate({app:'other'}).ok === false, 'importValidate rejects foreign
 ok(W.importValidate(null).ok === false, 'importValidate rejects null');
 ok(typeof W.exportProgress === 'function', 'exportProgress exists');
 W.localStorage.removeItem('z2ai_key');
+
+/* ================= 5b. sims render without crashing ================= */
+section('5b. Sims render');
+['opsbyte','percentiles','parallelism','samplers'].forEach(name => {
+  const host = doc.createElement('div');
+  host.id = 'simbody-' + name;
+  doc.body.appendChild(host);
+  try {
+    W.eval(`SIMS[${JSON.stringify(name)}](document.getElementById('simbody-${name}'))`);
+    ok(host.innerHTML.length > 0, `sim ${name} renders content`);
+  } catch (e) { ok(false, `sim ${name} renders without throwing — ${e.message}`); }
+  host.remove();
+});
 
 /* ================= 6. progress save/load round-trip ================= */
 section('6. Progress persistence');

@@ -499,7 +499,7 @@ function filterGl(v){
 
 /* ================= simulations ================= */
 function renderSim(name){
-  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
+  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',opsbyte:'Interactive: ops:byte — compute- or memory-bound?',percentiles:'Interactive: latency percentiles (p50/p95/p99)',parallelism:'Interactive: splitting a model across GPUs',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
   return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
 }
 function initSim(name){
@@ -1359,6 +1359,92 @@ function renderSearchResults(){
   box.style.display='';
   box.innerHTML=hits.length?hits.map(l=>`<button class="lessonlink ${isDone(l.id)?'done':''}" onclick="openLevels.add(${l._lv});go('${l._gate?'gate':'lesson'}','${l.id}')"><span class="st">${isDone(l.id)?'✓':''}</span><span>${l.t} <span style="color:var(--dim);font-size:11px">· L${l._lv+1}</span></span></button>`).join(''):'<div style="padding:8px;font-size:12.5px;color:var(--dim)">No lessons match.</div>';
 }
+
+/* ops:byte — arithmetic intensity vs hardware roofline */
+SIMS.opsbyte=function(b){
+  const gpus={'A100 (312 TFLOP/s bf16, 2.0 TB/s)':[312,2039],'H100 (990 TFLOP/s bf16, 3.35 TB/s)':[990,3350],'L4 (121 TFLOP/s bf16, 0.3 TB/s)':[121,300],'consumer 4090 (165 TFLOP/s, 1.0 TB/s)':[165,1008]};
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">LLM decode reuses one weight-load across the whole batch, so its <b>arithmetic intensity ≈ batch size</b>. The GPU has its own ops:byte ratio (peak FLOPs ÷ memory bandwidth). Below the ratio you're <b>memory-bound</b> (starved waiting for weights); above it, <b>compute-bound</b>.</p>
+  <div class="row"><span class="lbl">GPU</span><select id="ob_g" onchange="SIMS._ob()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">${Object.keys(gpus).map(g=>`<option>${g}</option>`).join('')}</select></div>
+  <div class="row"><span class="lbl">Batch size (concurrent requests)</span><input type="range" id="ob_b" min="1" max="512" value="8" oninput="SIMS._ob()"><span class="val" id="ob_bv">8</span></div>
+  <div class="simout" id="ob_out"></div>`;
+  SIMS._ob=function(){
+    const [flops,bw]=gpus[document.getElementById('ob_g').value];
+    const ratio=flops*1e12/(bw*1e9); // FLOP per byte
+    const batch=+document.getElementById('ob_b').value;
+    document.getElementById('ob_bv').textContent=batch;
+    const memBound=batch<ratio;
+    const util=Math.min(batch/ratio,1);
+    document.getElementById('ob_out').innerHTML=`Hardware ops:byte ratio = <b style="color:var(--accent2)">${ratio.toFixed(0)}</b> FLOP/byte · your intensity ≈ batch = <b style="color:var(--accent2)">${batch}</b>
+    <div class="bar" style="margin-top:8px;height:14px"><i style="width:${util*100}%;background:${memBound?'var(--amber)':'var(--green)'}"></i></div>
+    <div style="margin-top:8px;font-size:13px;color:${memBound?'var(--amber)':'var(--green)'}"><b>${memBound?'MEMORY-BOUND':'COMPUTE-BOUND'}</b> — ${memBound?`the GPU's compute sits ~${Math.round((1-util)*100)}% idle, waiting on weights from memory. Raising the batch packs more work per weight-load and lifts throughput almost for free — until you reach the ratio.`:`you've saturated the math units. Bigger batches no longer help throughput much; now latency per user starts to climb. This is the roofline.`}</div>
+    <div style="margin-top:6px;font-size:12px;color:var(--dim)">This is why LLM decode at batch=1 wastes the GPU, and why serving is all about safely raising the batch. Toy numbers, real formula (Horace He's "ops:byte").</div>`;
+  };
+  SIMS._ob();
+};
+
+/* latency percentiles */
+SIMS.percentiles=function(b){
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Latency isn't one number — it's a distribution with a tail. Drag the <b>tail heaviness</b>: the average barely moves, but p95/p99 (what your unluckiest users feel) explode. Averages lie; percentiles don't.</p>
+  <div class="row"><span class="lbl">Tail heaviness</span><input type="range" id="pc_s" min="5" max="120" value="35" oninput="SIMS._pc()"><span class="val" id="pc_sv"></span></div>
+  <div id="pc_bars"></div><div class="simout" id="pc_out" style="font-size:12.5px"></div>`;
+  SIMS._pc=function(){
+    const s=+document.getElementById('pc_s').value/100;
+    document.getElementById('pc_sv').textContent=s.toFixed(2);
+    // deterministic lognormal-ish sample set, base median 200ms
+    const N=2000, base=200, xs=[];
+    for(let i=1;i<=N;i++){
+      const u=(i-0.5)/N;                       // uniform quantiles, deterministic
+      const z=Math.sqrt(2)*invErf(2*u-1);      // inverse normal CDF
+      xs.push(base*Math.exp(s*z));
+    }
+    xs.sort((a,b)=>a-b);
+    const pct=p=>xs[Math.min(N-1,Math.floor(p/100*N))];
+    const mean=xs.reduce((a,b)=>a+b,0)/N;
+    const p50=pct(50),p95=pct(95),p99=pct(99),p999=pct(99.9);
+    const max=p999;
+    const row=(lbl,v,col)=>`<div class="barrow"><span class="bl">${lbl}</span><div class="bv" style="width:${Math.max(v/max*360,2)}px;background:${col}"></div><span class="bn">${Math.round(v)} ms</span></div>`;
+    document.getElementById('pc_bars').innerHTML=
+      row('mean',mean,'var(--dim)')+row('p50 (median)',p50,'var(--green)')+row('p95',p95,'var(--amber)')+row('p99',p99,'var(--red)')+row('p99.9',p999,'#b91c1c');
+    document.getElementById('pc_out').innerHTML=`p99/p50 ratio = <b style="color:var(--accent2)">${(p99/p50).toFixed(1)}×</b>. At scale, p99 isn't rare: 1 in 100 requests, and a page making 10 model calls hits it most of the time. SLOs are written on p95/p99, never the mean — design for the tail.`;
+  };
+  function invErf(x){ // Winitzki approximation
+    const a=0.147, ln=Math.log(1-x*x);
+    const t=2/(Math.PI*a)+ln/2;
+    return Math.sign(x)*Math.sqrt(Math.sqrt(t*t-ln/a)-t);
+  }
+  SIMS._pc();
+};
+
+/* parallelism: map a model across GPUs */
+SIMS.parallelism=function(b){
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">A model too big for one GPU must be split. Each strategy cuts the work a different way. Pick one and a GPU count:</p>
+  <div class="row"><span class="lbl">Strategy</span><select id="pl_s" onchange="SIMS._pl()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px"><option value="tp">Tensor parallel</option><option value="pp">Pipeline parallel</option><option value="dp">Replication (data parallel)</option><option value="ep">Expert parallel (MoE)</option></select>
+  <span class="lbl" style="min-width:60px">GPUs</span><input type="range" id="pl_n" min="2" max="8" value="4" oninput="SIMS._pl()"><span class="val" id="pl_nv">4</span></div>
+  <div id="pl_grid" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"></div>
+  <div class="simout" id="pl_out" style="font-size:12.5px"></div>`;
+  const cols=['#7c6cf6','#22d3ee','#34d399','#fbbf24','#fb923c','#f87171','#a78bfa','#2dd4bf'];
+  SIMS._pl=function(){
+    const s=document.getElementById('pl_s').value, n=+document.getElementById('pl_n').value;
+    document.getElementById('pl_nv').textContent=n;
+    let grid='', out='';
+    if(s==='tp'){
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>slice of every layer</b></div>`).join('');
+      out=`<b>Tensor parallel:</b> every layer's matrices are sliced across all ${n} GPUs, which compute one layer together then sync. Cuts per-GPU memory AND speeds each layer — but needs very fast interconnect (NVLink), so it's used <em>within</em> one machine. Communication every layer is the cost.`;
+    } else if(s==='pp'){
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>layers ${Math.floor(i*32/n)+1}–${Math.floor((i+1)*32/n)}</b></div>`).join('');
+      out=`<b>Pipeline parallel:</b> the model's layers are split into ${n} consecutive stages, one per GPU; a request flows through them like an assembly line. Low communication (only between stages), so it spans machines — but a single request idles GPUs not currently working ("bubbles"); you fill them by pipelining many requests.`;
+    } else if(s==='dp'){
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>full model copy</b></div>`).join('');
+      out=`<b>Replication:</b> each GPU holds a <em>complete</em> copy of the model and serves its own requests independently. Dead simple, scales throughput linearly — but only works if the model fits on one GPU. This is horizontal scaling for serving, not a way to fit a bigger model.`;
+    } else {
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>experts ${i*2+1}–${i*2+2}</b></div>`).join('');
+      out=`<b>Expert parallel:</b> for [[mixture of experts|MoE]] models, the many experts are spread across ${n} GPUs; each token is routed to the GPUs holding its chosen experts. Fits huge expert counts — but routing can imbalance load (some experts get more traffic), the central serving challenge for MoE.`;
+    }
+    document.getElementById('pl_grid').innerHTML=grid;
+    document.getElementById('pl_out').innerHTML=out.replace(/\[\[[^\]|]+\|([^\]]+)\]\]/g,'$1').replace(/\[\[([^\]]+)\]\]/g,'$1');
+  };
+  SIMS._pl();
+};
 
 /* real embeddings mini-RAG */
 SIMS.ragreal=function(b){
