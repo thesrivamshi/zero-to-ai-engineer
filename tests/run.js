@@ -36,13 +36,13 @@ function buildDom() {
     return '<script>\n' + js + '\n</script>';
   });
   ok(!/script src="data\//.test(html), 'all data scripts inlined');
+  // Prepend early mock so window.scrollTo exists before any app scripts run (eliminates jsdom "Not implemented" noise)
+  html = '<script>window.scrollTo = function(){};</script>' + html;
   const dom = new JSDOM(html, {
     url: 'https://localhost/',
     runScripts: 'dangerously',
     pretendToBeVisual: true,
   });
-  // silence scrollTo not implemented
-  dom.window.scrollTo = () => {};
   return dom;
 }
 
@@ -54,7 +54,7 @@ ok(Array.isArray(W.COURSE_LEVELS) && W.COURSE_LEVELS.length >= 6, 'COURSE_LEVELS
 ok(W.GLOSSARY && Object.keys(W.GLOSSARY).length > 30, 'GLOSSARY loaded');
 
 const LEVELS = W.COURSE_LEVELS, GLOSSARY = W.GLOSSARY;
-const VALID_SIMS = ['playground','ragreal','opsbyte','percentiles','parallelism','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention'];
+const VALID_SIMS = ['playground','ragreal','opsbyte','percentiles','parallelism','tokenizer','temperature','samplers','embedding','chunking','rag','costcalc','context','quant','batching','kvcache','speculative','attention','multiagent','dragorchestrate','scalecost','multiscale'];
 const ids = new Set();
 const allLessons = [];
 LEVELS.forEach((lv, li) => {

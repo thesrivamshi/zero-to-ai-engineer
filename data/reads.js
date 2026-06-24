@@ -7,7 +7,7 @@
    chapter of all three (page ranges focus on the parts each lesson teaches). */
 window.READS = {
 /* ===================== LEVEL 1 — Foundations (AIE ch.1–2, INF ch.0–1) ===================== */
-"l1a1":[{b:"AIE",c:"1 · Introduction to Building AI Applications with FMs",p:"1-15",f:"The Rise of AI Engineering — what the job is"}],
+"l1a1":[{b:"AIE",c:"1 · Introduction to Building AI Applications with FMs",p:"1-15",f:"Lesson: What an AI engineer actually does — An AI engineer builds applications on top of foundation models — big AI models that other companies (OpenAI, Anthropic, Meta, Google) have already trained. Book: AIE ch.1 Introduction. Matches. 2025-26: MCP/LangGraph extensions for the five things."}],
 "l1a2":[{b:"AIE",c:"1 · Introduction to Building AI Applications with FMs",p:"28-34",f:"Planning AI Applications — how to approach the work"}],
 "l1a3":[{b:"AIE",c:"1 · Introduction to Building AI Applications with FMs",p:"35-47",f:"The AI Engineering Stack — the whole map"}],
 "l1b1":[{b:"AIE",c:"2 · Understanding Foundation Models",p:"49-58",f:"Training Data & Modeling — next-token prediction"}],
@@ -71,7 +71,7 @@ window.READS = {
 "l2gate":[{b:"AIE",c:"4 · Evaluate AI Systems",p:"200-208",f:"Design Your Evaluation Pipeline — the gate's blueprint"}],
 
 /* ===================== LEVEL 3 — Building Applications (AIE ch.6, LEH ch.4/9) ===================== */
-"l3a1":[{b:"AIE",c:"3 · Evaluation Methodology",p:"134-136",f:"Introduction to Embedding"},{b:"LEH",c:"4 · RAG Feature Pipeline",p:"100-117",f:"Understanding RAG — embeddings"}],
+"l3a1":[{b:"AIE",c:"3 · Evaluation Methodology",p:"134-136",f:"Lesson: Embeddings: turning meaning into numbers — An embedding model converts any text into a vector — a list of numbers representing its meaning as a position in space. Book foundation: AIE ch.3 (p134) + LEH ch.4. Matches."},{b:"LEH",c:"4 · RAG Feature Pipeline",p:"100-117",f:"Understanding RAG — embeddings"}],
 "l3a2":[{b:"AIE",c:"6 · RAG and Agents",p:"257-267",f:"Retrieval Algorithms — the vector search pipeline"}],
 "l3a3":[{b:"AIE",c:"6 · RAG and Agents",p:"267-273",f:"Retrieval Optimization — chunking"},{b:"LEH",c:"4 · RAG Feature Pipeline",p:"117-127",f:"An overview of advanced RAG"}],
 "l3a4":[{b:"AIE",c:"6 · RAG and Agents",p:"257-267",f:"Retrieval Algorithms — sparse, dense, hybrid"}],
@@ -79,26 +79,26 @@ window.READS = {
 "l3b1":[{b:"AIE",c:"6 · RAG and Agents",p:"253-257",f:"RAG & RAG Architecture"},{b:"LEH",c:"4 · RAG Feature Pipeline",p:"100-117",f:"Understanding RAG"}],
 "l3b2":[{b:"AIE",c:"6 · RAG and Agents",p:"267-275",f:"Retrieval Optimization & RAG Beyond Texts — failure modes"}],
 "l3b3":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"117-139",f:"An overview of advanced RAG"},{b:"AIE",c:"6 · RAG and Agents",p:"267-273",f:"Retrieval Optimization"}],
-"l3b4":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"127-173",f:"The Twin's RAG feature pipeline — architecture & implementation"}],
+"l3b4":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"127-173",f:"Lesson: 🧪 Twin Stage 3: serve your twin (MCP + full multi-agent culmination) — The finale of the running build; inference pipeline + deploy + MCP expose + supervisor multi-agent. Book foundation: LEH ch.9-11. 2025-26: MCP + LangGraph checkpointers; explicit full MCP-exposed multi-agent system culmination."}],
 "l3b5":[{b:"LEH",c:"9 · RAG Inference Pipeline",p:"317-354",f:"Advanced RAG at serving time — rewriting, self-query, reranking"}],
 "l3b6":[{b:"AIE",c:"6 · RAG and Agents",p:"267-275",f:"Retrieval Optimization — RAG evaluation (recall/precision/faithfulness)"}],
 "l3c1":[{b:"AIE",c:"2 · Understanding Foundation Models",p:"99-105",f:"Structured Outputs"}],
-"l3c2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools (function calling)"}],
+"l3c2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Lesson: MCP: one protocol so any client can use your tools — Back in Level 3 you gave a model tools with function calling — but those tools were welded to your program. Book foundation: AIE ch.6. 2025-2026: MCP spec, gateways, code exec 98.7% save, 10K+ servers; https://modelcontextprotocol.io . Culmination of Twin as MCP multi-agent."}],
 "l3c3":[{b:"AIE",c:"6 · RAG and Agents",p:"275-281",f:"Agents — Overview & the loop"}],
 "l3c4":[{b:"AIE",c:"6 · RAG and Agents",p:"281-298",f:"Planning — reflection"}],
-"l3c5":[{b:"AIE",c:"6 · RAG and Agents",p:"281-300",f:"Planning & Agent Failure Modes (multi-agent)"}],
+"l3c5":[{b:"AIE",c:"6 · RAG and Agents",p:"281-300",f:"Lesson: Planning and when to reach for multiple agents — The ReAct loop interleaves thinking and acting one step at a time. For bigger tasks, two further patterns help. Book foundation: AIE ch.6. 2025-2026: supervisor/subagents/MCP/LangGraph/ADK; https://modelcontextprotocol.io"}],
 "l3c6":[{b:"AIE",c:"6 · RAG and Agents",p:"300-305",f:"Memory"}],
 "l3d1":[{b:"AIE",c:"5 · Prompt Engineering",p:"248-251",f:"Defenses Against Prompt Attacks (guardrails)"}],
 "l3d2":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference optimization at the app level — latency, cost, caching"}],
 "l3d3":[{b:"AIE",c:"5 · Prompt Engineering",p:"243-251",f:"Information Extraction & Defenses (moderation, PII)"}],
-"l3f1":[{b:"AIE",c:"6 · RAG and Agents",p:"281-300",f:"Planning & Agent Failure Modes — multi-agent architectures"}],
-"l3f2":[{b:"AIE",c:"6 · RAG and Agents",p:"275-300",f:"Agents — frameworks (LangGraph/OpenAI SDK/ADK are post-books: see the videos)"}],
-"l3f3":[{b:"AIE",c:"6 · RAG and Agents",p:"275-281",f:"Agent Overview & Tools — the supervisor pattern, by hand"}],
+"l3f1":[{b:"AIE",c:"6 · RAG and Agents",p:"281-300",f:"Lesson: Multi-agent architectures: supervisor, swarm, pipeline, hierarchical, debate — One agent in a loop is powerful, but some problems are cleaner when you split the work across several specialized agents. Book foundation: AIE ch.6. 2025-26: supervisor/subagents (LangGraph, ADK, OpenAI handoffs), shared state/reducers/checkpointing, handoffs, cost 1.5-3x multipliers, 'start simple measure'; ties to L5 full MCP-exposed supervisor Twin with voice writer + critic. See this lesson + videos + LangGraph docs."}],
+"l3f2":[{b:"AIE",c:"6 · RAG and Agents",p:"275-300",f:"Lesson: Agent frameworks — You built the agent loop and a tool server by hand — so now frameworks will make sense instead of being magic. Book foundation: AIE ch.6. 2025-26: LangGraph (graphs, subgraphs, persistence/checkpointers for Twin supervisor), OpenAI Agents SDK handoffs, Google ADK, MCP integration; supervisor patterns for L5 Twin multi-agent. See lesson video + official docs."}],
+"l3f3":[{b:"AIE",c:"6 · RAG and Agents",p:"275-281",f:"Lesson: 🧪 Lab: build a supervisor multi-agent flow by hand — Before any framework, build the supervisor pattern yourself — it's just functions calling functions. Book foundation: AIE ch.6. 2025-26: this lab is the skeleton for L5 Twin supervisor + MCP tools + critic; LangGraph wraps the same routing + state + handoff. See lab + multi-agent videos."}],
 "l3f4":[{b:"AIE",c:"6 · RAG and Agents",p:"298-305",f:"Agent Failure Modes & Memory — running agents unattended (automations)"}],
 "l3e1":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases for storing unstructured and vector data (SQL itself: see the video — the books assume it)"}],
 "l3e2":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases — querying the agent's memory store"}],
 "l3e3":[{b:"LEH",c:"2 · Tooling and Installation",p:"47-48",f:"Databases — wiring storage into Python"}],
-"l3twin1":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"127-173",f:"The LLM Twin's RAG feature pipeline (your data)"}],
+"l3twin1":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"127-173",f:"Lesson: 🧪 Twin Stage 1: your writing, made retrievable — The LLM Twin's RAG feature pipeline. Book: LEH ch.4. Matches. 2025-26: ties to L5 MCP culmination."}],
 "l3gate":[{b:"LEH",c:"4 · RAG Feature Pipeline",p:"139-173",f:"Implementing the RAG feature pipeline"},{b:"AIE",c:"6 · RAG and Agents",p:"267-273",f:"RAG evaluation"}],
 
 /* ===================== LEVEL 4 — Customizing Models (AIE ch.7–8, LEH ch.3/5/6/7) ===================== */
@@ -136,11 +136,11 @@ window.READS = {
 "l5b5":[{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"DevOps→MLOps→LLMOps; registries and artifacts"}],
 "l5c1":[{b:"AIE",c:"10 · AI Engineering Architecture and User Feedback",p:"470-496",f:"User Feedback and the data flywheel"}],
 "l5c2":[{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference Optimization — system-level cost"}],
-"l5d1":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — the function-calling MCP standardizes (MCP itself is post-books: see the video)"}],
-"l5d2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Agents → Tools — registering and dispatching tools (the MCP mechanic)"}],
-"l5d3":[{b:"INF",c:"7 · Production",p:"204-208",f:"Client Code — an MCP server is an API: transports, latency, protocols"}],
-"l5twin3":[{b:"LEH",c:"9 · RAG Inference Pipeline",p:"317-354",f:"Twin Stage 3 — serve the RAG inference pipeline"},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the twin"}],
-"l5gate":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Deploy the inference pipeline"},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Tracing & monitoring the deployed service"}],
+"l5d1":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Lesson: MCP: one protocol so any client can use your tools — Back in Level 3 you gave a model tools with function calling — but those tools were welded to your program. Book foundation: AIE ch.6. 2025-2026: MCP spec (tools/resources/prompts, list+call, JSON-RPC, stdio + Streamable HTTP), gateways, code exec ~98% savings, 10K+ servers; https://modelcontextprotocol.io . Culmination of Twin as MCP multi-agent server."}],
+"l5d2":[{b:"AIE",c:"6 · RAG and Agents",p:"278-281",f:"Lesson: 🧪 Lab: build an MCP-style tool server by hand — The real MCP SDK wraps a server over JSON-RPC and a transport — but the mechanic underneath is list + call. Book foundation: AIE ch.6. 2025-26: full MCP (tools + resources + prompts), security, gateways for Twin; stdio + HTTP; code exec mode. Your Twin Stage 3 exposes this. See this lesson's video + https://modelcontextprotocol.io."}],
+"l5d3":[{b:"INF",c:"7 · Production",p:"204-208",f:"Lesson: Consuming MCP servers, transports, and keeping it safe — MCP runs both directions: publish and consume. Book foundation: INF ch.7. 2025-26: stdio vs Streamable HTTP, security (least priv, auth, approval), gateway patterns, consume community MCP (filesystem etc) for your Twin multi-agent; prompt injection risks amplified. Ties directly to L5 Twin MCP server + L6 scale."}],
+"l5twin3":[{b:"LEH",c:"9 · RAG Inference Pipeline",p:"317-354",f:"Lesson: 🧪 Twin Stage 3: serve your twin (MCP + full multi-agent culmination) — The finale of the running build; explicit full MCP-exposed multi-agent system (MCP tools/list+call + supervisor + voice writer + retriever + critic with Twin core). Book foundation: LEH ch.9-11. 2025-26 extensions: MCP server (JSON-RPC, tools/resources/prompts, stdio/Streamable HTTP, gateways, Composio, code-exec 98% savings); LangGraph checkpointers + supervisor handoffs for the Twin; see this lesson's video + https://modelcontextprotocol.io + LangGraph docs."},{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Lesson: 🧪 Twin Stage 3: serve your twin (MCP + full multi-agent culmination) — Deploy + expose the inference pipeline as MCP + supervisor orchestration. 2025-26: full MCP-exposed multi-agent Twin culmination (required for gate)."}],
+"l5gate":[{b:"LEH",c:"10 · Inference Pipeline Deployment",p:"355-400",f:"Lesson: Project Gate 5 — Deploy your RAG system as a real service (LLM Twin FULL MCP-EXPOSED MULTI-AGENT SYSTEM cap — EXPLICIT CULMINATION) — Deploy + MCP expose (list+call + resource/prompt) + supervisor multi-agent (writer Twin core + retriever + critic) with persistence. REQUIRED: MCP server + supervisor multi-agent with Twin core. Book foundation: LEH ch.10-11. 2025-26 extensions: MCP full spec + gateways + LangGraph checkpointing for durable supervisor; share your Twin snippet; see video + https://modelcontextprotocol.io."},{b:"LEH",c:"11 · MLOps and LLMOps",p:"401-460",f:"Lesson: Project Gate 5 — ... EXPLICIT CULMINATION — Tracing, observability, evals for the full MCP-exposed multi-agent Twin. 2025-26: production MCP + multi-agent scaling prep (L6)."}],
 
 /* ===================== LEVEL 6 — Inference at Scale (INF ch.0–7, AIE ch.9, LEH ch.8) ===================== */
 "l6a1":[{b:"INF",c:"2 · Models",p:"46-55",f:"LLM Inference Mechanics — prefill and decode"},{b:"INF",c:"0 · Inference",p:"15-22",f:"What happens during inference"}],
@@ -163,5 +163,14 @@ window.READS = {
 "l6d1":[{b:"INF",c:"6 · Modalities",p:"153-176",f:"VLMs, embeddings, ASR/TTS, image/video generation serving"}],
 "l6d2":[{b:"INF",c:"7 · Production",p:"177-199",f:"Containerization, autoscaling GPUs, multi-cloud, reliability"}],
 "l6d3":[{b:"INF",c:"7 · Production",p:"199-210",f:"Testing/deploy, observability, client-side inference"}],
-"l6gate":[{b:"INF",c:"7 · Production",p:"177-210",f:"Production inference — the capstone reference"},{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference optimization end-to-end"}]
+"l6gate":[{b:"INF",c:"7 · Production",p:"177-210",f:"Production inference — the capstone reference"},{b:"AIE",c:"9 · Inference Optimization",p:"405-448",f:"Inference optimization end-to-end"}],
+"l3f1ma":[{b:"AIE",c:"6 · Agents",p:"240-260",f:"Lesson: ⚡ Micro: shared state, reducers & checkpointing (LangGraph-style for Twin supervisor) — Explicit state management (reducers + checkpointing) is what lets a supervisor multi-agent survive failures and resume. Book foundation: AIE ch.6. 2025-26: LangGraph Postgres/Redis checkpointers, shared state for L5 Twin supervisor (writer + retriever + critic); persistence required for durable MCP-exposed multi-agent. Critical bridge to L5 gate + L6 scaling."}],
+"l5d2quick":[{b:"AIE",c:"6 · Tools & MCP",p:"300-320",f:"Secure MCP exposure, gateways, list+call for Twin"}],
+"l6mamicro":[{b:"INF",c:"7 · Production",p:"177-210",f:"Multi-agent + MCP Twin scaling, harnesses, overhead at L6"}],
+"l1quickpost":[{b:"AIE",c:"7 · Finetuning",p:"300-310",f:"Post-training choice path for Twin"}],
+"l3f1quick":[{b:"AIE",c:"6 · RAG and Agents",p:"255-265",f:"Multi-agent scaling micro choice"}],
+"l3quickwin":[{b:"AIE",c:"4 · Evaluate",p:"165-175",f:"One-sentence faithfulness quick"}],
+"l5quickmcp":[{b:"AIE",c:"6 · RAG and Agents",p:"275-285",f:"Lesson: ⚡ Micro: MCP list+call by hand for Twin culmination — Build tiny registry + handle for tools/list and tools/call. Book foundation: AIE ch.6. 2025-26: this is the exact mechanic behind real MCP servers; add to your Twin supervisor + share the snippet with 🔌MCP badge. See l5d* and video."}],
+"l6a5quick":[{b:"INF",c:"2 · Models",p:"61-67",f:"Quick cost/scale for MCP MA Twin"}],
+"l6quickmcpma":[{b:"INF",c:"7 · Production",p:"190-200",f:"Lesson: ⚡ Micro: MCP + multi-agent choice at L6 scale — At scale your Twin (now multi-agent) hits real tradeoffs. Book foundation: INF ch.7. 2025-26: supervisor + MCP tools overhead at volume; KV/prefix affinity, batching, gateways, persistence/checkpointing, cost multipliers; measure before scaling the full MCP-exposed supervisor Twin. Ties to l6d* + L5 capstone."}]
 };

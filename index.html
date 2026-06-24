@@ -188,6 +188,46 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
 .pgmeta{font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:6px}
 .keywarn{border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.06);border-radius:10px;padding:12px 14px;font-size:13.5px;margin:10px 0}
 .keyinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 12px;font-family:var(--mono);font-size:13px;outline:none;margin:8px 0}
+
+/* ---------- lazy inline YouTube video players (click-to-load, responsive 16:9, in-app FS) ---------- */
+/* 100% in-app only. Lazy click-to-load overlays. Responsive 16:9. Controls, playsinline=1, playlists via videoseries, timestamps via start.
+   Titles + why notes ALWAYS kept visible inside the .yt-player container (visible in fullscreen too).
+   Prominent in-app fullscreen using requestFullscreen DIRECTLY on the .yt-player container.
+   NO primary external playback links whatsoever. Tiny secondary not used.
+   Polished delightful UX: elegant card, hover lift, accent load state, premium playbtn, strong prominent FS, subtle delights. */
+.vid{margin:14px 0 18px}
+.vidmeta{font-size:14.5px;line-height:1.4;margin-bottom:6px}
+.vidmeta b{font-weight:600;color:#fff}
+.vidnote{font-size:12px;color:var(--muted);font-style:italic;margin-top:2px}
+.yt-player{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px 14px 10px;
+  transition:box-shadow .2s ease, border-color .15s ease, transform .1s ease;
+  box-shadow:0 6px 20px rgba(0,0,0,.22);
+}
+.yt-player:hover{box-shadow:0 14px 36px rgba(0,0,0,.36);border-color:var(--border2);transform:translateY(-1px)}
+.yt-player.loaded{border-color:var(--accent);box-shadow:0 8px 28px rgba(124,108,246,.22)}
+.yt-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:13px}
+.yt-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.78));cursor:pointer;z-index:2;transition:background .1s}
+.yt-overlay:hover{background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.72))}
+.yt-overlay img{width:100%;height:100%;object-fit:cover;opacity:.92;display:block;filter:saturate(0.88) contrast(1.05);transition:transform .2s}
+.yt-overlay:hover img{transform:scale(1.015)}
+.yt-play{position:absolute;text-align:center;color:#fff;pointer-events:none;z-index:3}
+.yt-playbtn{width:86px;height:58px;background:linear-gradient(135deg,#e11d48,#9f1239);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;line-height:1;margin:0 auto 8px;box-shadow:0 14px 32px rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.28);transition:transform .12s,box-shadow .12s}
+.yt-overlay:hover .yt-playbtn{background:linear-gradient(135deg,#f43f5e,#be123c);transform:scale(1.06);box-shadow:0 18px 38px rgba(0,0,0,.7)}
+.yt-play small{display:block;font-size:11px;letter-spacing:.5px;opacity:.9;margin-top:2px;font-weight:600}
+.yt-controls{display:flex;align-items:center;justify-content:flex-start;gap:10px;margin-top:10px;flex-wrap:wrap}
+.yt-fs{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:0;border-radius:12px;padding:10px 20px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 5px 16px rgba(124,108,246,.38);transition:all .12s ease;letter-spacing:.3px}
+.yt-fs:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 9px 22px rgba(124,108,246,.55)}
+.yt-fs:active{transform:translateY(0);filter:brightness(0.96)}
+.yt-fs:focus{outline:3px solid rgba(124,108,246,.6);outline-offset:3px}
+.yt-wrap .fs-float{position:absolute;top:10px;right:10px;z-index:4;background:rgba(15,15,18,.82);color:#fff;border:1px solid rgba(255,255,255,.38);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:700;cursor:pointer;opacity:.92;transition:opacity .1s,background .1s,transform .1s}
+.yt-wrap .fs-float:hover{opacity:1;background:rgba(15,15,18,.95);transform:scale(1.02)}
+.yt-player .vidmeta{padding:3px 6px 5px;margin-bottom:6px}
+.yt-player.loaded .yt-overlay{display:none} /* ensure clean once loaded */
 @media(max-width:860px){
   .sidebar{position:fixed;left:0;top:0;z-index:40;transform:translateX(-100%);transition:transform .25s;width:290px}
   .sidebar.open{transform:none;box-shadow:0 0 60px rgba(0,0,0,.6)}
@@ -212,9 +252,16 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
   </div>
 </div>
 
-<!-- floating focus timer + global notes -->
+<!-- floating focus timer + global notes + PROMINENT Share your Twin flows (enhanced for productization / community) -->
 <button id="fabTimer" onclick="toggleTimer()" title="Focus timer" style="position:fixed;right:18px;bottom:74px;z-index:50;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)">🍅 <span id="fabTimerLabel">25:00</span></button>
 <button id="fabNotes" onclick="toggleNotes()" title="Notes" style="position:fixed;right:18px;bottom:22px;z-index:50;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.25)">📝 Notes</button>
+<!-- Primary prominent floating "Share your Twin" CTA (MCP culmination focus) - moved for visibility, no overlap. Always on, dynamic for L5 -->
+<button id="fabShareTwin" onclick="showShareCTA()" title="Share your full MCP-exposed multi-agent Twin (live MD/YAML/JSON + image badges + streaks + MCP/Multi-Agent highlights from P/AGENT/gates). Click anytime. Customize via CUSTOM.discordInvite." style="position:fixed;right:115px;bottom:18px;z-index:52;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:999px;padding:11px 18px;cursor:pointer;font-size:14px;font-weight:800;box-shadow:0 6px 20px rgba(124,108,246,.45);display:flex;align-items:center;gap:7px;letter-spacing:.2px">🚀 Share your Twin</button>
+<button onclick="openDiscord()" title="Join cohort Discord — easy CUSTOM.discordInvite placeholder (one-line fork powers ALL shares/CTAs/snippets/openDiscord/forkHelper). Static client only." style="position:fixed;right:18px;bottom:118px;z-index:50;background:#5865F2;color:#fff;border-radius:999px;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(88,101,242,.3)">💬 Discord</button>
+<!-- Fork helper repositioned to avoid overlap, still accessible + reinforced static -->
+<button onclick="showForkHelper()" title="Fork & customize for Discord/cohort (edit ONE CUSTOM.discordInvite line → all share flows, badges, CTAs, openDiscord branded). Pure static single-file — no build." style="position:fixed;right:65px;bottom:22px;z-index:50;background:var(--bg2);color:var(--text);border:1px solid var(--border2);border-radius:999px;padding:7px 11px;cursor:pointer;font-size:11px;font-weight:600">📋 Fork</button>
+<!-- Extra community hook floating for ADHD low-friction: quick share short -->
+<button onclick="const s=buildShareSnippets(); copyToClipboard(s.shortMd||s.md, this); setTimeout(()=>openDiscord(), 600);" title="Instant short share + open Discord (ADHD 5s accountability ritual). Uses live P/AGENT/gates." style="position:fixed;right:180px;bottom:118px;z-index:50;background:#3b82f6;color:#fff;border-radius:999px;padding:5px 9px;cursor:pointer;font-size:11px;font-weight:700">⚡ Share+Discord</button>
 <div id="notesDrawer" style="display:none;position:fixed;right:18px;bottom:118px;z-index:51;width:min(390px,92vw);background:var(--bg3);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:14px">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:14px">📝 My notes</b><span style="font-size:11px;color:var(--muted)" id="notesSaved">autosaves</span></div>
   <textarea id="globalNotes" placeholder="Jot anything as you go — questions, ideas, things to revisit. Autosaves to this browser; open anytime with the 📝 button." style="width:100%;min-height:220px;resize:vertical;background:var(--bg2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-size:13px;outline:none;font-family:inherit" oninput="saveGlobalNotes(this.value)"></textarea>
@@ -247,16 +294,391 @@ h1.ltitle{font-size:29px;letter-spacing:-.015em;line-height:1.2;margin-bottom:6p
 <script src="data/videos.js"></script>
 <script src="data/diagrams.js"></script>
 <script src="data/questions.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ================= state ================= */
 const LEVELS = window.COURSE_LEVELS || [];
 const GLOSSARY = window.GLOSSARY || {};
 const LKEY='z2ai_progress_v1';
 let P = {}; try{ P = JSON.parse(localStorage.getItem(LKEY)||'{}'); }catch(e){ P={}; }
-function save(){ localStorage.setItem(LKEY, JSON.stringify(P)); }
+function save(){ localStorage.setItem(LKEY, JSON.stringify(P)); if(typeof cloudQueuePush==='function') cloudQueuePush(); }
 function isDone(id){ return !!P[id]; }
+// Lightweight live AGENT state (for rich share snippets + twin config; persisted via P; fully client/static)
+let AGENT = {}; try{ AGENT = JSON.parse(localStorage.getItem('z2ai_agent')||'{}'); }catch(e){ AGENT = {}; }
+function saveAgent(){ localStorage.setItem('z2ai_agent', JSON.stringify(AGENT)); if(typeof cloudQueuePush==='function') cloudQueuePush(); }
+function updateAgent(partial){ AGENT = {...AGENT, ...partial, updated: new Date().toISOString().slice(0,10)}; saveAgent(); }
+// Thin award helper for Twin progress (used in gates/shares for mcpMultiAgent capstone evidence; delegates to existing streak/power)
+function awardTwinProgress(id, extra){ if(id && !P[id]) P[id]=true; updateStreakOnComplete(); if(extra) updateAgent(extra); save(); renderSidebar(); }
 const COLORS=['#34d399','#22d3ee','#a78bfa','#fbbf24','#fb923c','#f87171'];
 
+/* ================= Cloud sync + Auth (Supabase) — OPTIONAL & additive.
+   localStorage (P/AGENT) stays the offline source of truth; signing in just syncs it
+   across devices, powers the live Hall of Fame leaderboard, and gives a public Twin page.
+   The anon key below is a publishable client key (safe to ship); all data is guarded by RLS. */
+const SB_URL = 'https://wxdwdfhoscegwnyhxitg.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZHdkZmhvc2NlZ3dueWh4aXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjAxMDEsImV4cCI6MjA5Nzg5NjEwMX0.1wpTTQuFOsuhFgMMDujzvYKhmoPY4nRA-juuEnPqV_g';
+let sb=null, SB_USER=null, SB_PROFILE=null;
+try{ if(window.supabase&&window.supabase.createClient) sb=window.supabase.createClient(SB_URL, SB_ANON); }catch(e){ sb=null; }
+function cloudConfigured(){ return !!sb; }
+function cloudEnabled(){ return !!(sb&&SB_USER); }
+
+function countLessonsDone(){ try{ return (allLessons()||[]).filter(l=>isDone(l.id)).length; }catch(e){ return Object.keys(P).filter(k=>P[k]===true).length; } }
+function cloudMetrics(){ let s={}; try{ s=getTwinStatus()||{}; }catch(e){} const stages=(s.doneStages&&s.doneStages.length)||0; return { twin_progress_pct:Math.round((stages/3)*100), stages_done:stages, streak_days:(typeof getStreak==='function'?getStreak().count:0)||0, power:(typeof getTwinPower==='function'?getTwinPower():0)||0, lessons_done:countLessonsDone() }; }
+function twinSnapshot(){ let s={}; try{ s=getTwinStatus()||{}; }catch(e){} return { badges:s.badges||[], stages:s.stages||{}, gates:s.gates||[], mcpReady:!!s.mcpReady, mcpTools:(s.agentState&&s.agentState.tools)||[], agent:AGENT||{}, metrics:cloudMetrics(), updated:new Date().toISOString().slice(0,10) }; }
+
+let _cloudTimer=null;
+function cloudQueuePush(){ if(!cloudEnabled())return; clearTimeout(_cloudTimer); _cloudTimer=setTimeout(cloudPush,1500); }
+async function cloudPush(){ if(!cloudEnabled())return; try{
+  await sb.from('progress').upsert(Object.assign({ user_id:SB_USER.id, p:P, agent:AGENT, gates:{ globalNotes: localStorage.getItem('z2ai_globalnotes')||'' }, updated_at:new Date().toISOString() }, cloudMetrics()));
+  await sb.from('twin_profiles').update({ twin:twinSnapshot(), updated_at:new Date().toISOString() }).eq('user_id',SB_USER.id);
+}catch(e){ console.warn('cloud push failed',e); } }
+
+async function cloudPull(){ if(!cloudEnabled())return; try{
+  const { data:prof } = await sb.from('profiles').select('*').eq('id',SB_USER.id).maybeSingle(); SB_PROFILE=prof||null;
+  const { data } = await sb.from('progress').select('*').eq('user_id',SB_USER.id).maybeSingle();
+  if(data){
+    P = Object.assign({}, data.p||{}, P);          // union; local presence wins (booleans) — no progress lost
+    AGENT = Object.assign({}, data.agent||{}, AGENT);
+    const gn = data.gates && data.gates.globalNotes;
+    if(gn && !localStorage.getItem('z2ai_globalnotes')) localStorage.setItem('z2ai_globalnotes', gn);
+    localStorage.setItem(LKEY, JSON.stringify(P)); localStorage.setItem('z2ai_agent', JSON.stringify(AGENT));
+  }
+  await cloudPush();   // write the merged state straight back so cloud is current
+  render();
+}catch(e){ console.warn('cloud pull failed',e); } }
+
+async function cloudInitAuth(){ if(!sb)return; try{
+  const { data } = await sb.auth.getSession(); SB_USER = data&&data.session ? data.session.user : null;
+  sb.auth.onAuthStateChange((_e, session)=>{ const was=SB_USER&&SB_USER.id; SB_USER = session?session.user:null; renderSidebar(); if(SB_USER && SB_USER.id!==was) cloudPull(); if(!SB_USER) SB_PROFILE=null; });
+  if(SB_USER) cloudPull(); else renderSidebar();
+}catch(e){ console.warn('auth init failed',e); } }
+
+function _acctMsg(t,ok){ const m=document.getElementById('acctMsg'); if(m){ m.textContent=t; m.style.color=ok?'var(--green)':'var(--amber)'; } }
+async function acctSignIn(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||!p)return _acctMsg('Enter email + password.'); _acctMsg('Signing in…',true); const { error }=await sb.auth.signInWithPassword({ email:e, password:p }); if(error)return _acctMsg(error.message); _acctMsg('Signed in ✓',true); setTimeout(closeAccount,500); }
+async function acctSignUp(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||p.length<6)return _acctMsg('Email + password (min 6 chars).'); _acctMsg('Creating account…',true); const { data, error }=await sb.auth.signUp({ email:e, password:p }); if(error)return _acctMsg(error.message); if(data&&data.session){ _acctMsg('Account created ✓',true); setTimeout(closeAccount,500); } else { _acctMsg('Account created — check your email to confirm, then sign in.',true); } }
+async function acctMagic(){ const e=document.getElementById('acctEmail').value.trim(); if(!e)return _acctMsg('Enter your email first.'); _acctMsg('Sending magic link…',true); const { error }=await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin+location.pathname } }); if(error)return _acctMsg(error.message); _acctMsg('Magic link sent — check your email ✉️',true); }
+async function acctSignOut(){ await sb.auth.signOut(); SB_USER=null; SB_PROFILE=null; renderSidebar(); closeAccount(); }
+function closeAccount(){ const m=document.getElementById('acctModal'); if(m)m.remove(); }
+function showAccount(){
+  if(!cloudConfigured()){ alert('Cloud sync is not configured for this build.'); return; }
+  closeAccount();
+  const modal=document.createElement('div'); modal.id='acctModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
+  let body;
+  if(cloudEnabled()){
+    const slug=SB_PROFILE&&SB_PROFILE.username; const link=slug?(location.origin+location.pathname+'#twin/'+slug):'';
+    body=`<div style="font-weight:800;font-size:17px;margin-bottom:6px">☁️ Account</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Signed in as <b>${escapeHtml(SB_USER.email||'')}</b>. Your progress, Twin, and notes sync automatically across devices.</div>
+      ${link?`<div class="row" style="display:block;margin-bottom:10px"><span class="lbl" style="display:block;margin-bottom:4px">Your public Twin page</span><input class="keyinput" readonly value="${escapeHtml(link)}" onclick="this.select()"><div style="margin-top:6px;display:flex;gap:6px"><button class="simbtn ghost" onclick="copyToClipboard('${link}',this)">📋 Copy link</button><button class="simbtn ghost" onclick="go('twin','${slug}');closeAccount()">👁 View</button></div></div>`:''}
+      <div class="row" style="margin-top:6px"><button class="simbtn" onclick="cloudPush().then(()=>_acctMsg('Synced ✓',true))">⬆ Sync now</button> <button class="simbtn ghost" onclick="showHallOfFame();closeAccount()">🏆 Hall of Fame</button> <button class="simbtn ghost" onclick="acctSignOut()">Sign out</button></div>`;
+  } else {
+    body=`<div style="font-weight:800;font-size:17px;margin-bottom:6px">☁️ Sync your Twin across devices</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Optional. Create a free account to back up progress, join the live Hall of Fame leaderboard, and get a shareable public Twin page. Everything keeps working offline without it.</div>
+      <div class="row" style="display:block;margin-bottom:8px"><span class="lbl" style="display:block;margin-bottom:4px">Email</span><input class="keyinput" id="acctEmail" type="email" placeholder="you@example.com"></div>
+      <div class="row" style="display:block;margin-bottom:10px"><span class="lbl" style="display:block;margin-bottom:4px">Password (min 6 chars)</span><input class="keyinput" id="acctPw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')acctSignIn()"></div>
+      <div class="row"><button class="simbtn" onclick="acctSignIn()">Sign in</button> <button class="simbtn ghost" onclick="acctSignUp()">Create account</button></div>
+      <div style="text-align:center;color:var(--dim);font-size:11px;margin:8px 0">— or —</div>
+      <div class="row"><button class="simbtn ghost" style="width:100%" onclick="acctMagic()">✉️ Email me a magic link (no password)</button></div>`;
+  }
+  modal.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:440px;width:100%;padding:20px;position:relative">
+    <button onclick="closeAccount()" style="position:absolute;top:12px;right:14px;background:none;font-size:20px">×</button>
+    ${body}
+    <div id="acctMsg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
+    <div style="font-size:10px;color:var(--dim);margin-top:8px">Data is row-level-security protected — only you can read/write your own progress.</div>
+  </div>`;
+  modal.addEventListener('click',e=>{ if(e.target===modal) closeAccount(); });
+  document.body.appendChild(modal);
+}
+
+async function loadLeaderboard(){ const el=document.getElementById('liveLeaderboard'); if(!el)return; if(!cloudConfigured()){ el.style.display='none'; return; }
+  try{ const { data, error }=await sb.from('leaderboard').select('*').order('twin_progress_pct',{ascending:false}).order('power',{ascending:false}).limit(25);
+    if(error||!data||!data.length){ el.innerHTML=`<div style="color:var(--dim);font-size:12px;padding:6px 0">No public Twins on the board yet — be the first! Sign in (☁️ in the sidebar) and your progress appears here automatically.</div>`; return; }
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead><tr style="color:var(--muted);text-align:left"><th style="padding:4px 6px">#</th><th style="padding:4px 6px">Twin</th><th style="padding:4px 6px">Progress</th><th style="padding:4px 6px">Stages</th><th style="padding:4px 6px">🔥</th><th style="padding:4px 6px">⚡</th></tr></thead>
+      <tbody>${data.map((r,i)=>`<tr style="border-top:1px solid var(--border2)"><td style="padding:5px 6px">${i+1}</td><td style="padding:5px 6px">${r.avatar_emoji||'🧠'} ${r.twin_slug?`<a href="#twin/${encodeURIComponent(r.twin_slug)}" onclick="closeHOF&&closeHOF()" style="color:var(--cyan)">${escapeHtml(r.display_name||'Anonymous')}</a>`:escapeHtml(r.display_name||'Anonymous')}</td><td style="padding:5px 6px">${r.twin_progress_pct}%</td><td style="padding:5px 6px">${r.stages_done}/3</td><td style="padding:5px 6px">${r.streak_days||0}d</td><td style="padding:5px 6px">${r.power||0}</td></tr>`).join('')}</tbody></table>`;
+  }catch(e){ el.innerHTML=`<div style="color:var(--amber);font-size:12px">Couldn't load the live board right now.</div>`; }
+}
+
+async function renderPublicTwin(slug,c){
+  c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:24px 8px"><div style="color:var(--muted)">Loading Twin…</div></div>`;
+  if(!cloudConfigured()){ c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:24px 8px">Public Twin pages need cloud sync, which isn't configured for this build.</div>`; return; }
+  try{
+    const { data } = await sb.from('twin_profiles').select('slug,twin,updated_at').eq('slug',slug).eq('is_public',true).maybeSingle();
+    if(!data){ c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:40px 8px;text-align:center;color:var(--muted)">No public Twin found at <code>${escapeHtml(slug)}</code>.<br><br><button class="simbtn" onclick="go('home')">← Back to the course</button></div>`; return; }
+    const t=data.twin||{}, m=t.metrics||{};
+    c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:24px 8px">
+      <button class="simbtn ghost" onclick="go('home')" style="margin-bottom:14px">← Zero to AI Engineer</button>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+        <div style="font-size:22px;font-weight:800;margin-bottom:2px">🧠 ${escapeHtml(slug)}'s LLM Twin</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:14px">A growing AI agent built level-by-level${t.mcpReady?' — now a full MCP-exposed multi-agent system':''}. Last updated ${escapeHtml((data.updated_at||'').slice(0,10))}.</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px">
+          ${[['Twin progress',(m.twin_progress_pct||0)+'%'],['Stages',(m.stages_done||0)+'/3'],['🔥 Streak',(m.streak_days||0)+'d'],['⚡ Power',(m.power||0)],['Lessons',(m.lessons_done||0)]].map(x=>`<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px"><div style="font-size:11px;color:var(--muted)">${x[0]}</div><div style="font-size:18px;font-weight:700">${x[1]}</div></div>`).join('')}
+        </div>
+        ${(t.badges&&t.badges.length)?`<div style="margin-bottom:14px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Badges</div><div style="font-size:20px">${t.badges.join(' ')}</div></div>`:''}
+        ${(t.mcpTools&&t.mcpTools.length)?`<div style="margin-bottom:14px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">MCP tools exposed</div><div style="font-family:var(--mono);font-size:12px">${t.mcpTools.map(escapeHtml).join(', ')}</div></div>`:''}
+        <div class="row"><button class="simbtn" onclick="go('home')">Build your own Twin →</button> <button class="simbtn ghost" onclick="openDiscord()">💬 Join the cohort</button></div>
+      </div>
+    </div>`;
+  }catch(e){ c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:24px 8px;color:var(--amber)">Couldn't load this Twin right now.</div>`; }
+}
+
+/* ================= ADHD: progress streaks + quick challenges (all in-app, localStorage) ================= */
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function getStreak(){
+  const streak = P._streak || {count:0, last:null};
+  const today = todayStr();
+  if(!streak.last) return {count:0, active:false, last: null};
+  const last = new Date(streak.last);
+  const diff = Math.floor((new Date(today) - last) / (1000*3600*24));
+  if(diff === 0) return {count: streak.count, active: true, last: streak.last};
+  if(diff === 1) return {count: streak.count, active: false, last: streak.last}; // still shows current until next action
+  return {count:0, active:false, last: streak.last}; // gap >1 day resets on next complete
+}
+function updateStreakOnComplete(){
+  const s = P._streak || {count:0, last:null};
+  const t = todayStr();
+  if(s.last === t){
+    // same day, keep count
+  } else if(s.last){
+    const diff = Math.floor((new Date(t) - new Date(s.last)) / (1000*3600*24));
+    s.count = (diff === 1) ? s.count + 1 : 1;
+  } else {
+    s.count = 1;
+  }
+  s.last = t;
+  P._streak = s; save();
+}
+function resetStreak(){ delete P._streak; save(); }
+function getTwinPower(){
+  // Pure local computation; never calls getTwinStatus or allLessons (prevents any cycle in test/jsdom load)
+  try {
+    const st = (typeof getStreak === 'function') ? getStreak().count : 0;
+    const qcDone = Object.keys(P||{}).filter(k=>k.startsWith('qc_') && P[k] && P[k].done).length;
+    // Approximate done count from known gates/stages without full lesson scan (151 total non-gate ~)
+    let doneApprox = 0;
+    const stageKeys = ['l3twin1','l3gate','l4twin2','l4gate','l5twin3','l5gate','l6gate'];
+    stageKeys.forEach(k => { if (isDone(k)) doneApprox += 8; }); // rough weighting
+    const base = Object.keys(P||{}).filter(k=>k.startsWith('l') && P[k]).length;
+    const power = Math.round((doneApprox + base) * 1.0 + st * 6 + qcDone * 4 );
+    return Math.min(999, Math.max(0, power));
+  } catch(e){ return 0; }
+}
+const QUICK_CHALLENGES = [
+  {id:'qc1', t:'5-min win: One-sentence eval', desc:'Write a one-sentence eval for your current Twin stage. "It fails when..." — paste in your lesson notes.'},
+  {id:'qc2', t:'Quick challenge: Re-run a sim', desc:'Open any simulator (e.g. temperature or chunking), change a knob, screenshot or note one surprising output.'},
+  {id:'qc3', t:'Micro RAG test', desc:'In your mind or notes: give the Twin a question it must refuse from docs. Does Stage 1 retriever handle it?'},
+  {id:'qc4', t:'Prompt tweak', desc:'Take one of your Twin prompts and add "Answer ONLY from provided context. Else say I do not know." Test mentally.'},
+  {id:'qc5', t:'Badge flex prep', desc:'Complete one undone micro-lesson (3–5 min marked ones) and immediately Share Twin to lock the badge in your snippet.'},
+  {id:'qc6', t:'Trace a failure', desc:'Recall or invent one place your Twin would hallucinate. Add a guardrail idea in notes.'},
+  {id:'qc7', t:'MCP micro: list tools', desc:'In your L5 MCP lab or notebook: mentally or actually call tools/list on your Twin MCP server. Note the exposed tools (ask_my_twin etc).'},
+  {id:'qc8', t:'Multi-agent choice', desc:'Which pattern fits your Twin best today: supervisor (orchestrator), handoffs, or router? Note one reason + one failure mode it prevents.'},
+  {id:'qc9', t:'Streak + share ritual', desc:'Complete any lesson + immediately hit 🚀 Share Twin. Paste short version to your notes or Discord. Builds habit + accountability.'},
+  {id:'qc10', t:'5-min MCP win: expose one tool', desc:'Add or simulate one new MCP tool for your Twin (e.g. "list_my_topics"). Use the hand MCP lab. Note it for your share snippet.'},
+  {id:'qc11', t:'Multi-agent supervisor trace', desc:'Sketch or run a 3-step supervisor flow for a Twin task (writer + retriever + critic). Note one handoff improvement.'},
+  {id:'qc12', t:'Scale quick calc', desc:'From L6: estimate cost for 1000 Twin queries at your current batch/TTFT. Paste numbers + one optimization idea into notes.'},
+  {id:'qc13', t:'Choice: pick your next micro', desc:'Pick any 3-5min lesson you skipped (marked min). Complete + Share Twin for instant badge/streak feedback.'},
+  // NEW ADHD 5-min wins + choice + instant feedback + community/MCP/fork/config focus (24+ total)
+  {id:'qc14', t:'5-min win: Share ritual choice', desc:'Complete a lesson or QC → tap 🚀 Share Twin → choose short MD or forum MD → paste to notes. Instant streak + badge flex feedback.'},
+  {id:'qc15', t:'MCP + multi-agent micro: handoff test', desc:'For your L5 Twin: note one supervisor handoff (e.g. writer→critic). What faithfulness fail would it catch? Record + hit Share+Discord.'},
+  {id:'qc16', t:'Quick choice: scaling tradeoff', desc:'In L6 sim or mind: at 50rps for your MCP Twin, pick batch/cache or more agents? Note cost vs quality delta. +1 Power instant on share.'},
+  {id:'qc17', t:'ADHD instant feedback micro', desc:'After any lesson, give 👍/👎 (per-lesson choice). Then complete it + use floating ⚡Share+Discord for dopamine loop.'},
+  {id:'qc18', t:'Cohort accountability 2-min', desc:'Use the extra floating ⚡ Share+Discord button (or 🚀) to paste short snippet + join Discord. Builds visible Twin progress streak publicly.'},
+  {id:'qc19', t:'⚡ 5-min win: Visual choice path sim', desc:'Run any multi-agent or scaling sim (e.g. drag-orchestrate). Make a deliberate choice (supervisor vs router), note instant score feedback + why. Then Share+Discord for badge.'},
+  {id:'qc20', t:'⚡ 5-min win: Badge collector', desc:'Complete one micro-lesson (min:3-5) + give 👍 feedback. Check your earned badges in sidebar/home. Instant gamif dopamine.'},
+  {id:'qc21', t:'ADHD micro: streak ritual', desc:'Hit any complete → open quick challenge if available → copy short share snippet. See streak + Power tick up live. Repeat for momentum.'},
+  {id:'qc22', t:'⚡ 5-min fork choice: customize your Twin share', desc:'Tap 📋 Fork helper. Pick one extra (hashtag or tagline), imagine your cohort. Generate a live share snippet with new branding. Instant "static fork is trivial" feedback + copy commands.'},
+  {id:'qc23', t:'MCP config share: export live Twin state', desc:'Open 🚀 Share Twin → copy the JSON or YAML live from P/AGENT/gates (includes mcp_tools, multi_agent, stages). Paste to notes/gist for cohort tracking. See your full MCP culmination reflected.'},
+  {id:'qc24', t:'Choice + instant feedback loop', desc:'On any lesson tap 👍/👎 choice (instant micro), mark done, then ⚡Share+Discord short. Feel dopamine + streak/Power live tick. Choice + feedback everywhere for focus.'},
+  {id:'qc25', t:'Post your Twin snippet (gate ritual)', desc:'At any gate (esp L5): complete checklist → tap 🚀 Share Twin → copy full MD/YAML (must include 🔌MCP 🤖Multi-Agent for L5) + paste to #progress. Locks accountability + badge in cohort.'}
+];
+function getDailyChallenge(){
+  const key = 'qc_'+todayStr();
+  if(!P[key]){
+    // pick deterministically for the day so it stays the same
+    const idx = (parseInt(todayStr().replace(/-/g,'')) % QUICK_CHALLENGES.length);
+    P[key] = {idx, done:false};
+    save();
+  }
+  return {...QUICK_CHALLENGES[P[key].idx], done: !!P[key].done, key};
+}
+function completeDailyChallenge(){
+  const dc = getDailyChallenge();
+  if(!P[dc.key]) P[dc.key]={idx:0,done:false};
+  P[dc.key].done = true;
+  updateStreakOnComplete();
+  save();
+  // small visual reward in console for dev, but UI updates on re-render
+  // ADHD polish: auto-offer instant share CTA for streak/badge visual feedback
+  setTimeout(()=>{ 
+    const toast = document.createElement('div'); 
+    toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--bg2);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;font-size:12px;display:flex;gap:8px;align-items:center';
+    toast.innerHTML = `⚡ Quick win done! <button class="simbtn" style="padding:3px 8px;font-size:11px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);document.body.removeChild(this.closest('div[style*=\'position:fixed\']'));">🚀 Share short + lock streak</button> <button class="simbtn ghost" style="padding:3px 6px;font-size:10px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);document.body.removeChild(this.closest('div[style*=\'position:fixed\']'));setTimeout(()=>openDiscord(),400)">⚡+Discord</button> <button onclick="document.body.removeChild(this.closest('div[style*=\'position:fixed\']'))" style="background:none;font-size:12px">✕</button>`;
+    document.body.appendChild(toast); 
+  }, 300);
+}
+function giveADHDMicroFeedback(like, ctx='general'){
+  // client-only ADHD-friendly choice/feedback: records a micro choice + reinforces
+  P._feedback = P._feedback || [];
+  P._feedback.push({t: new Date().toISOString().slice(0,16), like:!!like, ctx});
+  if(like) updateStreakOnComplete(); // positive feedback gives streak bump for dopamine
+  save();
+  const el = document.createElement('span'); el.textContent = like ? '🙌 Thanks! +1 micro win' : '📝 Noted — thanks for the signal'; el.style.cssText='position:fixed;bottom:60px;right:30px;font-size:12px;background:var(--bg2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);z-index:999';
+  document.body.appendChild(el); setTimeout(()=>el.remove(), 1400);
+}
+function showQuickChallenge(){
+  const dc = getDailyChallenge();
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:520px;width:100%;padding:18px">
+      <div style="display:flex;justify-content:space-between"><b>⚡ Quick Challenge — ${dc.t}</b><button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="font-size:20px;background:none">×</button></div>
+      <div style="margin:14px 0;font-size:14.5px;color:#cfcfd6">${dc.desc}</div>
+      <div style="font-size:12px;color:var(--dim)">Stay in flow — 2–5 min. Doing it builds your streak 🔥</div>
+      <div class="row" style="margin-top:16px">
+        <button class="simbtn" onclick="completeDailyChallenge(); this.closest('[style*=\'position:fixed\']').remove(); render(); setTimeout(()=>{ const s=buildShareSnippets(); if(confirm('Quick win done — share your Twin progress (live MD from P/AGENT/gates)?')) showShareCTA(); }, 300);">✅ Mark done (+streak) + Share option</button>
+        <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Later</button>
+        <button class="simbtn ghost" onclick="const s=buildShareSnippets(); copyToClipboard(s.shortMd,this); this.closest('[style*=\'position:fixed\']').remove();">🚀 Copy short share now</button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted)">Daily challenge resets midnight. Streaks count consecutive days you complete lessons or challenges.</div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+/* ================= CUSTOM (easy to fork & tweak for Discord/cohorts) =================
+   Edit these for your cohort / fork. Pure static — no server.
+   discordInvite (one line) powers ALL community: floating Share Twin CTAs, modals, snippets (MD/YAML/JSON w/ badges), Discord buttons, banners, fork helper.
+   Add shareHashtag/cohortTagline for instant branding in every live share snippet.
+   FORK HELPER + Share modal: use in-app buttons (prominent) to copy CUSTOM-aware commands.
+*/
+const CUSTOM = {
+  discordInvite: 'https://discord.gg/YOUR_COHORT_HERE', // ← THE ONLY LINE most forks change (easy-to-customize Discord placeholder; powers ALL community hooks, floating CTAs (🚀 + ⚡Share+Discord), "Share your Twin", openDiscord helper, snippets (MD/YAML/JSON/Forum/Twitter/LinkedIn/Weekly/GitHub + extra image badges + MCP/Multi + streaks from live P/AGENT/gates), sidebar, home, settings, fork helper, onboarding, Hall of Fame, Discord structure modal)
+  communityName: 'Zero to AI Engineer Cohort',
+  githubRepo: 'https://github.com/thesrivamshi/zero-to-ai-engineer', // or your fork
+  forkNote: 'Static single-file app — just fork, edit index.html + data/*.js, push to any static host. 100% client-side (P+AGENT local only). No build ever. Pure static for trivial forking/hosting.',
+  // Easy extras for Discord / forking / community productization (no code changes needed — edit once, all flows update)
+  shareHashtag: '#ZeroToAIEngineer',
+  cohortTagline: 'Building our full MCP-exposed multi-agent LLM Twins',
+  discordChannel: '#progress' // used in copy hints / templates
+};
+function openDiscord(){ window.open(CUSTOM.discordInvite, '_blank'); } // global helper — use from any button, lab, or your custom code; auto-branded by CUSTOM.discordInvite
+window.openDiscord = openDiscord; // reinforced for easy community hooks / forks / extensions
+function getForkCommands(){
+  const base = CUSTOM.githubRepo.replace(/\.git$/,'');
+  return {
+    clone: `git clone ${base}.git && cd zero-to-ai-engineer`,
+    edit: `# ONE-LINE EDIT for your cohort (Discord + all shares/CTAs + snippets + openDiscord + fork UI):\n# In index.html near top of <script>:\n#   discordInvite: '${CUSTOM.discordInvite.replace(/'/g,"\\'")}',`,
+    editExtras: `# OPTIONAL easy CUSTOM fields (for hashtags, taglines in shares + branding all live MD/YAML/JSON):\n#   shareHashtag: '${CUSTOM.shareHashtag || '#ZeroToAIEngineer'}',\n#   cohortTagline: '${(CUSTOM.cohortTagline||'').replace(/'/g,"\\'")}',`,
+    serve: `python3 -m http.server 8000   # or npx serve .`,
+    deploy: `# Deploy: Vercel/Netlify/GH Pages/Cloudflare — no build cmd, output dir = . (pure static single-file!)\n# Static: fork, edit 1 line, push — all "Share your Twin" (beautiful snippets from live P/AGENT/gates), CTAs, hooks auto branded.`,
+    staticNote: 'Pure static: index.html + data/*.js. No framework/build. Full MCP multi-agent Twin sharing works immediately after CUSTOM edit.'
+  };
+}
+function showForkHelper(){
+  const f = getForkCommands();
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:660px;width:100%;padding:22px">
+      <div style="font-weight:800;font-size:17px;margin-bottom:8px">🚀 Fork Helper — customize in 2 min (static, no build, pure client-side) — for Discord / cohorts</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Edit <b>ONE line</b> (CUSTOM.discordInvite) → all "Share your Twin" flows, floating CTAs (🚀 + ⚡Share+Discord), sidebar, openDiscord() helper, beautiful MD/YAML/JSON snippets (with image badges + MCP/multi-agent + streaks), home banners update automatically. Add shareHashtag/cohortTagline for instant branding. <b>Fully static single-file</b> (index.html + data/*.js only). No frameworks, no build step.</div>
+      <div><b>1. Clone your fork</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.clone)}</pre></div>
+      <div><b>2. One-line CUSTOM edit</b> (top of &lt;script&gt; in index.html — THE key; powers EVERYTHING community)<pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.edit)}</pre></div>
+      <div><b>2b. (Optional extras — instant in all shares/CTAs)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.editExtras)}</pre></div>
+      <div><b>3. Serve locally (no install needed)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.serve)}</pre></div>
+      <div><b>4. Deploy anywhere (Vercel/Netlify/GH Pages/Cloudflare/Pages — zero build)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.deploy)}</pre></div>
+      <div class="row" style="margin-top:14px;flex-wrap:wrap">
+        <button class="simbtn" onclick="const ff=getForkCommands(); copyToClipboard(ff.clone+'\\n'+ff.edit+'\\n'+ff.editExtras+'\\n'+ff.serve+'\\n'+ff.deploy+'\\n'+(ff.staticNote||''), this); this.closest('[style*=\'position:fixed\']').remove();">📋 Copy all fork commands (ready-to-run + static note)</button>
+        <button class="simbtn ghost" onclick="openDiscord();">💬 Open your Discord</button>
+        <button class="simbtn ghost" onclick="showShareCTA(); this.closest('[style*=\'position:fixed\']').remove();">🚀 Preview live Share snippets (MCP multi-agent)</button>
+        <button class="simbtn ghost" onclick="showHallOfFame(); this.closest('[style*=\'position:fixed\']').remove();">🏆 Hall of Fame</button>
+        <button class="simbtn ghost" onclick="showDiscordStructure(); this.closest('[style*=\'position:fixed\']').remove();">💬 Discord structure ex</button>
+        <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px"><b>Static by design (reinforced):</b> fork → ONE CUSTOM edit (discordInvite + hashtag) → your branded full MCP-exposed multi-agent Twin sharing + floating CTAs (🚀 + ⚡) + snippets (MD/YAML/JSON + GitHub w/ live P/AGENT/gates + badges + mcp_tools) + openDiscord + fork UI live. Pure static single-file (index.html + data/*.js only). No build ever. Deploy Vercel etc with output dir=. Perfect for private Discord cohorts / ADHD 2-min setup. Add your cohort examples to Hall by forking.</div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+/* ================= FINAL POLISH: Onboarding prompt, Hall of Fame placeholders, Discord structure examples (community launch prep) ================= */
+function maybeShowOnboarding(){
+  if(P._onboarded) return;
+  // first time ADHD-friendly onboarding: micro intro + instant share CTA + Twin marketing
+  P._onboarded = true; save();
+  setTimeout(()=>{
+    const m = document.createElement('div');
+    m.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
+    m.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:16px;max-width:520px;width:100%;padding:22px">
+        <div style="font-size:17px;font-weight:800;margin-bottom:8px">👋 Welcome to Zero to AI Engineer</div>
+        <div style="font-size:13.5px;color:#cfcfd6;margin-bottom:12px">Build <b>one growing LLM Twin</b> that becomes a <b>full MCP-exposed multi-agent system</b> (L5 Stage 3 + gate: voice Twin core + retriever + critic under supervisor, MCP tools/list+call exposed — explicit culmination). Pure static single-file, 15-30min/day, streaks + quick wins/choice/feedback for focus.</div>
+        <div style="font-size:12.5px">• Tap lessons + sims (choice paths + instant feedback everywhere)<br>• ⚡ Quick Challenges + 🔥 streaks + Twin Power for dopamine<br>• 🚀 Share Twin after every win (floating CTAs + auto prompts)</div>
+        <div style="margin:16px 0 8px" class="row">
+          <button class="simbtn" onclick="this.closest('[style*=\'position:fixed\']').remove(); showQuickChallenge();">⚡ Start first 5-min Quick Win</button>
+          <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove(); showShareCTA();">🚀 Preview Share your MCP Twin</button>
+          <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button>
+        </div>
+        <div style="font-size:11px;color:var(--dim)">Edit CUSTOM.discordInvite once (in Settings) → your cohort's branded shares + CTAs. Join Discord for accountability. Your Twin culminates as full MCP multi-agent — share it!</div>
+      </div>`;
+    document.body.appendChild(m);
+  }, 1400);
+}
+function showHallOfFame(){
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:720px;width:100%;padding:20px;max-height:88vh;overflow:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:17px">🏆 Cohort Hall of Fame</b><button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="background:none;font-size:20px">×</button></div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Live leaderboard of cohort Twins — signed-in builders appear automatically, ranked by Twin progress then ⚡ Power. Click a name to view their public Twin page.</div>
+      <div id="liveLeaderboard" style="margin-bottom:16px">Loading live leaderboard…</div>
+      <div style="color:var(--muted);font-size:12px;margin-bottom:8px;border-top:1px solid var(--border2);padding-top:10px">Examples (and a place to brag — use 🚀 Share to post yours to Discord):</div>
+      <div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:10px 0">
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥14d · @alex</b><br>100% (3/3) 🧠🎤🔌🤖MultiAgent<br>✅ full MCP-exposed multi-agent (supervisor + voice writer)<br><button onclick="copyToClipboard('## My Twin 100% MCP+Multi 🔥\\nTools: ask_my_twin, supervisor_handoff\\n' + (typeof CUSTOM!=='undefined'?CUSTOM.discordInvite:''),this)" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Copy example share</button></div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥9d · @sam</b><br>Stage3 ✅ L5gate · MCP tools verified<br>Supervisor handoff fixed 4 faithfulness fails<br><button onclick="showShareCTA();this.closest('[style*=\'position:fixed\']').remove()" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Your turn: Share Twin</button></div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>Scale Master · @jordan</b><br>🏆 L6 + 3 MCP agents<br>Cost &lt;$0.002/query @ batch=32<br><span style="color:var(--dim);font-size:10px">Add yours via 🚀 floating CTA → paste to Discord</span></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="simbtn" onclick="showShareCTA();this.closest('[style*=\'position:fixed\']').remove()">🚀 Generate your live MCP Twin snippet + badges</button> <button class="simbtn ghost" onclick="openDiscord();">💬 Post to #hall-of-fame on Discord</button> <button class="simbtn ghost" onclick="showForkHelper();this.closest('[style*=\'position:fixed\']').remove()">📋 Customize for your cohort</button></div>
+      <div style="font-size:10px;color:var(--dim);margin-top:8px">Hall of Fame = accountability + celebration. All snippets auto-include "full MCP-exposed multi-agent system" + live state. Perfect launch ritual.</div>
+    </div>`;
+  document.body.appendChild(modal);
+  window.closeHOF=()=>{ try{ modal.remove(); }catch(e){} };
+  if(typeof loadLeaderboard==='function') loadLeaderboard();
+}
+function showDiscordStructure(){
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:18px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:680px;width:100%;padding:18px 20px">
+      <div style="font-weight:800;font-size:16px;margin-bottom:6px">💬 Suggested Discord Structure for Cohort Launch (easy to copy)</div>
+      <div style="color:var(--muted);font-size:12.5px;margin-bottom:10px">Fork the app, set CUSTOM.discordInvite + hashtag. Create these channels/threads for frictionless accountability + shares of full MCP multi-agent Twin. One CUSTOM edit brands every in-app prompt/CTA/snippet.</div>
+      <pre style="font-size:12px;background:#0d0d11;padding:10px;border-radius:8px;white-space:pre-wrap">#welcome
+• Onboard: paste your first Twin snippet from 🚀 Share
+• Rules + links to live course + fork helper
+
+#progress
+• Daily/weekly: EVERYONE pastes live short MD or full from app after lessons/gates
+• "Gate 5 done — full MCP-exposed multi-agent ✅" + snippet
+
+#hall-of-fame
+• Pin top MCP Twin shares (use showHallOfFame examples + real ones)
+• Celebrate Stage 3 culmination
+
+#help-questions
+• Tech + lab help (use the in-app sims/feedback first)
+
+#weekly-sync
+• Threads: "Week X discussion: [paste per-level prompt from README]"
+• Everyone drops latest share snippet + 1 MCP/multi insight
+
+#rituals
+• "Paste your short share" pins for ADHD micro-wins
+• Streak celebrations
+
+Use in-app floating ⚡Share+Discord + auto gate prompts to drive posts. Leader pins CUSTOM.md templates + discussion prompts from README.</pre>
+      <div style="margin-top:10px"><button class="simbtn" onclick="copyToClipboard(this.previousElementSibling.textContent,this);openDiscord();">📋 Copy structure + open Discord</button> <button class="simbtn ghost" onclick="showForkHelper();this.closest('[style*=\'position:fixed\']').remove()">📋 Fork Helper (set invite)</button> <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button></div>
+      <div style="font-size:11px;margin-top:8px;color:var(--dim)">Onboarding prompt + Hall of Fame + this modal are in-app. Add #onboarding-pings thread for first-time users.</div>
+    </div>`;
+  document.body.appendChild(modal);
+}
 function allLessons(){ const out=[]; LEVELS.forEach((lv,li)=>{ lv.chapters.forEach(ch=>ch.lessons.forEach(l=>out.push({...l,_lv:li,_ch:ch.title}))); if(lv.project) out.push({...lv.project,_lv:li,_gate:true,_ch:'Project Gate'}); }); return out; }
 function levelStats(lv,li){ let t=0,d=0; lv.chapters.forEach(ch=>ch.lessons.forEach(l=>{t++; if(isDone(l.id))d++;})); if(lv.project){t++; if(isDone(lv.project.id))d++;} return {t,d}; }
 
@@ -285,8 +707,11 @@ function render(){
   else if(view==='settings') renderSettings(c);
   else if(view==='review') renderReview(parseInt(arg),c);
   else if(view==='books') renderBooks(c);
+  else if(view==='twin') renderPublicTwin(arg,c);
   else renderHome(c);
   window.scrollTo(0,0);
+  enhanceFloatingShare(); // dynamic prominence for "Share your Twin" + MCP culmination tie-in
+  maybeShowOnboarding(); // community launch: one-time ADHD-friendly onboarding + MCP Twin intro + CTAs
 }
 
 /* ================= sidebar ================= */
@@ -297,6 +722,9 @@ function renderSidebar(){
   const cur=(location.hash.match(/lesson\/([^/]+)/)||[])[1];
   let html=`<div class="logo" onclick="go('home')"><div class="mark">AI</div><div class="nm">Zero to AI Engineer<small>beginner → expert</small></div></div>
   <div class="overall">${done} / ${total} complete<div class="bar"><i style="width:${total?Math.round(done/total*100):0}%"></i></div></div>
+  ${(()=>{ const st=getStreak(); return st.count>0 ? `<div style="margin:0 8px 8px;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px"><span>🔥 ${st.count}-day streak</span>${st.active?'<span style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:99px">today</span>':''} <button onclick="showQuickChallenge()" style="margin-left:auto;font-size:10px;border:1px solid var(--border2);padding:1px 6px;border-radius:4px;background:none">+ challenge</button></div>` : `<div style="margin:0 8px 8px;font-size:11px"><button onclick="showQuickChallenge()" style="font-size:11px;color:var(--cyan);background:none;border:1px solid var(--border2);padding:2px 8px;border-radius:99px">⚡ Start daily quick challenge</button></div>`; })()}
+  <div style="margin:0 8px 10px;font-size:12px;color:var(--cyan);display:flex;align-items:center;gap:6px"><span>⚡ Twin Power: <b>${getTwinPower()}</b></span><span style="font-size:10px;background:var(--bg3);padding:1px 4px;border-radius:3px">XP</span></div>
+  ${(()=>{ const s=getTwinStatus(); return s.badges.length ? `<div style="margin:0 8px 8px;font-size:10px"><span style="color:var(--muted)">Earned badges:</span> <span style="font-size:12px">${s.badges.slice(0,6).join(' ')}${s.badges.length>6?' +'+(s.badges.length-6):''}</span> <button onclick="showShareCTA()" style="font-size:9px;margin-left:4px;padding:1px 4px;border:1px solid var(--border2);border-radius:3px;background:none">share</button></div>` : `<div style="margin:0 8px 6px;font-size:10px;color:var(--dim)">No badges yet — complete Twin stages for 🧠🎤🔌🤖 etc</div>`; })()}
   <input id="sbsearch" placeholder="🔍 Search lessons…" value="${searchTerm.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:13px;outline:none;margin:0 0 10px">
   <div id="searchresults" style="display:none"></div><div id="sblist">`;
   LEVELS.forEach((lv,li)=>{
@@ -320,6 +748,11 @@ function renderSidebar(){
   html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('books')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📚</span> Book progress <span class="pc">${bookPct()}%</span></button>`;
   html+=`<button class="lvlhead" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
+  if(typeof cloudConfigured==='function' && cloudConfigured()) html+=`<button class="lvlhead" onclick="showAccount()"><span class="dot" style="background:var(--bg3);color:var(--muted)">☁️</span> Account ${cloudEnabled()?'<span class="pc" style="color:var(--green)">synced</span>':'<span class="pc">sign in</span>'}</button>
+  <button class="lvlhead" onclick="showHallOfFame()"><span class="dot" style="background:var(--bg3);color:var(--muted)">🏆</span> Hall of Fame <span class="pc">live</span></button>`;
+  html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
+  html+=`<button class="lvlhead" onclick="showShareCTA()" style="margin-top:2px;background:linear-gradient(90deg,rgba(124,108,246,.1),rgba(167,139,250,.08));border:2px solid var(--accent)"><span class="dot" style="background:var(--accent);color:#fff">🚀</span> Share your full MCP multi-agent Twin (live MD/YAML/JSON + badges from P/AGENT/gates)</button>
+  <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper — customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
   html+='</div>';
   sb.innerHTML=html;
   if(searchTerm) renderSearchResults();
@@ -337,7 +770,10 @@ function renderHome(c){
     <div class="stat"><b>${quizCount}</b><span>quiz questions</span></div>
     <div class="stat"><b>${LEVELS.length}</b><span>levels</span></div>
     <div class="stat"><b>${done}</b><span>completed</span></div>
-  </div>`;
+    ${(()=>{const st=getStreak(); return st.count>0?`<div class="stat" style="border-color:var(--amber)"><b>🔥${st.count}</b><span>day streak</span></div>`:'';})()}
+    <div class="stat" style="border-color:var(--cyan)"><b>⚡${getTwinPower()}</b><span>Twin Power</span></div>
+  </div>
+  <div style="text-align:center;margin:8px 0 18px"><button class="simbtn ghost" style="font-size:12.5px;padding:6px 14px" onclick="showQuickChallenge()">⚡ Quick Challenge (daily ADHD win)</button> <span style="font-size:11px;color:var(--dim)">or use 🍅 timer</span></div>`;
   LEVELS.forEach((lv,li)=>{
     const st=levelStats(lv,li); const col=COLORS[li%COLORS.length];
     const first = lv.chapters[0].lessons[0];
@@ -347,7 +783,13 @@ function renderHome(c){
       <div class="meta"><span>${st.t} lessons</span><div class="bar"><i style="width:${st.t?Math.round(st.d/st.t*100):0}%;background:${col}"></i></div><span>${Math.round(st.d/st.t*100)||0}%</span></div>
     </button>`;
   });
-  html+=`<div class="callout tip" style="margin-top:26px"><div class="ct">How to use this course</div>Go in order. Read each lesson, play with the interactive demos, pass the quiz, and do every lab on your own computer. Project gates at the end of each level are mandatory — they're where the real learning happens. Your progress is saved in this browser automatically.</div>`;
+  html+=`<div class="callout tip" style="margin-top:26px"><div class="ct">How to use this course</div>Go in order. Read each lesson, play with the interactive demos, pass the quiz, and do every lab on your own computer. Project gates at the end of each level are mandatory — they're where the real learning happens. Your progress is saved in this browser automatically. (Pure static single-file: fork + edit CUSTOM once + host anywhere.)</div>
+<div class="callout" style="margin:14px 0;font-size:12.5px"><div class="ct">Strict prerequisites</div>Every quiz (and every lesson body) only draws from concepts completed so far. If a question references a term you haven't seen, it is a bug — report the lesson id. The sidebar + review checkpoints enforce spaced repetition only over prior material.</div>`;
+  // Prominent community share flow + fork CTA (even more visible "Share your Twin")
+  const twinS = getTwinStatus();
+  const st = getStreak();
+  const shareHashtag = (typeof CUSTOM !== 'undefined' && CUSTOM.shareHashtag) || '#ZeroToAIEngineer';
+  html += `<div style="margin:24px 0 8px;border:3px solid var(--accent);border-radius:16px;padding:18px;background:rgba(124,108,246,.04)"><div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><b style="font-size:16px">🚀 Share your full MCP-exposed multi-agent Twin</b><div style="font-size:12.5px;color:var(--muted)">Live MD/YAML/JSON + shields.io image badges + MCP 🤖Multi-Agent + streak (powered by live P + AGENT + gates state). The explicit course culmination: full MCP server (list+call) + supervisor multi-agent (voice Twin + retriever + critic). Paste ready-to-paste snippets to Discord for accountability.</div></div><button class="simbtn" onclick="showShareCTA()" style="font-weight:800;padding:10px 18px">🚀 Share Twin + Badges</button> <button class="simbtn ghost" onclick="showForkHelper()" style="font-size:12px">📋 Fork for cohort</button></div><div style="margin-top:10px;font-size:12px;color:var(--dim)">Stages ${twinS.doneStages.length}/3 · ${twinS.gates.length}/6 gates${st.count?` · 🔥${st.count}d streak`:''} ${twinS.mcpReady ? '· ✅ FULL MCP MULTI-AGENT CULMINATION!' : '· (L5 = full MCP multi-agent)'} ${shareHashtag}. <button onclick="showQuickChallenge()" style="font-size:11px">+ quick challenge</button> <button onclick="openDiscord()" style="font-size:11px">💬 ${CUSTOM.communityName}</button> <button onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);" style="font-size:11px">⚡ Copy short</button> <button onclick="showHallOfFame()" style="font-size:11px">🏆 Hall of Fame</button> <button onclick="showDiscordStructure()" style="font-size:11px">💬 Discord setup</button></div></div>`;
   c.innerHTML=html;
 }
 
@@ -378,6 +820,7 @@ function renderLesson(id,c){
   if(l.deploy) html+=renderDeployEx(l);
   if(l.quiz&&l.quiz.length) html+=renderQuiz(l);
   else if(!hasExercise(l)) html+=`<div style="margin-top:30px"><button class="simbtn" onclick="markDone('${l.id}')">${isDone(l.id)?'✓ Completed':'Mark as complete'}</button></div>`;
+  html+=`<div style="margin:12px 0;font-size:12px;color:var(--muted);padding:6px 0;border-top:1px dashed var(--border2)">Per-lesson quick feedback (ADHD dopamine): <button onclick="giveADHDMicroFeedback(true,'lesson');markDone('${l.id}')" style="font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:none">👍 helpful — +micro win</button> <button onclick="giveADHDMicroFeedback(false,'lesson')" style="font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:none">👎 tweak needed</button> <span style="font-size:10px">(instant + streak bump on 👍)</span> <button onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);setTimeout(()=>openDiscord(),400)" style="font-size:10px;margin-left:6px;padding:2px 6px;border:1px solid var(--accent);border-radius:4px;background:none;color:var(--accent2)">🚀 Share this win (+streak)</button></div>`;
   html+=renderNotes(l);
   html+=navBtns(prev,next);
   c.innerHTML=html;
@@ -399,10 +842,161 @@ function srcLabel(src){
     return BOOK_NAMES[m[1].toUpperCase()]+', Chapter '+m[2]+(m[3]?' ('+m[3].trim()+')':'');
   }).join(' · ');
 }
+/* ===== lazy inline YouTube players for ALL videos (100% in-app, no tabs/externals required) =====
+   Click-to-load overlay (click only loads iframe). Responsive 16:9 via aspect-ratio.
+   Controls=1, playsinline=1, modestbranding, rel=0. Playlists via videoseries?list= (no vid case handled).
+   Full timestamp support via start= (t/start parse handles 90s/1m30s/1h2m3s).
+   Titles + why notes ALWAYS kept visible inside .yt-player (above .yt-wrap, remain in fullscreen).
+   Prominent in-app fullscreen button(s) call fullscreenVideo which does requestFullscreen on the .yt-player CONTAINER.
+   NO primary external playback links at all (no <a> to youtube watch ever for videos; non-YT never links).
+   All videos (VIDEOS[] + inline lesson.videos) go exclusively through renderVideos.
+*/
+function parseYouTube(urlStr){
+  if(!urlStr) return {};
+  try{
+    const u=new URL(urlStr);
+    let vid=null, list=null, start=null;
+    const h=u.hostname.replace(/^www\./,'');
+    if(h==='youtu.be'){
+      vid=u.pathname.slice(1).split(/[?&]/)[0];
+    }else if(h==='youtube.com'||h==='m.youtube.com'){
+      vid=u.searchParams.get('v');
+      if(!vid){
+        const m=u.pathname.match(/\/(?:embed|v|shorts)\/([a-zA-Z0-9_-]{11})/);
+        if(m) vid=m[1];
+      }
+      list=u.searchParams.get('list');
+      if((u.pathname==='/playlist' || u.pathname.startsWith('/watch')) && !vid) list = list || u.searchParams.get('list');
+    }
+    const t=u.searchParams.get('t')||u.searchParams.get('start');
+    start = parseYTStart(t);
+    if(vid && vid.length>11) vid=vid.substring(0,11);
+    return {vid, list, start};
+  }catch(e){return{};}
+}
+function parseYTStart(t){
+  if(!t) return null;
+  const s = String(t).trim();
+  if(/^\d+$/.test(s)) return parseInt(s,10);
+  // support 1h2m3s / 90s / 1m30 etc
+  let secs = 0;
+  const hm = s.match(/(\d+)h/i); if(hm) secs += parseInt(hm[1],10)*3600;
+  const mm = s.match(/(\d+)m/i); if(mm) secs += parseInt(mm[1],10)*60;
+  const ss = s.match(/(\d+)s/i); if(ss) secs += parseInt(ss[1],10);
+  if(secs>0) return secs;
+  // last resort: strip non-digits (for plain '90')
+  const n = parseInt(s.replace(/[^0-9]/g,''),10);
+  return n || null;
+}
+function buildYTEmbed({vid,list,start}){
+  // Always produces embed URL for lazy inline iframe. Supports:
+  // - single vid (with optional playlist + start timestamp)
+  // - playlist only via videoseries?list= (for playlist links)
+  const params = ['autoplay=1','rel=0','modestbranding=1','playsinline=1','controls=1'];
+  let path = '';
+  if(list && !vid){
+    path = 'videoseries?list=' + encodeURIComponent(list);
+  }else if(vid){
+    path = vid;
+    if(list) params.push('list=' + encodeURIComponent(list));
+  }else if(list){
+    path = 'videoseries?list=' + encodeURIComponent(list);
+  }else{
+    return '';
+  }
+  if(start) params.push('start=' + start);
+  const hasQ = path.includes('?');
+  return 'https://www.youtube.com/embed/' + path + (hasQ ? '&' : '?') + params.join('&');
+}
+function loadYouTubePlayer(cid){
+  const player=document.getElementById(cid);
+  if(!player || player.dataset.loaded==='1') return;
+  const wrap=player.querySelector('.yt-wrap');
+  if(!wrap) return;
+  const vid=player.dataset.vid||'';
+  const list=player.dataset.list||'';
+  const start=player.dataset.start?parseInt(player.dataset.start,10):null;
+  const src=buildYTEmbed({vid,list,start});
+  if(!src){
+    const o=wrap.querySelector('.yt-overlay'); if(o) o.remove();
+    wrap.innerHTML+='<div style="padding:20px;color:#aaa;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#111">Unable to embed video</div>';
+    player.dataset.loaded='1'; player.classList.add('loaded'); return;
+  }
+  // remove ONLY the click-to-load overlay; titles+why notes live in .yt-player (stay visible + in FS)
+  const overlay = wrap.querySelector('.yt-overlay');
+  if(overlay) overlay.remove();
+  const ifr = document.createElement('iframe');
+  ifr.src = src;
+  ifr.title = 'YouTube video player';
+  ifr.setAttribute('frameborder','0');
+  ifr.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen');
+  ifr.setAttribute('allowfullscreen','');
+  ifr.setAttribute('playsinline','');
+  // iframe only for the 16:9 player; container FS keeps title/why
+  wrap.appendChild(ifr);
+  player.dataset.loaded='1';
+  player.classList.add('loaded');
+  // fs-float already in static render markup for pre-load FS clicks; no re-add
+}
+function fullscreenVideo(cid){
+  const player=document.getElementById(cid);
+  if(!player) return;
+  if(!player.dataset.loaded) loadYouTubePlayer(cid);
+  // Prominent in-app fullscreen using requestFullscreen on the .yt-player CONTAINER.
+  // This keeps titles + why notes visible (in the same card) during fullscreen.
+  // Primary mechanism — no reliance on external YT links or new tabs.
+  const req = player.requestFullscreen || player.webkitRequestFullscreen || player.mozRequestFullScreen || player.msRequestFullscreen;
+  if (req) {
+    try { req.call(player); } catch(e){}
+  }
+  // Fallback only if container FS not taken (rare); prefer container for titles+why
+  setTimeout(() => {
+    if (!document.fullscreenElement) {
+      const wrap = player.querySelector('.yt-wrap') || player;
+      const ifr = wrap.querySelector('iframe');
+      const target = ifr || wrap;
+      const tReq = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
+      if (tReq) { try { tReq.call(target); } catch(e){} }
+    }
+  }, 140);
+}
 function renderVideos(videos){
-  return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold</div><ul style="margin:6px 0 2px 18px">`+
-    videos.map(v=>`<li style="margin:6px 0"><a href="${v.url}" target="_blank" rel="noopener">${v.title}</a>${v.why?` — <span style="color:var(--muted)">${v.why}</span>`:''}</li>`).join('')+
-  `</ul></div>`;
+  if(!videos||!videos.length) return '';
+  const items=videos.map(v=>{
+    const p=parseYouTube(v.url);
+    const isYT=!!(p.vid||p.list);
+    const title=escapeHtml(v.title);
+    const why=v.why?` — <span style="color:var(--muted)">${escapeHtml(v.why)}</span>`:'';
+    if(!isYT){
+      // Non-YT case never provides playback link — purely informational. (All curated videos are YT.)
+      return `<div class="vid"><div class="vidmeta"><b>${title}</b>${why}</div><div class="vidnote">External resource (non-YouTube, not played here)</div></div>`;
+    }
+    const cid='yt_'+Math.random().toString(36).slice(2,10);
+    const thumb=p.vid?`https://i.ytimg.com/vi/${p.vid}/hqdefault.jpg`:'';
+    const ds=`data-vid="${p.vid||''}" data-list="${p.list||''}" data-start="${p.start||''}"`;
+    const overlayImg=thumb?`<img src="${thumb}" loading="lazy" alt="Play ${title}">`:'';
+    // EXCLUSIVELY 100% in-app lazy inline iframe.
+    // Click overlay loads the iframe (click-to-load).
+    // NO primary (or any) external playback links for watching videos.
+    // Titles + why notes are always in the .yt-player container (above player, inside FS).
+    // Prominent in-app FS button uses requestFullscreen on container.
+    return `<div class="vid">
+<div class="yt-player" id="${cid}" ${ds}>
+<div class="vidmeta"><b>${title}</b>${why}</div>
+<div class="yt-wrap">
+  <div class="yt-overlay" onclick="loadYouTubePlayer('${cid}')">
+    ${overlayImg}
+    <div class="yt-play"><div class="yt-playbtn">▶</div><small>Click to load &amp; play inside the app</small></div>
+  </div>
+  <button type="button" class="fs-float" onclick="event.stopImmediatePropagation();fullscreenVideo('${cid}')" title="Fullscreen inside the app (requestFullscreen on the .yt-player container)">⛶ FS</button>
+</div>
+<div class="yt-controls">
+  <button type="button" class="yt-fs" onclick="fullscreenVideo('${cid}')" title="Prominent in-app fullscreen: requestFullscreen on container keeps titles + why visible; 100% inside app, zero new tabs or external links">⛶ FULLSCREEN (in-app)</button>
+</div>
+</div>
+</div>`;
+  }).join('');
+  return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold (100% in-app, no tabs or external links required)</div>${items}</div>`;
 }
 function renderQuestions(arr){
   const lc={easy:'var(--green)',medium:'var(--amber)',hard:'var(--red)'};
@@ -421,11 +1015,17 @@ function renderDiagrams(arr){
     ${d.caption?`<figcaption style="font-size:13px;color:var(--muted);margin-top:10px">${d.caption} <span style="opacity:.6">— original schematic (redrawn for clarity, not from the book)</span></figcaption>`:''}
   </figure>`).join('');
 }
+function linkify(text){
+  if(!text) return '';
+  return text.replace(/(https?:\/\/[^\s<>"')]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline; word-break:break-all;">$1</a>');
+}
 function renderReads(reads,lid){
   const n=reads.length, done=reads.filter((_,i)=>P['read_'+lid+'_'+i]).length;
   return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books — ${done}/${n} marked read</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">The depth behind this lesson. Tick each one as you read it — across the whole course these references cover every chapter of all three books. Page numbers only; buy the books.</p><ul style="margin:6px 0 2px;list-style:none;padding-left:0">`+
     reads.map((r,i)=>{ const k='read_'+lid+'_'+i, d=!!P[k];
-      return `<li style="margin:8px 0;display:flex;gap:9px;align-items:flex-start"><button onclick="toggleRead('${lid}',${i})" title="Mark as read" style="flex:0 0 auto;cursor:pointer;background:${d?'var(--green)':'transparent'};border:1px solid ${d?'var(--green)':'var(--border)'};color:${d?'#06240f':'var(--muted)'};border-radius:5px;width:22px;height:22px;font-size:13px;line-height:20px;padding:0">${d?'✓':''}</button><span style="${d?'opacity:.55':''}"><b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}${r.f?` <span style="color:var(--muted)">— ${r.f}</span>`:''}</span></li>`;
+      const main = `<b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}`;
+      const noteDiv = r.f ? `<div style="margin:6px 0 12px 32px;padding:10px 14px;background:#fffbeb;border:2px solid var(--accent2);border-radius:8px;font-size:14px;line-height:1.45;box-shadow:0 2px 4px rgba(0,0,0,0.15);"><strong style="font-weight:800;color:#854d0e;letter-spacing:0.1px;display:block;margin-bottom:4px;font-size:13px;">📖 BOOK FOUNDATIONS vs 2025-2026 EXTENSIONS + this lesson's 🎬 video + official docs:</strong> ${linkify(r.f)}</div>` : '';
+      return `<li style="margin:10px 0"><div style="display:flex;gap:9px;align-items:flex-start"><button onclick="toggleRead('${lid}',${i})" title="Mark as read" style="flex:0 0 auto;cursor:pointer;background:${d?'var(--green)':'transparent'};border:1px solid ${d?'var(--green)':'var(--border)'};color:${d?'#06240f':'var(--muted)'};border-radius:5px;width:22px;height:22px;font-size:13px;line-height:20px;padding:0">${d?'✓':''}</button><span style="${d?'opacity:.55':''}">${main}</span></div>${noteDiv}</li>`;
     }).join('')+
   `</ul><div style="margin-top:8px"><span onclick="go('books')" style="cursor:pointer;color:var(--muted);font-size:13px;text-decoration:underline">📚 See your progress across all three books →</span></div></div>`;
 }
@@ -467,13 +1067,14 @@ function navBtns(prev,next){
     <button class="navbtn next" ${next?`onclick="go('${next._gate?'gate':'lesson'}','${next.id}')"`:'disabled'}><small>Next →</small><span>${next?next.t:'Course complete!'}</span></button>
   </div>`;
 }
-function markDone(id){ P[id]=true; save(); render(); }
+function markDone(id){ P[id]=true; updateStreakOnComplete(); save(); render(); }
 
 /* ================= quiz ================= */
 let qSel={};
 function renderQuiz(l){
   qSel={};
   let html=`<div class="quiz" id="quiz"><div class="qhead">✏️ Check your understanding <span style="color:var(--dim);font-weight:500;font-size:12px">— all correct to complete the lesson</span></div>`;
+  html+=`<div class="callout tip" style="margin:8px 12px 0;font-size:12.5px;border-left-color:var(--green);padding:12px 14px;font-weight:500;border:2px solid var(--green);background:rgba(16,185,129,.06)"><strong>🛡️ STRICT SEQUENCING ENFORCED — PREREQS ONLY</strong><br>This quiz (and review checkpoints) test <strong>ONLY</strong> concepts explicitly introduced in <strong>this lesson's body + all prior lessons</strong>. <strong>NO forward references allowed.</strong> Forbidden in any quiz: agents/multi-agent orchestration or supervisor patterns (before L3c3+), MCP / tools/list+call / MCP servers (before L5d1+ and the quickwin), KV cache / quantization / speculative decoding / batching economics / roofline / prefill-decode (before L6a1+), FTI pipelines (before L5a1), scaling/multipliers for multi-agent (before L3f but full MCP scaling in L6), or any later material. Lesson bodies lightly updated only to front-load needed defs. Every explanation MUST state <strong>Mental model</strong>, <strong>Common mistake</strong>, and end with <strong>"Check this question: ..."</strong> for immediate diagnostic feedback. Per-question "Check this question" is the feedback anchor. If any question references un-introduced material, it is a bug — report the lesson id and go back. Go in order; sidebar + gates enforce it.</div>`;
   l.quiz.forEach((q,qi)=>{
     html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q}</div>`;
     q.o.forEach((o,oi)=>{
@@ -511,7 +1112,7 @@ function grade(id){
 }
 function maybeComplete(l){
   // called when an exercise finishes: complete lesson if quiz also passed (or no quiz)
-  if(!l.quiz||!l.quiz.length||P[l.id+'_quiz']){ P[l.id]=true; }
+  if(!l.quiz||!l.quiz.length||P[l.id+'_quiz']){ P[l.id]=true; updateStreakOnComplete(); }
   save(); renderSidebar();
 }
 
@@ -596,7 +1197,12 @@ function toggleCheck(id,ci){
   P[id+'_ck']=ck;
   const all=allLessons(); const g=all.find(l=>l.id===id);
   P[id]=ck.length===g.checklist.length;
+  if(P[id]) updateStreakOnComplete();
   save(); render();
+  if(P[id]) {
+    if(id==='l5gate') { updateAgent({ mcpServer: 'exposed', tools: ['ask_my_twin','recall_memories','list_writing'], supervisor: 'writer+retriever+critic' }); awardTwinProgress(null, {mcpMultiAgent: true}); }
+    setTimeout(()=> { if(confirm('🎉 Gate complete! Share your full MCP-exposed multi-agent Twin (L5 = culminating MCP server + supervisor multi-agent) (live snippets + badges + streaks) with the cohort?')) { showShareCTA(); setTimeout(showHallOfFame, 1800); } }, 600);
+  }
 }
 
 /* ================= review checkpoint ================= */
@@ -648,7 +1254,7 @@ function filterGl(v){
 
 /* ================= simulations ================= */
 function renderSim(name){
-  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',opsbyte:'Interactive: ops:byte — compute- or memory-bound?',percentiles:'Interactive: latency percentiles (p50/p95/p99)',parallelism:'Interactive: splitting a model across GPUs',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights'};
+  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',opsbyte:'Interactive: ops:byte — compute- or memory-bound?',percentiles:'Interactive: latency percentiles (p50/p95/p99)',parallelism:'Interactive: splitting a model across GPUs',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights',multiagent:'GAME SIM: Multi-agent flows — pick arch, watch success score',dragorchestrate:'DRAG-DROP: Build your agent team',scalecost:'GAME CALC: Real-time scaling cost explorer (find cheap configs)',multiscale:'SCALE SIM: Multi-agent scaling choices — pick strategy, tune load, see live success/cost/latency'};
   return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
 }
 function initSim(name){
@@ -656,7 +1262,128 @@ function initSim(name){
   if(!b) return;
   SIMS[name] && SIMS[name](b);
 }
-const SIMS={};
+const SIMS={}; SIMS.multiagent=function(b){
+  b.innerHTML=`
+  <p style="font-size:13px;color:var(--muted)">Choose architecture for your Twin (supervisor + voice writer + retriever + critic, MCP-exposed at L5). Watch success score, cost, and latency update. Ties to L3f1 + L5 gate + L6 scale.</p>
+  <div class="row"><span class="lbl">Architecture</span>
+    <button class="simbtn ghost" onclick="SIMS._maPick('supervisor')">Supervisor (orchestrator + specialists)</button>
+    <button class="simbtn ghost" onclick="SIMS._maPick('swarm')">Swarm (many parallel)</button>
+    <button class="simbtn ghost" onclick="SIMS._maPick('pipeline')">Pipeline (fixed chain)</button>
+  </div>
+  <div class="row"><span class="lbl"># Agents / Load (users)</span><input type="range" id="ma_n" min="1" max="50" value="5" oninput="SIMS._ma()"><span class="val" id="ma_nv">5</span></div>
+  <div id="ma_out" class="simout"></div>
+  <div style="font-size:11px;color:var(--dim);margin-top:6px">Choice path: pick arch then drag load slider. High load + swarm = cost explosion; supervisor + critic wins on scale.</div>`;
+  SIMS._maState = {arch:'supervisor'};
+  SIMS._maPick = function(a){ SIMS._maState.arch=a; SIMS._ma(); };
+  SIMS._ma = function(){
+    const n = +document.getElementById('ma_n').value;
+    document.getElementById('ma_nv').textContent=n;
+    const arch = SIMS._maState.arch;
+    let succ, cost, lat;
+    if(arch==='supervisor'){ succ = Math.max(72, 95 - Math.floor(n/3)); cost = Math.round(1.2 * n); lat = 180 + Math.floor(n*4); }
+    else if(arch==='swarm'){ succ = Math.max(55, 88 - Math.floor(n/2)); cost = Math.round(2.8 * n); lat = 140 + Math.floor(n*7); }
+    else { succ = Math.max(60, 82 - Math.floor(n/1.5)); cost = Math.round(1.8 * n); lat = 220 + Math.floor(n*3); }
+    const score = Math.round(succ * (1 - (cost- n)/ (cost+10)));
+    document.getElementById('ma_out').innerHTML = `<b>Arch:</b> ${arch} | <b>Load:</b> ${n} users<br>
+    <b>Success:</b> <span style="color:${succ>85?'var(--green)':succ>70?'var(--amber)':'var(--red)'}">${succ}%</span> · <b>Cost mult:</b> ${cost}× · <b>Latency:</b> ~${lat}ms<br>
+    <b>Scaled Score:</b> ${score} <span style="font-size:10px">(higher=better balance)</span><br>
+    <span style="color:var(--dim)">Tip: at high scale, supervisor + handoff validation beats swarm on cost & reliability.</span>`;
+  };
+  SIMS._ma();
+};
+SIMS.dragorchestrate=function(b){
+  b.innerHTML=`
+  <p style="font-size:13px;color:var(--muted)">Assemble your supervisor team for the Twin (drag choices = pick roles: voice writer + retriever + critic under supervisor). Instant score + feedback on multi-agent tradeoffs (supervisor + writer/retriever/critic + MCP handoff validation wins; avoid unbalanced). Ties to L5 culmination.</p>
+  <div class="row"><span class="lbl">Team roles (tap to toggle)</span>
+    <button class="simbtn ghost" onclick="SIMS._doToggle('writer')">+ Voice Writer (Twin)</button>
+    <button class="simbtn ghost" onclick="SIMS._doToggle('retr')">+ Retriever</button>
+    <button class="simbtn ghost" onclick="SIMS._doToggle('crit')">+ Critic</button>
+    <button class="simbtn ghost" onclick="SIMS._doToggle('router')">+ Router</button>
+  </div>
+  <div id="do_team" style="font-size:12px;margin:4px 0;color:var(--accent)">Selected: <b>supervisor</b></div>
+  <div id="do_out" class="simout"></div>
+  <div style="font-size:11px;color:var(--dim)">Micro choice: balanced team (writer+retr+crit) + supervisor gives high score. Extra router adds latency.</div>`;
+  SIMS._doRoles = {supervisor:true};
+  SIMS._doToggle = function(r){
+    if(SIMS._doRoles[r]) delete SIMS._doRoles[r]; else SIMS._doRoles[r]=true;
+    const sel = Object.keys(SIMS._doRoles).filter(k=>SIMS._doRoles[k]);
+    document.getElementById('do_team').innerHTML = 'Selected: <b>' + (sel.length?sel.join(' + '):'none') + '</b>';
+    SIMS._doCalc();
+  };
+  SIMS._doCalc = function(){
+    const roles = Object.keys(SIMS._doRoles).filter(k=>SIMS._doRoles[k]);
+    const n = roles.length;
+    let base = 55;
+    if(roles.includes('writer') && roles.includes('retr') && roles.includes('crit')) base = 92;
+    else if(roles.includes('writer') && roles.includes('retr')) base = 78;
+    else if(roles.includes('crit')) base += 8;
+    const bal = (roles.includes('supervisor')?1:0.6) * (roles.length<2?0.7:1) * (roles.includes('router')?0.9:1);
+    const score = Math.round(base * bal);
+    const fb = score>85 ? '✅ Excellent for Twin multi-agent (supervisor + specialists + critic = contained blast radius)' : (score>70?'⚡ Good start — add critic for validation' : '⚠️ Unbalanced; supervisor alone or missing retriever/critic compounds errors');
+    document.getElementById('do_out').innerHTML = `<b>Team size:</b> ${n} · <b>Score:</b> <span style="color:${score>85?'var(--green)':score>70?'var(--amber)':'var(--red)'}">${score}</span><br>${fb}<br><span style="font-size:10px;color:var(--dim)">MCP multi-agent payoff: explicit handoff validation between roles.</span>`;
+  };
+  SIMS._doCalc();
+};
+SIMS.scalecost=function(b){
+  b.innerHTML=`
+  <p style="font-size:13px;color:var(--muted)">Real-time scaling cost explorer for your full MCP-exposed multi-agent Twin (L5 supervisor + voice writer core). Adjust load + tactics (affinity, checkpoint, early critic); instant $ and win feedback. L6 scaling lesson.</p>
+  <div class="row"><span class="lbl">Daily reqs</span><input type="range" id="sc_req" min="100" max="10000" step="100" value="2000" oninput="SIMS._sc()"><span class="val" id="sc_rv">2000</span></div>
+  <div class="row"><span class="lbl">Batch size</span><input type="range" id="sc_b" min="1" max="32" value="8" oninput="SIMS._sc()"><span class="val" id="sc_bv">8</span></div>
+  <div class="row"><span class="lbl">Use KV cache + prefix?</span><button class="simbtn ghost" onclick="SIMS._scToggle()">Toggle cache</button> <span id="sc_cache">ON</span></div>
+  <div id="sc_out" class="simout"></div>
+  <div style="font-size:11px;color:var(--dim)">Micro-win: high batch + cache slashes cost at scale for MCP-exposed supervisor Twin.</div>`;
+  SIMS._scCache = true;
+  SIMS._scToggle = function(){ SIMS._scCache = !SIMS._scCache; document.getElementById('sc_cache').textContent = SIMS._scCache?'ON':'OFF'; SIMS._sc(); };
+  SIMS._sc = function(){
+    const req = +document.getElementById('sc_req').value;
+    const bsz = +document.getElementById('sc_b').value;
+    document.getElementById('sc_rv').textContent=req; document.getElementById('sc_bv').textContent=bsz;
+    let c = (req / 1000) * (0.8 / Math.sqrt(bsz)); // rough $/k
+    if(SIMS._scCache) c *= 0.55;
+    c = Math.round(c*100)/100;
+    const eff = (SIMS._scCache && bsz>=8) ? 88 : (bsz>=4?72:55);
+    const msg = eff>80 ? '✅ Great economics for served MCP Twin at volume' : 'Tune batch/cache for win';
+    document.getElementById('sc_out').innerHTML = `~$${c} /day est · <b>Efficiency:</b> <span style="color:${eff>80?'var(--green)':eff>65?'var(--amber)':'var(--red)'}">${eff}%</span><br>${msg}<br><span style="font-size:10px">MCP + supervisor multi-agent + caching = scale-ready.</span>`;
+  };
+  SIMS._sc();
+};
+SIMS.multiscale=function(b){
+  b.innerHTML=`
+  <p style="font-size:13px;color:var(--muted)">Scale your Twin multi-agent system (supervisor + retriever + critic). Pick strategy + tune load. Instant feedback on tradeoffs.</p>
+  <div class="row"><span class="lbl">Scaling strategy</span>
+    <select id="ms_strat" onchange="SIMS._ms()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:6px">
+      <option value="naive">Naive: 1x each agent</option>
+      <option value="batched">Batched workers (pool + queue)</option>
+      <option value="cached" selected>Prefix cache + supervisor fanout</option>
+      <option value="spec">Speculative + critic early exit</option>
+    </select>
+  </div>
+  <div class="row"><span class="lbl">Concurrent load (req/s)</span><input type="range" id="ms_load" min="1" max="100" value="12" oninput="SIMS._ms()"><span class="val" id="ms_lv"></span></div>
+  <div class="row"><span class="lbl">Agents in team</span><input type="range" id="ms_agt" min="2" max="8" value="3" oninput="SIMS._ms()"><span class="val" id="ms_av"></span></div>
+  <div class="simout" id="ms_out"></div>
+  <div style="margin-top:4px;font-size:11px"><button class="simbtn ghost" onclick="SIMS._msChoice('scaleup')">Choice: +2 GPUs for pool</button> <button class="simbtn ghost" onclick="SIMS._msChoice('optimize')">Choice: add cache+early exit</button> <span style="color:var(--dim)">Tap choices for path-dependent boosts.</span></div>`;
+  SIMS._msBoost = 1;
+  SIMS._msChoice = function(c){ SIMS._msBoost = (c==='scaleup'?1.15:1.25); SIMS._ms(); setTimeout(()=>{SIMS._msBoost=1;},1200); };
+  SIMS._ms = function(){
+    const load = +document.getElementById('ms_load').value;
+    const agt = +document.getElementById('ms_agt').value;
+    document.getElementById('ms_lv').textContent=load; document.getElementById('ms_av').textContent=agt;
+    const strat = document.getElementById('ms_strat').value;
+    let baseSucc=82, baseCost=1.0, baseLat=240;
+    if(strat==='batched'){ baseSucc=88; baseCost=0.7; baseLat=160; }
+    else if(strat==='cached'){ baseSucc=91; baseCost=0.55; baseLat=120; }
+    else if(strat==='spec'){ baseSucc=85; baseCost=0.9; baseLat=95; }
+    const succ = Math.max(55, Math.round(baseSucc - load*0.35 + (agt-3)*1.5 ));
+    const cost = Math.round((baseCost * load * agt * 0.8) * SIMS._msBoost *10)/10;
+    const lat = Math.round(baseLat + load*2.2 - (agt-3)*5 );
+    const win = succ>80 && cost<25 && lat<300;
+    document.getElementById('ms_out').innerHTML = `Load ${load} rps · Team size ${agt}<br>
+    <b>Success:</b> <span style="color:${succ>80?'var(--green)':succ>65?'var(--amber)':'var(--red)'}">${succ}%</span> &nbsp; <b>Cost factor:</b> ${cost}× &nbsp; <b>Latency:</b> ${lat}ms<br>
+    <span style="${win?'color:var(--green)':'color:var(--amber)'}">${win?'✅ Good scale config for your Twin multi-agent (MCP-exposed supervisor)!' : '⚠️ Tradeoff: tune strategy or add caching.'}</span>
+    <div style="font-size:10px;margin-top:3px;color:var(--dim)">MCP tools exposed to supervisor scale here; cached + checkpointers win. Choice paths matter: cached supervisor wins at scale; naive blows cost. Post your sim choice + Twin snippet!</div>`;
+  };
+  SIMS._ms();
+};
 
 /* tokenizer: crude BPE-ish splitter for intuition */
 SIMS.tokenizer=function(b){
@@ -982,6 +1709,21 @@ function renderSettings(c){
     <input type="file" id="impfile" accept="application/json,.json" style="display:none" onchange="if(this.files[0])importProgress(this.files[0])">
   </div>
   <div class="simout" id="impout" style="margin-top:12px">Export downloads a file; import restores from one (it replaces current progress).</div>
+  <div style="margin-top:10px"><button class="simbtn ghost" style="font-size:12px" onclick="if(confirm('Reset streak only?')){resetStreak(); renderSettings(document.getElementById('content'));}">Reset streak (dev/ADHD fresh start)</button> <span style="font-size:11px;color:var(--dim)">Streaks auto-update on completes. Export keeps your _streak data.</span></div>
+
+  <h2 style="font-size:20px;margin:34px 0 10px">🌐 Community & Forking (static, zero friction) — Share your MCP Twin flows</h2>
+  <div class="callout tip"><div class="ct">Fully static — the easiest course to fork/customize/host for Discord cohorts (reinforced everywhere)</div>This is <strong>one index.html + data/*.js only</strong>. No build, no server, pure client. Edit <b>one CUSTOM.discordInvite</b> (plus optional shareHashtag/cohortTagline) → EVERY floating CTA (🚀 Share, ⚡Share+Discord), Share modal (MD/YAML/JSON/Forum/GitHub w/ image badges + live P/AGENT/gates + MCP/multi + new QCs), sidebar, home banner, openDiscord helper, fork UI updates instantly. Perfect for your cohort's full MCP-exposed multi-agent Twin sharing ritual + accountability. Deploy with empty build cmd + output dir=.</div>
+  <div style="margin:12px 0">
+    <button class="simbtn" onclick="openDiscord()">💬 Open ${CUSTOM.communityName} Discord</button>
+    <button class="simbtn ghost" onclick="showForkHelper()">📋 Fork Helper UI (CUSTOM-aware + static deploy)</button>
+    <button class="simbtn ghost" onclick="showShareCTA()">🚀 Preview Share your MCP Twin snippets</button>
+    <button class="simbtn ghost" onclick="const f=getForkCommands(); copyToClipboard(f.clone + '\\n' + f.edit + '\\n' + f.editExtras + '\\n' + f.serve + '\\n' + f.deploy, this)">📋 Quick fork commands (w/ extras)</button>
+    <button class="simbtn ghost" onclick="showHallOfFame()">🏆 View Hall of Fame placeholder</button>
+    <button class="simbtn ghost" onclick="showDiscordStructure()">💬 Show Discord structure examples</button>
+    <button class="simbtn ghost" onclick="copyToClipboard('git clone https://github.com/thesrivamshi/zero-to-ai-engineer.git\ncd zero-to-ai-engineer\n# === ONE-CLICK FORK GUIDE ===\n# Edit ONLY this line in index.html (near top of <script>):\n#   discordInvite: \\'https://discord.gg/YOUR_COHORT_HERE\\',\n# (Optional) shareHashtag: \\'#MyCohort\\', cohortTagline: \\'Our MCP Twins\\'\npython3 -m http.server 8000\n# Deploy: Vercel/Netlify/GH Pages (no build cmd, output dir = . )', this)">Copy full fork guide</button>
+  </div>
+  <div style="font-size:13px;color:var(--muted)">Easy customize points: CUSTOM.discordInvite (THE one line for all CTAs/shares/snippets), shareHashtag, cohortTagline, data/level*.js. Deploy: output dir=., no build. In-app buttons + Fork Helper make Discord cohort setup trivial. All share flows tie to the full MCP multi-agent Twin culmination.</div>
+  <pre style="font-size:11px;margin-top:8px">CUSTOM = { discordInvite: 'https://discord.gg/YOUR_REAL_LINK', shareHashtag: '#MyCohort', ... }  // edit once → ALL community + share productization updates</pre>
   </div>`;
 }
 async function saveKey(){
@@ -1528,6 +2270,307 @@ function importProgress(file){
   rd.readAsText(file);
 }
 
+/* ================= Share your Twin — beautiful snippets from live P state ================= */
+function getTwinStatus(){
+  const stages = {
+    'Stage 1 — Retriever Twin (RAG over your writing)': isDone('l3twin1') && isDone('l3gate'),
+    'Stage 2 — Voice Twin (fine-tuned on your corpus)': isDone('l4twin2') && isDone('l4gate'),
+    'Stage 3 — full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core — explicit course culmination)': isDone('l5twin3') && isDone('l5gate')
+  };
+  const doneStages = Object.keys(stages).filter(k=>stages[k]);
+  const gates = ['l1gate','l2gate','l3gate','l4gate','l5gate','l6gate'].filter(g=>isDone(g));
+  const badges = [];
+  if(isDone('l3twin1')) badges.push('🧠 Retriever');
+  if(isDone('l4twin2')) badges.push('🎤 Voice');
+  if(isDone('l5twin3')) badges.push('🚀 Deployed');
+  if(isDone('l5gate') && isDone('l5twin3')) badges.push('🔌 MCP');
+  if(isDone('l5gate') && isDone('l5twin3')) badges.push('🤖 Multi-Agent');
+  if(gates.length >= 3) badges.push('🛠️ Builder');
+  if(gates.length >= 5) badges.push('📈 Engineer');
+  if(isDone('l6gate')) badges.push('🏆 Scale Master');
+  const st = getStreak().count;
+  if(st >= 3) badges.push('🔥 Streak Starter');
+  if(st >= 7) badges.push('🔥 7-Day Twin');
+  if(st >= 14) badges.push('🔥 Twin Flame');
+  if(Object.keys(P).filter(k=>k.startsWith('qc_') && P[k] && P[k].done).length >= 5) badges.push('⚡ Quick Win Hunter');
+  if(isDone('l3f1quick') || isDone('l6a5quick') || isDone('l5quickmcp')) badges.push('🧩 Micro-Module Master');
+  const evidence = {};
+  ['l3gate','l4gate','l5gate'].forEach(gid=>{
+    const evs = Object.keys(P).filter(k=>k.startsWith(gid+'_ev_'));
+    if(evs.length) evidence[gid] = evs.reduce((o,k)=>{ o[k.split('_ev_')[1]] = P[k]; return o; },{});
+  });
+  // MCP/multi-agent + live AGENT state highlights (from P + AGENT + gates) — strengthened detection for shares/gates
+  const mcpReady = isDone('l5twin3') && isDone('l5gate');
+  const multiAgent = mcpReady && (isDone('l5gate') || !!AGENT.supervisor || (AGENT.tools||[]).length > 1);
+  const mcpMultiAgent = mcpReady && multiAgent; // explicit for gates/shares detection
+  const agentState = { ...AGENT, mcpExposed: mcpReady, multiAgentOrchestrated: multiAgent, mcpMultiAgent: mcpMultiAgent, twinStages: doneStages.length, culminatesAs: mcpReady ? 'full MCP-exposed multi-agent system (MCP tools/list+call + supervisor w/ voice Twin + retriever + critic — the explicit LLM Twin culmination at L5)' : 'in progress toward L5 MCP multi-agent' };
+  // compute power locally (no getTwinPower call to avoid cycle)
+  const doneCountForPower = (typeof allLessons === 'function') ? allLessons().filter(l=>!l._gate).filter(l=>isDone(l.id)).length : 0;
+  const stForPower = getStreak().count;
+  const qcForPower = Object.keys(P).filter(k=>k.startsWith('qc_') && P[k] && P[k].done).length;
+  const simsForPower = (P._feedback||[]).filter(f=>f.ctx&&f.ctx.includes('sim')).length + (badges.length>3?2:0);
+  const power = Math.round(doneCountForPower * 1.8 + stForPower * 6 + badges.length * 12 + qcForPower * 4 + simsForPower * 3);
+  return {stages, doneStages, gates, badges, evidence, totalDone: Object.keys(P).filter(k=>P[k]===true).length, mcpReady, multiAgent, mcpMultiAgent, agentState, power: Math.min(999, Math.max(0, power)) };
+}
+function buildShareSnippets(){
+  const s = getTwinStatus();
+  const pct = Math.round((s.doneStages.length / 3)*100);
+  const now = new Date().toISOString().slice(0,10);
+  const streak = getStreak().count;
+  const power = s.power || getTwinPower();
+  const hashtag = CUSTOM.shareHashtag || '#ZeroToAIEngineer';
+  const tagline = CUSTOM.cohortTagline || 'Building our full MCP-exposed multi-agent LLM Twins';
+  // Even better live snippets: MORE image badges (shields.io), MCP/multi-agent highlights, streaks, tools, CUSTOM branding, full culmination tie + live P/AGENT/gates state (enhanced; mcpMultiAgent detection)
+  const qcCount = Object.keys(P||{}).filter(k=>k.startsWith('qc_') && P[k] && P[k].done).length;
+  const mcpMA = !!(s.mcpMultiAgent || s.mcpReady && s.multiAgent);
+  const badgeImgs = [
+    `![Twin Progress](https://img.shields.io/badge/Twin-${pct}%25-${pct>66?'brightgreen':pct>33?'blue':'orange'})`,
+    `![Gates](https://img.shields.io/badge/Gates-${s.gates.length}/6-yellow)`,
+    streak>0 ? `![Streak](https://img.shields.io/badge/Streak-${streak}--day-orange)` : '',
+    `![Twin-Power](https://img.shields.io/badge/Power-${power}-cyan)`,
+    `![QCs](https://img.shields.io/badge/QuickWins-${qcCount}-brightgreen)`,
+    ...(s.badges.length ? [`![Badges](https://img.shields.io/badge/Badges-${encodeURIComponent(s.badges.join(' '))}-purple)`] : []),
+    s.mcpReady ? `![MCP](https://img.shields.io/badge/MCP-Exposed-success)` : '',
+    mcpMA ? `![Multi-Agent](https://img.shields.io/badge/Multi--Agent-Supervisor-blue)` : '',
+    s.agentState && s.agentState.mcpExposed ? `![Config](https://img.shields.io/badge/Config-Live%20P%2FAGENT-gates-informational)` : '',
+    `![Cohort](https://img.shields.io/badge/${encodeURIComponent(hashtag.replace('#',''))}-active-blueviolet)`
+  ].filter(Boolean).join(' ');
+  // Enriched MCP tools from live AGENT (if user set via labs) + live P state (e.g. evidence, feedback for config)
+  const mcpTools = (s.agentState && s.agentState.tools) ? s.agentState.tools : (s.mcpReady ? ['ask_my_twin','recall_memories','list_writing','supervisor_handoff'] : []);
+  const mcpToolsStr = mcpTools.length ? mcpTools.join(', ') : 'TBD (add in L5 MCP lab)';
+  const liveConfigFromP = {
+    ...s.agentState,
+    progress_from_p: `${pct}%`,
+    gates_completed_count: s.gates.length,
+    streak: streak,
+    quick_wins: qcCount,
+    feedback_count: (P._feedback||[]).length,
+    evidence_keys: Object.keys(s.evidence||{}),
+    last_updated: now,
+    culminates_as_full_mcp_multiagent: s.mcpReady,
+    static_client_only: true
+  };
+  // MARKDOWN for Discord / forums / GitHub — enhanced with MORE image badges + prettier + MCP/multi highlights + streaks + full culmination + live P/AGENT
+  const md = `## 🚀 My LLM Twin Progress — Zero to AI Engineer
+
+${badgeImgs}
+
+**${pct}% of Twin complete** (${s.doneStages.length}/3 stages) · ${s.gates.length} gates shipped${streak?` · 🔥 ${streak}-day streak`:''} · ⚡ ${power} Twin Power · ${qcCount} Quick Wins
+
+**Badges:** ${s.badges.join(' ') || 'Just starting — watch this space!'}
+
+### Twin Stages
+${Object.keys(s.stages).map(st => `- ${s.stages[st] ? '✅' : '⬜'} ${st}`).join('\n')}
+
+### Gates Completed
+${s.gates.length ? s.gates.map(g=>`- ✅ ${g}`).join('\n') : '- None yet'}
+
+${s.mcpReady ? `**✅ FULL MCP-EXPOSED MULTI-AGENT TWIN CULMINATION (Stage 3):** Your Twin is now a **production-grade MCP-exposed multi-agent system** (your voice Twin as core writer + retriever + critic specialists; supervisor orchestration). MCP tools/list + tools/call exposed for Claude/Cursor/other agents to consume it. Tools: ${mcpToolsStr}. (Agent spine: L2 function calling → L3 RAG+agents+multi-agent patterns → L5 MCP+FTI+supervisor Twin core → L6 scaling cost/latency/affinity/batching/persistence. Pure static single-file course.)` : 'Twin culminates at L5 as full MCP-exposed multi-agent system (supervisor + MCP server).'}
+
+${s.evidence.l5gate ? `**L5 Evidence snapshot:** \`\`\`json\n${JSON.stringify(s.evidence.l5gate, null, 2).slice(0,420)}\n\`\`\`` : ''}
+
+**Live Twin Config (P + AGENT state — from browser):** \`\`\`json\n${JSON.stringify(liveConfigFromP, null, 2).slice(0,380)}\n\`\`\`
+
+Built with the one growing agent — **now the full MCP multi-agent Twin**.
+
+Join: ${CUSTOM.discordInvite} ${hashtag}
+Fork & customize: ${CUSTOM.githubRepo}
+
+*Live export ${now} (pure static single-file — fork, set CUSTOM.discordInvite + extras, host anywhere). ${tagline}*`;
+
+  // Forum / GitHub flavored MD (beautiful ready-to-paste, extra structure)
+  const forumMd = `**🚀 LLM Twin Update** (${pct}% | ${s.doneStages.length}/3 stages | ${s.gates.length}/6 gates${streak?` | 🔥${streak}d` : ''})
+
+${badgeImgs.replace(/!\[/g,'[').replace(/\]\(https:[^)]+\)/g,'')}  (badges auto-render in MD viewers)
+
+**Status:** ${s.mcpReady ? '✅ FULL MCP-EXPOSED MULTI-AGENT (supervisor + voice writer + retriever + critic; MCP list+call ready)' : 'Building the agent spine → L5 culmination'}
+**Tools exposed (MCP):** ${mcpToolsStr}
+**Live state:** P/AGENT powered, ${power} Power, ${s.badges.length} badges.
+Discussion: What MCP tool or handoff improved your Twin most?
+
+${CUSTOM.discordInvite} ${hashtag} | Fork: ${CUSTOM.githubRepo}`;
+
+  // Short beautiful version (even better for quick Discord posts, MCP highlight)
+  const shortMd = `**My LLM Twin** — ${pct}% (${s.doneStages.length}/3) ${s.badges.join(' ')}${streak?` 🔥${streak}d` : ''}${s.mcpReady ? ' 🔌MCP 🤖MultiAgent ✅' : ''}\n✅ ${Object.keys(s.stages).filter(k=>s.stages[k]).map(k=>k.split(' — ')[0]).join(' · ') || 'Building…'}\nMCP tools: ${mcpToolsStr} · QCs:${qcCount} · ${hashtag} · Join: ${CUSTOM.discordInvite}\n(live P/AGENT/gates · full MCP multi-agent at L5)`;
+
+  // GitHub/Forum ready variant (enhanced beautiful for issues/discussions, full live state)
+  const githubMd = `## My LLM Twin Progress (${pct}% | ${s.doneStages.length}/3 stages | MCP:${s.mcpReady?'✅ full exposed multi-agent': 'in progress'})
+
+${badgeImgs}
+
+- **Stages:** ${Object.keys(s.stages).filter(k=>s.stages[k]).join(', ') || 'Building agent spine'}
+- **Gates:** ${s.gates.join(', ')}
+- **MCP Tools (live from AGENT):** ${mcpToolsStr}
+- **Streak / Power / QCs:** 🔥${streak}d | ⚡${power} | ${qcCount} quick wins
+- **Culmination:** ${s.mcpReady ? 'full MCP-exposed multi-agent system (supervisor + voice core + MCP list/call)' : '→ L5 gate for full MCP multi-agent Twin'}
+- **Config snapshot:** static, client-only from P/AGENT/gates
+
+${CUSTOM.discordInvite} ${hashtag}
+*Generated live in-app — fork & set CUSTOM.discordInvite (pure static, no build)*`;
+
+  // YAML for configs / GitHub issues / docs — even richer with MCP/multi/streaks/CUSTOM + live P/AGENT
+  const yaml = `twin:
+  owner: "your-name-here"
+  date: "${now}"
+  progress: ${pct}
+  streak_days: ${streak}
+  stages:
+    1_retriever: ${s.stages['Stage 1 — Retriever Twin (RAG over your writing)']}
+    2_voice: ${s.stages['Stage 2 — Voice Twin (fine-tuned on your corpus)']}
+    3_mcp_multiagent: ${s.stages['Stage 3 — full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core)']}
+  mcp_exposed: ${s.mcpReady}
+  multi_agent_orchestrated: ${s.multiAgent}
+  mcp_tools: [${mcpTools.map(t=>`"${t}"`).join(', ')}]
+  badges: [${s.badges.map(b=>b.replace(/[^\w\s-]/g,'')).join(', ')}]
+  gates_complete: [${s.gates.join(', ')}]
+  quick_wins: ${qcCount}
+  agent_state: ${JSON.stringify(liveConfigFromP)}
+  community: ${CUSTOM.discordInvite}
+  hashtag: ${hashtag}
+  static_fork: true  # edit ONE line in CUSTOM (discordInvite + shareHashtag) → all shares/CTAs update
+  culminates_as: full MCP-exposed multi-agent system (L5 Stage 3 + gate)
+  # Twin culminates as: full MCP server (tools/list+call) + supervisor multi-agent (voice/retriever/critic)
+  # Fork for Discord cohort: edit CUSTOM only. Deploy: output dir=., no build.
+  # Ready-to-paste for forums/gists: use the in-app 🚀 Share your Twin (live from P/AGENT/gates)
+`;
+
+  // JSON for bots, forums, structured shares — richer MCP/multi + P/AGENT + streak + culmination + choice for Discord/GitHub
+  const json = JSON.stringify({
+    app: "zero-to-ai-engineer",
+    twin: {
+      progress_pct: pct,
+      stages_completed: s.doneStages,
+      badges: s.badges,
+      gates: s.gates,
+      streak_days: streak,
+      evidence: s.evidence,
+      mcp_exposed: s.mcpReady,
+      multi_agent: s.multiAgent,
+      mcp_tools: mcpTools,
+      culminates_as: "full MCP-exposed multi-agent system (supervisor + voice Twin writer + retriever + critic; MCP tools/list+call exposed for external agents)",
+      live_state: { from: "P + AGENT + gates (browser only)", agent: liveConfigFromP }
+    },
+    exported: now,
+    links: { discord: CUSTOM.discordInvite, repo: CUSTOM.githubRepo, hashtag },
+    fork_ready: { static: true, edit_one_line: "CUSTOM.discordInvite (or shareHashtag/cohortTagline for extra branding)", tagline },
+    cohort: { name: CUSTOM.communityName, channel: CUSTOM.discordChannel || '#progress' },
+    share_variants: { md_for_discord: "use md", forum_md: "use forumMd", yaml_for_gist: "use yaml" }
+  }, null, 2);
+
+  // MORE community share templates for launch prep: twitter-style, linkedin, weekly cohort report
+  const twitterMd = `🚀 Built my LLM Twin to full MCP-exposed multi-agent system (voice + supervisor + MCP tools)! ${pct}% | ${streak}d streak ${hashtag} ${CUSTOM.discordInvite} (live from static course)`;
+  const linkedinMd = `Proud to complete the LLM Twin capstone: a full MCP-exposed multi-agent system (Stage 3: served MCP server + supervisor orchestration with my voice Twin as core writer + retriever + critic). ${pct}% progress, ${s.gates.length} gates, ${streak} day streak. Tools exposed via MCP: ${mcpToolsStr}. #AIEngineering ${hashtag}`;
+  const weeklyReport = `## Weekly Twin Report (${now})
+**Cohort:** ${CUSTOM.communityName} ${hashtag}
+**Progress:** ${pct}% (stages ${s.doneStages.length}/3) | Gates: ${s.gates.length}/6 | Streak: 🔥${streak} | Power: ⚡${power}
+**MCP + Multi-Agent Culmination:** ${s.mcpReady ? '✅ FULL MCP-EXPOSED MULTI-AGENT SYSTEM live' : 'Building toward L5'}
+**Tools:** ${mcpToolsStr}
+**Next:** ${s.mcpReady ? 'L6 scale + share to Hall of Fame' : 'Complete L5 gate + use 🚀 Share'}
+Live snippet + badges generated in-app. Join: ${CUSTOM.discordInvite}
+*All powered by pure static course + CUSTOM*`;
+
+  return {md, yaml, json, pct, badges: s.badges, shortMd, badgeImgs, mcpReady: s.mcpReady, forumMd, twitterMd, linkedinMd, weeklyReport, githubMd};
+}
+function copyToClipboard(text, btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    if(btn){ const orig=btn.textContent; btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent=orig,1400); }
+  }).catch(()=> alert('Copy failed — select & copy manually:\n\n'+text));
+}
+function renderShareModal(){
+  const snippets = buildShareSnippets();
+  const st = getStreak();
+  const hashtag = CUSTOM.shareHashtag || '#ZeroToAIEngineer';
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:860px;width:100%;max-height:92vh;overflow:auto;padding:20px 22px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-weight:800;font-size:18px">🚀 Share your full MCP-exposed multi-agent Twin — live MD/YAML/JSON + image badges + streaks</div>
+        <button onclick="this.closest('[style*=\"position:fixed\"]').remove()" style="background:none;font-size:22px;opacity:.7">×</button>
+      </div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:14px">Live from P + AGENT + gates (full state + badges + MCP tools). Shields.io badges render inline in Discord/forums/GitHub. Ties directly to the L5 culmination: full MCP-exposed multi-agent system (MCP tools/list+call + supervisor + voice Twin core). Edit CUSTOM once for branded everything. 8+ ready-to-paste formats (MD/YAML/JSON + GitHub/Forum extras).</div>
+      
+      <!-- In-app beautiful visual preview card (styled share snippet) -->
+      <div style="margin:10px 0 14px;padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:linear-gradient(135deg,var(--bg3),var(--bg2));">
+        <div style="font-size:11px;letter-spacing:.06em;color:var(--accent2);margin-bottom:4px">PREVIEW — paste MD for real image badges + MCP/MA highlights + streak</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div style="font-weight:700;font-size:15px">My LLM Twin • ${snippets.pct}% complete</div>
+          <span style="background:var(--accent);color:#fff;border-radius:99px;padding:2px 9px;font-size:11px;font-weight:700">${snippets.pct>66?'🏆':'⚙️'} Twin</span>
+          ${snippets.badges.map(b=>`<span style="border:1px solid var(--border2);border-radius:99px;padding:1px 8px;font-size:11px">${b}</span>`).join('')}
+          ${st.count?`<span style="color:#f59e0b">🔥${st.count}d</span>`:''}
+          ${snippets.mcpReady?`<span style="background:#22c55e;color:#052e1d;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700">🔌MCP+🤖MA CULMINATION</span>`:''}
+          <span style="color:var(--cyan);font-size:11px">⚡${power} Power</span>
+        </div>
+        <div style="margin:8px 0 4px;font-size:12.5px;color:var(--dim)">Stages: ${snippets.pct/33|0}/3 • Gates: ${getTwinStatus().gates.length}/6 • ${snippets.mcpReady ? '✅ FULL MCP-exposed multi-agent system (the course culmination)' : 'Culminates in MCP multi-agent (L5 gate)'}</div>
+        <div style="font-size:10px;opacity:.7">All formats live-updated from browser state. Use short MD for daily, full for gates. ${hashtag}</div>
+      </div>
+
+      <div style="margin:10px 0 6px;font-weight:700">Badges earned: <span style="font-size:14px">${snippets.badges.join(' ') || '— start building!'}</span></div>
+      
+      <div style="margin:12px 0"><b>Markdown (Discord / GitHub / Forums) — with image badges ✨</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-md').textContent,this)">Copy MD</button></div>
+      <pre id="sh-md" style="background:#0d0d11;border:1px solid var(--border);padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:180px;overflow:auto">${escapeHtml(snippets.md)}</pre>
+      
+      <div style="margin:10px 0"><b>Short beautiful version</b> (quick paste for daily accountability) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-short').textContent,this)">Copy short</button></div>
+      <pre id="sh-short" style="background:#0d0d11;border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:70px;overflow:auto">${escapeHtml(snippets.shortMd||'')}</pre>
+      
+      <div style="margin:12px 0"><b>Forum / GitHub flavored MD</b> (ready-to-paste for threads, issues — MCP focus) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-forum').textContent,this)">Copy forum MD</button></div>
+      <pre id="sh-forum" style="background:#0d0d11;border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:100px;overflow:auto">${escapeHtml(snippets.forumMd||snippets.md||'')}</pre>
+      
+      <div style="margin:12px 0"><b>YAML (config, GitHub gist, docs, bots)</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-yaml').textContent,this)">Copy YAML</button></div>
+      <pre id="sh-yaml" style="background:#0d0d11;border:1px solid var(--border);padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:120px;overflow:auto">${escapeHtml(snippets.yaml)}</pre>
+      
+      <div style="margin:12px 0"><b>JSON (structured / tracking / cohort bots)</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-json').textContent,this)">Copy JSON</button></div>
+      <pre id="sh-json" style="background:#0d0d11;border:1px solid var(--border);padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:120px;overflow:auto">${escapeHtml(snippets.json)}</pre>
+      
+      <div style="margin:10px 0"><b>Extra launch templates</b> (Twitter/X short, LinkedIn, Weekly report, GitHub/Forum ready) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-tw').textContent,this)">Copy Twitter</button> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-li').textContent,this)">Copy LinkedIn</button> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-weekly').textContent,this)">Copy Weekly</button> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-gh').textContent,this)">Copy GitHub MD</button></div>
+      <pre id="sh-tw" style="background:#0d0d11;border:1px solid var(--border);padding:8px;border-radius:8px;font-size:11px;max-height:48px;overflow:auto">${escapeHtml(snippets.twitterMd||'')}</pre>
+      <pre id="sh-li" style="background:#0d0d11;border:1px solid var(--border);padding:8px;border-radius:8px;font-size:11px;max-height:48px;overflow:auto">${escapeHtml(snippets.linkedinMd||'')}</pre>
+      <pre id="sh-weekly" style="background:#0d0d11;border:1px solid var(--border);padding:8px;border-radius:8px;font-size:11px;max-height:70px;overflow:auto">${escapeHtml(snippets.weeklyReport||'')}</pre>
+      <pre id="sh-gh" style="background:#0d0d11;border:1px solid var(--border);padding:8px;border-radius:8px;font-size:11px;max-height:90px;overflow:auto">${escapeHtml(snippets.githubMd||'')}</pre>
+      
+      <div class="row" style="margin-top:16px">
+        <button class="simbtn" onclick="const short=document.getElementById('sh-short').textContent; copyToClipboard(short,this); setTimeout(()=>openDiscord(), 900);">💬 Copy short MD + open Discord (accountability flow)</button>
+        <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-md').textContent,this); openDiscord();">📋 Copy full MD + Discord</button>
+        <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-forum').textContent,this); setTimeout(()=>openDiscord(),500);">📋 Copy forum MD + Discord</button>
+        <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-gh').textContent,this); setTimeout(()=>openDiscord(),300);">📋 Copy GitHub/Forum MD + Discord</button>
+        <button class="simbtn ghost" onclick="go('settings');this.closest('[style*=\"position:fixed\"]').remove()">⚙️ Customize Discord (CUSTOM)</button>
+        <button class="simbtn ghost" onclick="showForkHelper(); this.closest('[style*=\"position:fixed\"]').remove();">📋 Fork Helper (CUSTOM-aware)</button>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <button class="simbtn ghost" onclick="const f=getForkCommands(); copyToClipboard(f.clone+'\\n'+f.edit+'\\n'+f.editExtras+'\\n'+f.serve+'\\n'+f.deploy ,this)">📋 Copy full CUSTOM fork cmds</button>
+        <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-json').textContent,this)">Copy JSON for cohort tracking</button>
+        <button class="simbtn ghost" onclick="showHallOfFame(); this.closest('[style*=\"position:fixed\"]').remove();">🏆 Hall of Fame</button>
+        <button class="simbtn ghost" onclick="showDiscordStructure(); this.closest('[style*=\"position:fixed\"]').remove();">💬 Discord ex</button>
+      </div>
+      <div style="margin:12px 0 4px;font-size:12px;color:var(--muted)">Quick feedback (ADHD micro + instant dopamine): <button onclick="giveADHDMicroFeedback(true,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👍 Great for sharing</button> <button onclick="giveADHDMicroFeedback(false,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👎 Could improve</button></div>
+      <div style="font-size:11px;color:var(--dim);margin-top:8px">Shields.io badges auto-render as images in Discord/GH/forums. All tied to full MCP-exposed multi-agent Twin culmination (L5 Stage 3). Live from P + AGENT + gates. One-line CUSTOM.discordInvite + shareHashtag powers every share/CTA/floating button/fork. Pure static single-file — fork/customize/host anywhere (output dir=., no build).</div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+function showShareCTA(){ renderShareModal(); }
+
+function enhanceFloatingShare(){
+  const btn = document.getElementById('fabShareTwin');
+  if(!btn) return;
+  const s = getTwinStatus();
+  const st = getStreak();
+  if(s.mcpReady){
+    btn.innerHTML = `🚀 Share FULL MCP Twin 🔥`;
+    btn.style.background = 'linear-gradient(90deg,#22c55e,#16a34a)';
+    btn.title = `Share your FULL MCP-exposed multi-agent Twin culmination (Stage 3)! Beautiful live MD/YAML/JSON + shields.io badges + streaks + MCP/Multi-Agent from P/AGENT/gates. Paste for cohort.`;
+    btn.style.boxShadow = '0 6px 22px rgba(34,197,94,.45)';
+  } else if(s.doneStages.length >= 2){
+    btn.innerHTML = `🚀 Share Twin (${s.doneStages.length}/3)`;
+  } else {
+    btn.innerHTML = `🚀 Share your Twin`;
+  }
+  // add subtle streak badge if active
+  if(st.count > 0 && !btn.textContent.includes('🔥')){
+    // append streak hint without breaking
+    btn.title += ` · ${st.count}d streak`;
+  }
+}
+
 /* ================= sidebar search ================= */
 let searchTerm='';
 function setSearch(v){ searchTerm=v.toLowerCase(); renderSearchResults(); }
@@ -1670,7 +2713,7 @@ SIMS.ragreal=function(b){
 };
 
 /* ================= global notes + focus (pomodoro) timer ================= */
-function saveGlobalNotes(v){ if(v) localStorage.setItem('z2ai_globalnotes',v); else localStorage.removeItem('z2ai_globalnotes'); const s=document.getElementById('notesSaved'); if(s) s.textContent='saved ✓'; }
+function saveGlobalNotes(v){ if(v) localStorage.setItem('z2ai_globalnotes',v); else localStorage.removeItem('z2ai_globalnotes'); const s=document.getElementById('notesSaved'); if(s) s.textContent='saved ✓'; if(typeof cloudQueuePush==='function') cloudQueuePush(); }
 function toggleNotes(){ const d=document.getElementById('notesDrawer'),t=document.getElementById('timerDrawer'); if(t)t.style.display='none'; if(!d)return; const open=(d.style.display==='none'||!d.style.display); d.style.display=open?'block':'none'; if(open){ const ta=document.getElementById('globalNotes'); if(ta){ ta.value=localStorage.getItem('z2ai_globalnotes')||''; ta.focus(); } } }
 let _tk=null,_tRemain=1500,_tMode='focus',_tRunning=false;
 const _tLen={focus:1500,short:300,long:900},_tName={focus:'Focus',short:'Short break',long:'Long break'};
@@ -1686,7 +2729,7 @@ function initWidgets(){ _tPaint(); document.addEventListener('keydown',e=>{ if(e
 /* boot */
 if(!LEVELS.length){
   document.getElementById('content').innerHTML='<div style="padding:60px;text-align:center;color:var(--muted)">Course data failed to load. Make sure the <code>data/</code> folder sits next to this file.</div>';
-}else { render(); initWidgets(); }
+}else { render(); initWidgets(); cloudInitAuth(); }
 </script>
 </body>
 </html>

@@ -24,9 +24,16 @@ window.VIDEOS = {
 /* MCP */
 "l5d1":[
  {title:"codebasics — Model Context Protocol Clearly Explained (MCP Beyond the Hype)",url:"https://www.youtube.com/watch?v=tzrwxLNHtRY",why:"What MCP is and why it exists, without the hype."},
- {title:"IBM Technology — What is MCP? Integrate AI Agents with Databases & APIs",url:"https://www.youtube.com/watch?v=eur8dUO9mvE",why:"A clean conceptual picture of the client/server model."}],
-"l5d2":[{title:"Tech With Tim — Build Anything With a CUSTOM MCP Server (Python Tutorial)",url:"https://www.youtube.com/watch?v=-8k9lGpGQ6g",why:"The same list/call mechanic you built by hand, now with the real MCP SDK over stdio."}],
-"l5d3":[{title:"Tech With Tim — Build an Advanced MCP Server (Auth, Databases & More)",url:"https://www.youtube.com/watch?v=j5f2EQf5hkw",why:"Remote transport, authentication, and databases — production-shaped MCP."}],
+ {title:"IBM Technology — What is MCP? Integrate AI Agents with Databases & APIs",url:"https://www.youtube.com/watch?v=eur8dUO9mvE",why:"A clean conceptual picture of the client/server model."},
+ {title:"MCP Course #3 - Build MCP Server (2026 Update, FastMCP)",url:"https://www.youtube.com/watch?v=_veLqeCzdIQ",why:"Hands-on build of MCP server with current SDK and 2026 patterns."},
+ {title:"The Future of MCP — David Soria Parra, Anthropic (AI Engineer 2026)",url:"https://www.youtube.com/watch?v=v3Fr2JR47KA",why:"Anthropic on code execution with MCP, scaling patterns, efficiency for 1000s of tools (fresh 2026)."},
+ {title:"MCP - Code Execution with MCP for Efficient Agents (Anthropic patterns 2025/26)",url:"https://www.youtube.com/watch?v=Glbi_Tr1NSE",why:"How code mode + MCP cuts tokens dramatically, progressive disclosure, sandbox execution."},
+ {title:"Google Cloud Tech — How to build an AI Agent and MCP Server with ADK (step-by-step 2026)",url:"https://www.youtube.com/watch?v=wBnnA8aIxUs",why:"MCP + ADK integration, A2A, multi-agent teams on Google Cloud."}],
+"l5d2":[{title:"Tech With Tim — Build Anything With a CUSTOM MCP Server (Python Tutorial)",url:"https://www.youtube.com/watch?v=-8k9lGpGQ6g",why:"The same list/call mechanic you built by hand, now with the real MCP SDK over stdio."},
+ {title:"MCP Server Setup: Build Remote MCP Server Hands-On Lab 2026",url:"https://www.youtube.com/watch?v=b-99wp-KRJ8",why:"Production 2026 MCP: FastMCP, Streamable HTTP, auth, discovery."},
+ {title:"LaunchDarkly — LangGraph Multi-Agent with MCP Tools (Dynamic 2026)",url:"https://www.youtube.com/watch?v=JeyDrn1dSUQ",why:"(Related) Supervisor + MCP integration, checkpointing for production multi-agent."}],
+"l5d3":[{title:"Tech With Tim — Build an Advanced MCP Server (Auth, Databases & More)",url:"https://www.youtube.com/watch?v=j5f2EQf5hkw",why:"Remote transport, authentication, and databases — production-shaped MCP."},
+ {title:"MCP - Code Execution with MCP for Efficient Agents (Anthropic patterns)",url:"https://www.youtube.com/watch?v=Glbi_Tr1NSE",why:"Modern efficiency: code mode for MCP tools to avoid token bloat."}],
 /* Inference engines / scale */
 "l6b3":[
  {title:"IBM Technology — What is vLLM? Efficient AI Inference for LLMs",url:"https://www.youtube.com/watch?v=McLdlg5Gc9s",why:"What a serving engine does and why it beats a naive loop."},
@@ -84,7 +91,10 @@ window.VIDEOS = {
 "l3b6":[{title:"Logical Lenses — RAG Evaluation: Precision, Recall, Faithfulness, RAGAS",url:"https://www.youtube.com/watch?v=7_LTU0LA374",why:"Measuring retrieval and generation separately."}],
 "l3c1":[{title:"VectorLab — Structured Outputs: Specify a JSON schema for LLM outputs",url:"https://www.youtube.com/watch?v=mIZHRqMoJec",why:"Making AI speak machine-readable JSON."}],
 "l3c4":[{title:"Matthew Renze — Self-Reflection in LLM Agents",url:"https://www.youtube.com/watch?v=VCPwYAQTcpE",why:"Letting an agent check its own work (from the study's author)."}],
-"l3c5":[{title:"Shaw Talebi — Multi-agent Systems Explained in 17 Minutes",url:"https://www.youtube.com/watch?v=Mi5wOpAgixw",why:"When to split work across agents — and when not to."}],
+"l3c5":[{title:"Shaw Talebi — Multi-agent Systems Explained in 17 Minutes",url:"https://www.youtube.com/watch?v=Mi5wOpAgixw",why:"When to split work across agents — and when not to."},
+ {title:"Data Science Dojo — FastMCP + LangGraph Integration (2026)",url:"https://www.youtube.com/watch?v=e6SPMINZfPk",why:"Hands-on: build MCP tools with FastMCP and wire into LangGraph supervisor multi-agent (production 2026 pattern)."},
+ {title:"Google Cloud Tech — Build AI Agent + MCP Server with ADK (2026)",url:"https://www.youtube.com/watch?v=wBnnA8aIxUs",why:"Step-by-step MCP server + Google ADK multi-agent orchestration + A2A (latest cross-framework)."}],
+"l3f1":[{title:"Krish Naik — LangGraph Multi-Agent Supervisor, Swarm & Hierarchical (2026)",url:"https://www.youtube.com/watch?v=E0fQWFNqGgg",why:"Supervisor vs swarm vs hierarchical patterns with code, checkpointing, and real routing."}],
 "l3c6":[{title:"IBM Technology — The Four Types of Memory Every AI Agent Needs",url:"https://www.youtube.com/watch?v=BacJ6sEhqMo",why:"Short-term and long-term agent memory."}],
 "l3d1":[{title:"Sunny Savita — Guardrails for LLM Applications (Complete Tutorial)",url:"https://www.youtube.com/watch?v=7V1w5gnZ-kw",why:"The safety sandwich, built."}],
 "l3d2":[{title:"IBM Technology — What is Prompt Caching? Optimize LLM Latency",url:"https://www.youtube.com/watch?v=u57EnkQaUTY",why:"Caching for latency and cost."}],
@@ -125,7 +135,8 @@ window.VIDEOS = {
 "l6c3":[{title:"Simon Oz — How LLMs use multiple GPUs",url:"https://www.youtube.com/watch?v=4i76hmmnJEo",why:"Parallelism across GPUs, made visual."}],
 "l6c4":[{title:"Cole Medin — The HARD Truth About Hosting Your Own LLMs",url:"https://www.youtube.com/watch?v=EMuBqcO048E",why:"Self-host vs API — the real economics."}],
 "l6d1":[{title:"IBM Technology — What Are Vision Language Models?",url:"https://www.youtube.com/watch?v=lOD_EE96jhM",why:"Serving beyond text."}],
-"l6d2":[{title:"Arm Software Developers — Auto-scaling ML Inference with NVIDIA Triton",url:"https://www.youtube.com/watch?v=VZtWTgzfo6s",why:"Autoscaling GPUs and staying up."}],
+"l6d2":[{title:"Arm Software Developers — Auto-scaling ML Inference with NVIDIA Triton",url:"https://www.youtube.com/watch?v=VZtWTgzfo6s",why:"Autoscaling GPUs and staying up."},
+ {title:"Multi-Agent in Production + MCP Scaling 2026",url:"https://www.youtube.com/watch?v=TK9kf6a9i10",why:"Supervisor patterns, persistence, gateways, cost multipliers at scale (LangGraph/MCP focus)."}],
 "l6d3":[{title:"Arize AI — Intro to OpenTelemetry and LLM Observability",url:"https://www.youtube.com/watch?v=0I0ZrmyoTpM",why:"The client side and tracing of inference."}],
 /* ---- final gap fill ---- */
 "l3d3":[{title:"Microsoft Developer — PII Redaction with Azure AI Language",url:"https://www.youtube.com/watch?v=ZDaog_MJGS8",why:"Detecting and masking personal data before it leaks into logs."}],
@@ -137,15 +148,21 @@ window.VIDEOS = {
 /* ---- Multi-agent & frameworks (L3) ---- */
 "l3f1":[
  {title:"LangChain — Conceptual Guide: Multi-Agent Architectures",url:"https://www.youtube.com/watch?v=4nZl32FwU-o",why:"Supervisor, swarm, hierarchical — the patterns, from the LangGraph team."},
- {title:"Anthropic (AI Engineer) — How We Build Effective Agents (Barry Zhang)",url:"https://www.youtube.com/watch?v=D7_ipDqhtwk",why:"When NOT to go multi-agent — the discipline that matters most."}],
+ {title:"Anthropic (AI Engineer) — How We Build Effective Agents (Barry Zhang)",url:"https://www.youtube.com/watch?v=D7_ipDqhtwk",why:"When NOT to go multi-agent — the discipline that matters most."},
+ {title:"LangGraph Advanced – Build Multi Agent AI Systems with Supervisor",url:"https://www.youtube.com/watch?v=TK9kf6a9i10",why:"2026 deep dive: supervisor pattern, splitting agents, orchestration in LangGraph."},
+ {title:"LangGraph Multi-Agent Supervisor & Benchmarks (2025/26 updates)",url:"https://www.youtube.com/watch?v=B_0TNuYi56w",why:"Hierarchical supervisor, persistence, 50% perf gains explained from LangGraph team."}],
 "l3f2":[
  {title:"IBM Technology — LangChain vs LangGraph: A Tale of Two Frameworks",url:"https://www.youtube.com/watch?v=qAF1NjEVHhY",why:"Where each framework fits."},
  {title:"Hugging Face — OpenAI Agents SDK Crash Course",url:"https://www.youtube.com/watch?v=kKc0FwiuRg8",why:"The lightweight agents/tools/handoffs SDK."},
  {title:"Google for Developers — Getting started with Agent Development Kit (ADK)",url:"https://www.youtube.com/watch?v=44C8u0CDtSo",why:"Google's open agent framework."},
- {title:"LangChain — What Is LangSmith? Explained in 5 Minutes",url:"https://www.youtube.com/watch?v=kYtnLaJeia8",why:"Tracing and observability for agent runs."}],
+ {title:"LangChain — What Is LangSmith? Explained in 5 Minutes",url:"https://www.youtube.com/watch?v=kYtnLaJeia8",why:"Tracing and observability for agent runs."},
+ {title:"How to Build AI Agents from Scratch with Google ADK (2026 Tutorial)",url:"https://www.youtube.com/watch?v=g-Fa1GQeCRc",why:"Full 2026 walkthrough of ADK for production agents, graphs, multi-agent."},
+ {title:"OpenAI Agents SDK + MCP support updates",url:"https://www.youtube.com/watch?v=Glbi_Tr1NSE",why:"Latest on OpenAI Agents SDK with MCP integration for tools."},
+ {title:"Building MCP Agents with OpenAI Agents SDK (2026)",url:"https://www.youtube.com/watch?v=2MYzc79Lj04",why:"MCP integration + handoffs for multi-agent in OpenAI SDK."}],
 "l3f3":[
  {title:"Analytics Vidhya — LangGraph: Building a Multi-Agent AI Research Assistant",url:"https://www.youtube.com/watch?v=mRkLvqFMkyI",why:"The same supervisor idea, in LangGraph."},
- {title:"Cole Medin — OpenAI's Agents SDK (Crash Course)",url:"https://www.youtube.com/watch?v=e7qvd2bOITc",why:"Multi-agent handoffs with the OpenAI SDK."}],
+ {title:"Cole Medin — OpenAI's Agents SDK (Crash Course)",url:"https://www.youtube.com/watch?v=e7qvd2bOITc",why:"Multi-agent handoffs with the OpenAI SDK."},
+ {title:"Building Agents And Multi Agents With LangGraph",url:"https://www.youtube.com/watch?v=E0fQWFNqGgg",why:"2025/2026 patterns: supervisor, swarm, hierarchical with LangGraph."}],
 "l3f4":[
  {title:"Youri van Hofwegen — n8n Tutorial for Beginners: Build AI Agents",url:"https://www.youtube.com/watch?v=TKnaDGpN7Ns",why:"Wiring agents to triggers and schedules, no-code."},
  {title:"n8n — Quick Start: Build Your First AI Agent",url:"https://www.youtube.com/watch?v=GuaKeDS6UKU",why:"The official quick path to an automation."}],
