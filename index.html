@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
 :root{
   --bg:#ffffff; --bg2:#f7f6f3; --bg3:#efece5; --border:#e6e3db; --border2:#dad5ca;
@@ -341,6 +342,24 @@ function cloudEnabled(){ return !!(sb&&SB_USER); }
 let SB_STATS=null; // server-computed {join_date,day_number,active_days,active_today,streak,consistency}
 async function refreshStats(){ if(!cloudEnabled())return; try{ const {data}=await sb.rpc('my_stats'); if(data){ SB_STATS=data; if(typeof renderSidebar==='function') renderSidebar(); } }catch(e){} }
 function markActiveCloud(){ if(!cloudEnabled())return; try{ sb.rpc('mark_active').then(()=>refreshStats()); }catch(e){} } // server stamps current_date - can't be faked client-side
+const ADMIN_EMAILS=['srivamshi.leo@gmail.com','srivamshi.ai@gmail.com','desk.mightyminds@gmail.com'];
+function isAdmin(){ return cloudEnabled() && SB_USER && ADMIN_EMAILS.includes(((SB_USER.email)||'').toLowerCase()); }
+async function renderAdmin(c){
+  c.innerHTML=`<div style="max-width:760px;margin:0 auto;padding:8px 4px 60px"><div class="crumb"><b>Analytics</b></div><h1 class="ltitle">Analytics</h1><div class="lmeta" id="admeta">Loading…</div><div id="adbody"></div></div>`;
+  const meta=document.getElementById('admeta'), body=document.getElementById('adbody');
+  if(!cloudConfigured()){ meta.textContent=''; body.innerHTML='Cloud not configured for this build.'; return; }
+  let data=null; try{ const r=await sb.rpc('site_stats'); data=r.data; }catch(e){}
+  if(!data||!data.admin){ meta.textContent='Admins only'; body.innerHTML=`<p style="color:var(--muted)">${cloudEnabled()?'Signed in as <b>'+escapeHtml((SB_USER&&SB_USER.email)||'')+'</b>, which is not on the admin list. Add it in the <code>site_stats()</code> Supabase function.':'Sign in with an admin account to view analytics.'}</p><button class="simbtn" onclick="showAccount()">Sign in</button>`; return; }
+  meta.textContent='Live from Supabase · '+new Date().toLocaleString();
+  const card=(n,l)=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`;
+  const bars=(arr,color)=>{ arr=arr||[]; const max=Math.max(1,...arr.map(x=>x.c||0)); return `<div style="display:flex;align-items:flex-end;gap:3px;height:64px;margin-top:6px">${arr.map(x=>`<div title="${x.d}: ${x.c}" style="flex:1;background:${color};height:${Math.round((x.c||0)/max*100)}%;min-height:2px;border-radius:2px 2px 0 0"></div>`).join('')}</div><div style="font-size:10px;color:var(--dim);font-family:var(--mono);margin-top:3px">${(arr[0]||{}).d||''} → today</div>`; };
+  body.innerHTML=`
+    <div class="statrow" style="margin:6px 0 14px">${card(data.total_users,'total users')}${card(data.active_today,'active today')}${card(data.active_7d,'active · 7d')}${card(data.signups_7d,'signups · 7d')}</div>
+    <div class="statrow" style="margin:0 0 22px">${card(data.lessons_done_total,'lessons completed')}${card((data.avg_progress_pct||0)+'%','avg twin progress')}${card(data.on_leaderboard,'on leaderboard')}${card(data.public_twins,'public twins')}</div>
+    <h2>Signups · last 14 days</h2>${bars(data.signups_by_day,'var(--accent)')}
+    <h2 style="margin-top:20px">Active users · last 14 days</h2>${bars(data.active_by_day,'var(--green)')}
+    <p style="font-size:11px;color:var(--dim);margin-top:18px">Admin-only, live from Supabase. Add admin emails in the <code>site_stats()</code> function. For raw traffic (visitors &amp; sources), enable Vercel Web Analytics in the project dashboard — the script is already on the page.</p>`;
+}
 function accountChipHTML(){
   if(!cloudConfigured()) return '';
   if(cloudEnabled()){
@@ -823,6 +842,7 @@ function render(){
   else if(view==='review') renderReview(parseInt(arg),c);
   else if(view==='books') renderBooks(c);
   else if(view==='twin') renderPublicTwin(arg,c);
+  else if(view==='admin') renderAdmin(c);
   else renderHome(c);
   window.scrollTo(0,0);
   enhanceFloatingShare(); // dynamic prominence for "Share your Twin" + MCP culmination tie-in
@@ -866,6 +886,7 @@ function renderSidebar(){
   html+=`<button class="lvlhead" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
   html+=`<button class="lvlhead" onclick="showJoinGate(true)"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔒</span> Request invite <span class="pc">community</span></button>`;
+  if(typeof isAdmin==='function' && isAdmin()) html+=`<button class="lvlhead" onclick="go('admin')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📊</span> Analytics <span class="pc">admin</span></button>`;
   if(discordReady()) html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
   html+=`<button class="lvlhead" onclick="showShareCTA()" style="margin-top:2px;background:rgba(122,31,31,.06);border:1px solid var(--accent)"><span class="dot" style="background:var(--accent);color:#f7f6f3">🚀</span> Share your full MCP multi-agent Twin (live MD/YAML/JSON + badges from P/AGENT/gates)</button>
   <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper - customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
