@@ -575,7 +575,7 @@ function giveADHDMicroFeedback(like, ctx='general'){
   const el = document.createElement('span'); el.textContent = like ? '🙌 Thanks! +1 micro win' : '📝 Noted — thanks for the signal'; el.style.cssText='position:fixed;bottom:60px;right:30px;font-size:12px;background:var(--bg2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);z-index:999';
   document.body.appendChild(el); setTimeout(()=>el.remove(), 1400);
 }
-function showQuickChallenge(){
+function showQuickChallenge(){ return; /* Quick Challenge removed — kept as no-op so any stray reference is harmless */
   const dc = getDailyChallenge();
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
@@ -809,7 +809,7 @@ function renderSidebar(){
   ${accountChipHTML()}
   <div class="overall">${done} / ${total} complete<div class="bar"><i style="width:${total?Math.round(done/total*100):0}%"></i></div></div>
   <button onclick="go('start')" class="lvlhead" style="margin:0 0 8px;border:1px solid var(--accent);background:rgba(122,31,31,.05)"><span class="dot" style="background:var(--accent);color:#f7f6f3">📌</span> Start here <span class="pc" style="color:var(--accent)">Day ${dayNumber()}</span></button>
-  ${(()=>{ const st=getStreak(); return st.count>0 ? `<div style="margin:0 8px 8px;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px"><span>🔥 ${st.count}-day streak</span>${st.active?'<span style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:99px">today</span>':''} <button onclick="showQuickChallenge()" style="margin-left:auto;font-size:10px;border:1px solid var(--border2);padding:1px 6px;border-radius:4px;background:none">+ challenge</button></div>` : `<div style="margin:0 8px 8px;font-size:11px"><button onclick="showQuickChallenge()" style="font-size:11px;color:var(--cyan);background:none;border:1px solid var(--border2);padding:2px 8px;border-radius:99px">⚡ Start daily quick challenge</button></div>`; })()}
+  ${(()=>{ const st=getStreak(); return `<div style="margin:0 8px 10px;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px"><span>🔥 ${st.count}-day streak</span>${st.active?'<span style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:99px">active today</span>':'<span style="font-size:10px;color:var(--dim)">do one thing today</span>'}<span style="margin-left:auto;font-size:10px;color:var(--dim)">${consistencyPct()}% consistent</span></div>`; })()}
   <div style="margin:0 8px 10px;font-size:12px;color:var(--cyan);display:flex;align-items:center;gap:6px"><span>⚡ Twin Power: <b>${getTwinPower()}</b></span><span style="font-size:10px;background:var(--bg3);padding:1px 4px;border-radius:3px">XP</span></div>
   ${(()=>{ const s=getTwinStatus(); return s.badges.length ? `<div style="margin:0 8px 8px;font-size:10px"><span style="color:var(--muted)">Earned badges:</span> <span style="font-size:12px">${s.badges.slice(0,6).join(' ')}${s.badges.length>6?' +'+(s.badges.length-6):''}</span> <button onclick="showShareCTA()" style="font-size:9px;margin-left:4px;padding:1px 4px;border:1px solid var(--border2);border-radius:3px;background:none">share</button></div>` : `<div style="margin:0 8px 6px;font-size:10px;color:var(--dim)">No badges yet — complete Twin stages for 🧠🎤🔌🤖 etc</div>`; })()}
   <input id="sbsearch" placeholder="🔍 Search lessons…" value="${searchTerm.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:13px;outline:none;margin:0 0 10px">
@@ -879,6 +879,15 @@ function renderStart(c){
         <div class="stat"><b>${cons}%</b><span>consistent</span></div>
       </div>
 
+      <h2>What the numbers mean</h2>
+      <ul>
+        <li><strong>Day N</strong> — days since you joined. Your clock starts on Day 1.</li>
+        <li><strong>🔥 Streak</strong> — consecutive days you completed at least one thing. Miss a day and it resets, so do one small thing daily.</li>
+        <li><strong>Consistency %</strong> — the share of days you've actually shown up since joining. This is the number that matters most.</li>
+        <li><strong>⚡ Twin Power</strong> — your momentum score. It climbs as you complete lessons, hold your streak, and post in public. It's what ranks you in the cohort — so consistency, not speed, wins.</li>
+        <li><strong>Badges</strong> — milestone markers for the big builds: 🧠 Retriever Twin, 🎤 Voice Twin, 🔌 MCP, 🤖 Multi-Agent. They're proof of what you've actually shipped, earned by completing each Twin stage's project gate.</li>
+      </ul>
+
       <h2>🔒 Invite-only — how you earn it</h2>
       <p>The community is invite-only, and the bar is simple: <strong>show that you do the work, in public.</strong></p>
       <ul>
@@ -914,7 +923,7 @@ function renderHome(c){
     <div class="stat" style="border-color:var(--cyan)"><b>⚡${getTwinPower()}</b><span>Twin Power</span></div>
   </div>
   <div style="text-align:center;margin:18px 0 4px"><button class="simbtn" onclick="go('start')">📌 New here? Start here — how this cohort works</button></div>
-  <div style="text-align:center;margin:8px 0 18px"><button class="simbtn ghost" style="font-size:12.5px;padding:6px 14px" onclick="showQuickChallenge()">⚡ Quick Challenge (daily ADHD win)</button> <span style="font-size:11px;color:var(--dim)">or use 🍅 timer</span></div>`;
+  `;
   LEVELS.forEach((lv,li)=>{
     const st=levelStats(lv,li); const col=COLORS[li%COLORS.length];
     const first = lv.chapters[0].lessons[0];
