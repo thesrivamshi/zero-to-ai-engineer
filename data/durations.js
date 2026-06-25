@@ -1,6 +1,6 @@
 /* YouTube video durations in SECONDS, keyed by video id.
-   Auto-fetched via YouTube Data API (Composio) on 2026-06-25. Used by lessonTimeMinutes() to
-   estimate per-lesson time (videos + book pages + buffer). Regenerate by re-fetching contentDetails. */
+   Auto-fetched via YouTube Data API (Composio) on 2026-06-25. Includes videos.js + inline level videos.
+   Used by lessonTimeMinutes(). */
 window.VID_DUR = {
 "-8k9lGpGQ6g":1561,
 "-QVoIxEpFkM":691,
@@ -9,6 +9,7 @@ window.VID_DUR = {
 "1jReCwBgM84":318,
 "2MYzc79Lj04":2666,
 "3SBUCJzogj4":1072,
+"3c-iBn73dDE":9975,
 "44C8u0CDtSo":1125,
 "4N5fBnsBj08":174,
 "4i76hmmnJEo":722,
@@ -19,6 +20,7 @@ window.VID_DUR = {
 "7S_tz1z_5bA":11419,
 "7V1w5gnZ-kw":5172,
 "7_LTU0LA374":739,
+"7xTGNNLPyMI":12684,
 "80bIUggRJf4":513,
 "89NuzmKokIk":1948,
 "8JJ101D3knE":4153,
@@ -55,6 +57,7 @@ window.VID_DUR = {
 "NmBW49OBeBU":524,
 "OOphjh7wzm8":599,
 "PWDhTBd3cZI":304,
+"PXWYUTMt-AU":1615,
 "PqHVpvvHLpE":396,
 "Q1Y-vkXqCKM":274,
 "QhD015WUMxE":456,
@@ -78,6 +81,7 @@ window.VID_DUR = {
 "_veLqeCzdIQ":780,
 "aDmp2Uim0zQ":360,
 "aOjgPJ94-aM":350,
+"aircAruvnKk":1120,
 "aqdWSYWC_LI":1704,
 "b-99wp-KRJ8":4245,
 "bTMPwUgLZf0":2060,
@@ -88,6 +92,7 @@ window.VID_DUR = {
 "dYu8kUWSf3E":2043,
 "e6SPMINZfPk":3006,
 "e7qvd2bOITc":1877,
+"eMlx5fFNoYc":1570,
 "eihYrX7F7as":450,
 "eur8dUO9mvE":226,
 "ezdIOLbUSWg":406,
@@ -105,6 +110,7 @@ window.VID_DUR = {
 "jrHRe9lSqqA":657,
 "k1Reed3QIYE":202,
 "k2pD3k1485A":1275,
+"kCc8FmEb1nY":6980,
 "kK3NmQT241w":129,
 "kKc0FwiuRg8":1531,
 "kYtnLaJeia8":325,
@@ -124,6 +130,7 @@ window.VID_DUR = {
 "rEdx4tZoB9c":50,
 "sGvXO7CVwc0":497,
 "sJzuNAisXHA":263,
+"sVcwVQRHIc8":9191,
 "t1caDsMzWBk":879,
 "tLMViADvSNE":771,
 "trfUBIDeI1Y":369,
@@ -133,9 +140,13 @@ window.VID_DUR = {
 "v3Fr2JR47KA":1126,
 "v7qMjy_RxOs":1208,
 "vHDwpoSFdQY":2194,
+"viZrOnJclY0":972,
 "wBnnA8aIxUs":474,
+"wjZofJX0v4M":1634,
 "xbpdMkTz8L4":818,
 "y8iDGA4Y650":863,
 "zYGDpG-pTho":790,
+"zduSFxRajkE":8015,
+"zjkBMFhNj_g":3588,
 "zq97PFCftNA":339
 };
