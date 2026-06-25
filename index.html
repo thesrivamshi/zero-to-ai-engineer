@@ -596,7 +596,8 @@ const CUSTOM = {
   cohortTagline: 'Building our full MCP-exposed multi-agent LLM Twins',
   discordChannel: '#progress' // used in copy hints / templates
 };
-function openDiscord(){ window.open(CUSTOM.discordInvite, '_blank'); } // global helper — use from any button, lab, or your custom code; auto-branded by CUSTOM.discordInvite
+function discordReady(){ return !!(CUSTOM.discordInvite && !/YOUR_COHORT|YOUR_REAL_LINK|YOUR_/i.test(CUSTOM.discordInvite)); }
+function openDiscord(){ if(!discordReady()){ alert("The cohort Discord isn't set up yet — it lights up automatically once a server invite is configured (CUSTOM.discordInvite)."); return; } window.open(CUSTOM.discordInvite, '_blank'); } // graceful until a real invite is set
 window.openDiscord = openDiscord; // reinforced for easy community hooks / forks / extensions
 function getForkCommands(){
   const base = CUSTOM.githubRepo.replace(/\.git$/,'');
@@ -783,7 +784,7 @@ function renderSidebar(){
   html+=`<button class="lvlhead" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
   if(typeof cloudConfigured==='function' && cloudConfigured()) html+=`<button class="lvlhead" onclick="showHallOfFame()"><span class="dot" style="background:var(--bg3);color:var(--muted)">🏆</span> Hall of Fame <span class="pc">live</span></button>`;
-  html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
+  if(discordReady()) html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
   html+=`<button class="lvlhead" onclick="showShareCTA()" style="margin-top:2px;background:rgba(122,31,31,.06);border:1px solid var(--accent)"><span class="dot" style="background:var(--accent);color:#f7f6f3">🚀</span> Share your full MCP multi-agent Twin (live MD/YAML/JSON + badges from P/AGENT/gates)</button>
   <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper — customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
   html+='</div>';
