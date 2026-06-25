@@ -666,14 +666,11 @@ function showHallOfFame(){
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:17px">🏆 Cohort Hall of Fame</b><button onclick="modalClose(this)" style="background:none;font-size:20px">×</button></div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Live leaderboard of cohort Twins — signed-in builders appear automatically, ranked by Twin progress then ⚡ Power. Click a name to view their public Twin page.</div>
       <div id="liveLeaderboard" style="margin-bottom:16px">Loading live leaderboard…</div>
-      <div style="color:var(--muted);font-size:12px;margin-bottom:8px;border-top:1px solid var(--border2);padding-top:10px">Examples (and a place to brag — use 🚀 Share to post yours to Discord):</div>
-      <div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:10px 0">
-        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥14d · @alex</b><br>100% (3/3) 🧠🎤🔌🤖MultiAgent<br>✅ full MCP-exposed multi-agent (supervisor + voice writer)<br><button onclick="copyToClipboard('## My Twin 100% MCP+Multi 🔥\\nTools: ask_my_twin, supervisor_handoff\\n' + (typeof CUSTOM!=='undefined'?CUSTOM.discordInvite:''),this)" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Copy example share</button></div>
-        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥9d · @sam</b><br>Stage3 ✅ L5gate · MCP tools verified<br>Supervisor handoff fixed 4 faithfulness fails<br><button onclick="showShareCTA();modalClose(this)" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Your turn: Share Twin</button></div>
-        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>Scale Master · @jordan</b><br>🏆 L6 + 3 MCP agents<br>Cost &lt;$0.002/query @ batch=32<br><span style="color:var(--dim);font-size:10px">Add yours via 🚀 floating CTA → paste to Discord</span></div>
+      <div class="row" style="margin-top:14px;border-top:1px solid var(--border2);padding-top:14px">
+        ${(typeof cloudEnabled==='function'&&cloudEnabled()) ? `<button class="simbtn" onclick="cloudPush().then(()=>{modalClose(this);showHallOfFame();})">⬆ Update my standing</button>` : `<button class="simbtn" onclick="showAccount();modalClose(this)">☁️ Sign in to appear</button>`}
+        <button class="simbtn ghost" onclick="showShareCTA();modalClose(this)">🚀 Share your Twin</button>
       </div>
-      <div class="row" style="margin-top:12px"><button class="simbtn" onclick="showShareCTA();modalClose(this)">🚀 Generate your live MCP Twin snippet + badges</button> <button class="simbtn ghost" onclick="openDiscord();">💬 Post to #hall-of-fame on Discord</button> <button class="simbtn ghost" onclick="showForkHelper();modalClose(this)">📋 Customize for your cohort</button></div>
-      <div style="font-size:10px;color:var(--dim);margin-top:8px">Hall of Fame = accountability + celebration. All snippets auto-include "full MCP-exposed multi-agent system" + live state. Perfect launch ritual.</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px">Sign in and your Twin appears here automatically as you complete stages — ranked by progress, then ⚡ Power. Make a lesson or stage progress to climb.</div>
     </div>`;
   document.body.appendChild(modal);
   window.closeHOF=()=>{ try{ modal.remove(); }catch(e){} };
