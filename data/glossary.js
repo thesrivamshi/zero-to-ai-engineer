@@ -1,4 +1,5 @@
 window.GLOSSARY = {
+"gqa": "Grouped-query attention — an attention design where several query heads share one key/value head, shrinking the KV cache (and its memory cost) roughly 4–8× versus classic multi-head attention, with little quality loss. Standard in modern models like Llama-3, Qwen2.5, and Mistral.",
 "token": "The chunk of text a model actually reads and writes — usually a word piece, about 4 characters or ¾ of a word in English. Models never see letters or words, only tokens.",
 "tokenizer": "The program that splits text into tokens before it reaches the model, using a fixed vocabulary learned from data (commonly ~50k–200k pieces).",
 "llm": "Large Language Model — a neural network with billions of parameters trained on huge amounts of text to predict the next token.",

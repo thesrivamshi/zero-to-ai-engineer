@@ -104,8 +104,8 @@ estimate_tokens("hello world")   # 2.75</code></pre>
 py:{
 task:"Build the exact data shape used by every chat API: create a list called <b>messages</b> containing two dictionaries — a system message ('You are a helpful tutor.') and a user message ('What is a token?'). Then loop over the list and print each message's role and content, separated by ': '. Finally, write a function <b>estimate_tokens(text)</b> returning len(text)/4 and print the estimate for the user message's content.",
 starter:"# 1) build the messages list (list of dicts with 'role' and 'content')\nmessages = [\n    # your two dictionaries here\n]\n\n# 2) loop and print  role: content\n\n# 3) define estimate_tokens(text) and print the estimate for the user message\n",
-check:{stdoutIncludes:["system: You are a helpful tutor.","user: What is a token?"],stdoutRegex:"4\\.25|4\\.3",codeIncludes:["def estimate_tokens"],failMsg:"Print each message as role: content, and print the token estimate (len/4) for 'What is a token?' (=4.25)."},
-hint:"Loop: for m in messages: print(f\"{m['role']}: {m['content']}\")  — and 'What is a token?' has 17 characters, so 17/4 = 4.25"},
+check:{stdoutIncludes:["system: You are a helpful tutor.","user: What is a token?"],stdoutRegex:"4\\.0",codeIncludes:["def estimate_tokens"],failMsg:"Print each message as role: content, and print the token estimate (len/4) for 'What is a token?' (=4.0)."},
+hint:"Loop: for m in messages: print(f\"{m['role']}: {m['content']}\")  — and 'What is a token?' has 16 characters, so 16/4 = 4.0"},
 quiz:[
 {q:"Given msg = {\"role\": \"user\", \"content\": \"Hi\"}, how do you get \"Hi\"?",o:["msg[1]","msg[\"content\"]","msg.content()"],a:1,e:"Dictionaries are accessed by key name in square brackets. This exact shape — role + content — is how all chat APIs structure messages."},
 {q:"What does Python use to define which lines belong inside a loop or function?",o:["Curly braces { }","Indentation (leading spaces)","Semicolons"],a:1,e:"Indentation is structural in Python, not decorative. Most beginner syntax errors are indentation errors."}]},
@@ -630,7 +630,7 @@ cases:[
 {input:"Beautiful design, but it crashes constantly",expected:"mixed"},
 {input:"Expensive but honestly worth every penny",expected:"positive"},
 {input:"Stopped working after a week, very disappointed",expected:"negative"},
-{input:"Does the job, nothing special",expected:"mixed"}]},
+{input:"Beautiful screen, but the battery dies in two hours",expected:"mixed"}]},
 body:`
 <p>You built a harness as a local script in the last lab. Now run one <strong>live, in this page</strong>, against your connected API key — and feel the real engineering loop: change the prompt, re-measure, beat the threshold.</p>
 <p>The lab below runs your prompt template against 10 sentiment cases and reports per-case ✓/✗ plus accuracy. Your job: get to <strong>80%+</strong>. The interesting cases are the sarcastic ones ("Oh fantastic, ANOTHER update…") and the genuinely mixed ones ("Great screen but the battery is a joke"). A first run rarely clears the bar.</p>
