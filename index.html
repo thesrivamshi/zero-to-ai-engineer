@@ -596,8 +596,31 @@ const CUSTOM = {
   cohortTagline: 'Building our full MCP-exposed multi-agent LLM Twins',
   discordChannel: '#progress' // used in copy hints / templates
 };
-function discordReady(){ return !!(CUSTOM.discordInvite && !/YOUR_COHORT|YOUR_REAL_LINK|YOUR_/i.test(CUSTOM.discordInvite)); }
-function openDiscord(){ if(!discordReady()){ alert("The cohort Discord isn't set up yet — it lights up automatically once a server invite is configured (CUSTOM.discordInvite)."); return; } window.open(CUSTOM.discordInvite, '_blank'); } // graceful until a real invite is set
+function discordReady(){ return false; } // Discord hidden for now — community is invite-only via the form below
+function openDiscord(){ /* Discord disabled for now */ }
+
+/* ===== Invite-only community gate (Typeform) ===== */
+const JOIN_FORM_URL = 'https://form.typeform.com/to/dLHCfwiH';
+function joinGateSeen(){ try{ return localStorage.getItem('z2ai_join_seen')==='1'; }catch(e){ return false; } }
+function openJoinForm(){ try{ localStorage.setItem('z2ai_join_seen','1'); }catch(e){} window.open(JOIN_FORM_URL,'_blank'); const m=document.getElementById('joinGate'); if(m)m.remove(); }
+function dismissJoinGate(){ try{ localStorage.setItem('z2ai_join_seen','1'); }catch(e){} const m=document.getElementById('joinGate'); if(m)m.remove(); }
+function showJoinGate(force){
+  if(!force && joinGateSeen()) return;
+  if(document.getElementById('joinGate')) return;
+  const m=document.createElement('div'); m.id='joinGate';
+  m.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(20,19,15,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
+  m.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;max-width:460px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 24px 64px rgba(20,19,15,.22)">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">🔒 Invite-only community</div>
+    <div style="font-family:var(--serif);font-size:27px;line-height:1.12;margin-bottom:14px">Join Zero to AI Engineer</div>
+    <p style="color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:24px">We're building a private, invite-only community of people becoming AI engineers. Request an invite — it takes a minute (your LinkedIn + the role you're working toward).<br><br>Just here to learn? The full course is free — skip and start anytime.</p>
+    <button onclick="openJoinForm()" style="display:block;width:100%;background:var(--accent);color:#f7f6f3;border:none;border-radius:5px;padding:14px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:12px;cursor:pointer;margin-bottom:10px">Request an invite →</button>
+    <button onclick="dismissJoinGate()" style="display:block;width:100%;background:none;border:none;color:var(--dim);font-size:13px;padding:6px;cursor:pointer">Skip — just use the course</button>
+  </div>`;
+  document.body.appendChild(m);
+}
+/* Hide features parked for later (Discord + leaderboard) wherever they render, including dynamic modals */
+function hideHiddenFeatures(root){ try{ (root||document).querySelectorAll('[onclick*="openDiscord"],[onclick*="showHallOfFame"]').forEach(el=>{ el.style.display='none'; }); }catch(e){} }
+function installFeatureHider(){ try{ hideHiddenFeatures(); new MutationObserver(()=>hideHiddenFeatures()).observe(document.body,{childList:true,subtree:true}); }catch(e){} }
 window.openDiscord = openDiscord; // reinforced for easy community hooks / forks / extensions
 function getForkCommands(){
   const base = CUSTOM.githubRepo.replace(/\.git$/,'');
@@ -659,7 +682,8 @@ function maybeShowOnboarding(){
     document.body.appendChild(m);
   }, 1400);
 }
-function showHallOfFame(){
+function showHallOfFame(){ return; /* leaderboard parked for now */
+  // eslint-disable-next-line no-unreachable
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
@@ -745,7 +769,7 @@ function render(){
   else renderHome(c);
   window.scrollTo(0,0);
   enhanceFloatingShare(); // dynamic prominence for "Share your Twin" + MCP culmination tie-in
-  maybeShowOnboarding(); // community launch: one-time ADHD-friendly onboarding + MCP Twin intro + CTAs
+  showJoinGate(); // invite-only community gate (Typeform) — shows once, skippable
 }
 
 /* ================= sidebar ================= */
@@ -783,7 +807,7 @@ function renderSidebar(){
   html+=`<button class="lvlhead" style="margin-top:10px" onclick="go('books')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📚</span> Book progress <span class="pc">${bookPct()}%</span></button>`;
   html+=`<button class="lvlhead" onclick="go('glossary')"><span class="dot" style="background:var(--bg3);color:var(--muted)">📖</span> Glossary</button>`;
   html+=`<button class="lvlhead" onclick="go('settings')"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔑</span> API key ${getKey()?'<span class="pc" style="color:var(--green)">connected</span>':'<span class="pc">not set</span>'}</button>`;
-  if(typeof cloudConfigured==='function' && cloudConfigured()) html+=`<button class="lvlhead" onclick="showHallOfFame()"><span class="dot" style="background:var(--bg3);color:var(--muted)">🏆</span> Hall of Fame <span class="pc">live</span></button>`;
+  html+=`<button class="lvlhead" onclick="showJoinGate(true)"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔒</span> Request invite <span class="pc">community</span></button>`;
   if(discordReady()) html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
   html+=`<button class="lvlhead" onclick="showShareCTA()" style="margin-top:2px;background:rgba(122,31,31,.06);border:1px solid var(--accent)"><span class="dot" style="background:var(--accent);color:#f7f6f3">🚀</span> Share your full MCP multi-agent Twin (live MD/YAML/JSON + badges from P/AGENT/gates)</button>
   <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper — customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
@@ -2762,7 +2786,7 @@ function initWidgets(){ _tPaint(); document.addEventListener('keydown',e=>{ if(e
 /* boot */
 if(!LEVELS.length){
   document.getElementById('content').innerHTML='<div style="padding:60px;text-align:center;color:var(--muted)">Course data failed to load. Make sure the <code>data/</code> folder sits next to this file.</div>';
-}else { render(); initWidgets(); cloudInitAuth(); }
+}else { render(); initWidgets(); cloudInitAuth(); installFeatureHider(); }
 </script>
 </body>
 </html>
