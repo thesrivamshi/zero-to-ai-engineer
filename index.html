@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zero to AI Engineer — An Interactive Course</title>
+<title>Zero to AI Engineer - An Interactive Course</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -96,7 +96,7 @@ h1.ltitle{font-family:var(--serif);font-weight:400;font-size:38px;letter-spacing
 .callout.tip{border-left-color:var(--green)}
 .callout .ct{font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.18em;margin-bottom:7px;color:var(--accent);font-family:var(--mono)}
 .callout.warn .ct{color:var(--amber)}.callout.fail .ct{color:var(--red)}.callout.tip .ct{color:var(--green)}
-/* collapsible repeated info note — collapsed to one line; expands on hover, click pins open (touch-friendly) */
+/* collapsible repeated info note - collapsed to one line; expands on hover, click pins open (touch-friendly) */
 .infonote{border:1px solid var(--border);border-left:2px solid var(--green);background:var(--bg2);border-radius:0 5px 5px 0;margin:18px 0;overflow:hidden}
 .infonote .in-h{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 14px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:10.5px;color:var(--green);user-select:none}
 .infonote .in-h .chev{margin-left:auto;transition:transform .3s ease;font-size:11px}
@@ -265,7 +265,7 @@ h1.ltitle{font-family:var(--serif);font-weight:400;font-size:38px;letter-spacing
       <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="font-size:20px">☰</button>
       <b style="font-size:14px">Zero to AI Engineer</b>
       <button onclick="showAccount()" id="topbarAccount" title="Sign in / account & sync" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;border:1px solid var(--border2);border-radius:99px;padding:5px 11px;color:var(--text)">☁️ <span id="topbarAcctLabel">Sign in</span></button>
-      <a href="https://github.com/thesrivamshi/zero-to-ai-engineer" target="_blank" rel="noopener" title="Open source on GitHub — star it, fork it, deploy your own" aria-label="GitHub repository" style="margin-left:12px;display:inline-flex;align-items:center;gap:6px;color:var(--text);text-decoration:none;font-size:13px;opacity:.85">
+      <a href="https://github.com/thesrivamshi/zero-to-ai-engineer" target="_blank" rel="noopener" title="Open source on GitHub - star it, fork it, deploy your own" aria-label="GitHub repository" style="margin-left:12px;display:inline-flex;align-items:center;gap:6px;color:var(--text);text-decoration:none;font-size:13px;opacity:.85">
         <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <span style="display:none">GitHub</span>
       </a>
@@ -280,7 +280,7 @@ h1.ltitle{font-family:var(--serif);font-weight:400;font-size:38px;letter-spacing
 <!-- Floating share/Discord/fork CTAs removed for a cleaner, less distracting UI. Sharing still available from the sidebar (Share your Twin / Hall of Fame / Account). -->
 <div id="notesDrawer" style="display:none;position:fixed;right:18px;bottom:118px;z-index:51;width:min(390px,92vw);background:var(--bg3);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:14px">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:14px">📝 My notes</b><span style="font-size:11px;color:var(--muted)" id="notesSaved">autosaves</span></div>
-  <textarea id="globalNotes" placeholder="Jot anything as you go — questions, ideas, things to revisit. Autosaves to this browser; open anytime with the 📝 button." style="width:100%;min-height:220px;resize:vertical;background:var(--bg2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-size:13px;outline:none;font-family:inherit" oninput="saveGlobalNotes(this.value)"></textarea>
+  <textarea id="globalNotes" placeholder="Jot anything as you go - questions, ideas, things to revisit. Autosaves to this browser; open anytime with the 📝 button." style="width:100%;min-height:220px;resize:vertical;background:var(--bg2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-size:13px;outline:none;font-family:inherit" oninput="saveGlobalNotes(this.value)"></textarea>
   <div style="font-size:11px;color:var(--muted);margin-top:6px">Global pad. Each lesson also has its own note box at the bottom. Both back up via Settings → Export progress.</div>
 </div>
 <div id="timerDrawer" style="display:none;position:fixed;right:18px;bottom:118px;z-index:51;width:min(300px,92vw);background:var(--bg3);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:16px;text-align:center">
@@ -328,7 +328,7 @@ function updateAgent(partial){ AGENT = {...AGENT, ...partial, updated: new Date(
 function awardTwinProgress(id, extra){ if(id && !P[id]) P[id]=true; updateStreakOnComplete(); if(extra) updateAgent(extra); save(); renderSidebar(); }
 const COLORS=['#34d399','#22d3ee','#a78bfa','#fbbf24','#fb923c','#f87171'];
 
-/* ================= Cloud sync + Auth (Supabase) — OPTIONAL & additive.
+/* ================= Cloud sync + Auth (Supabase) - OPTIONAL & additive.
    localStorage (P/AGENT) stays the offline source of truth; signing in just syncs it
    across devices, powers the live Hall of Fame leaderboard, and gives a public Twin page.
    The anon key below is a publishable client key (safe to ship); all data is guarded by RLS. */
@@ -340,7 +340,7 @@ function cloudConfigured(){ return !!sb; }
 function cloudEnabled(){ return !!(sb&&SB_USER); }
 let SB_STATS=null; // server-computed {join_date,day_number,active_days,active_today,streak,consistency}
 async function refreshStats(){ if(!cloudEnabled())return; try{ const {data}=await sb.rpc('my_stats'); if(data){ SB_STATS=data; if(typeof renderSidebar==='function') renderSidebar(); } }catch(e){} }
-function markActiveCloud(){ if(!cloudEnabled())return; try{ sb.rpc('mark_active').then(()=>refreshStats()); }catch(e){} } // server stamps current_date — can't be faked client-side
+function markActiveCloud(){ if(!cloudEnabled())return; try{ sb.rpc('mark_active').then(()=>refreshStats()); }catch(e){} } // server stamps current_date - can't be faked client-side
 function accountChipHTML(){
   if(!cloudConfigured()) return '';
   if(cloudEnabled()){
@@ -375,7 +375,7 @@ async function cloudPull(){ if(!cloudEnabled())return; try{
   const { data:prof } = await sb.from('profiles').select('*').eq('id',SB_USER.id).maybeSingle(); SB_PROFILE=prof||null;
   const { data } = await sb.from('progress').select('*').eq('user_id',SB_USER.id).maybeSingle();
   if(data){
-    P = Object.assign({}, data.p||{}, P);          // union; local presence wins (booleans) — no progress lost
+    P = Object.assign({}, data.p||{}, P);          // union; local presence wins (booleans) - no progress lost
     AGENT = Object.assign({}, data.agent||{}, AGENT);
     const gn = data.gates && data.gates.globalNotes;
     if(gn && !localStorage.getItem('z2ai_globalnotes')) localStorage.setItem('z2ai_globalnotes', gn);
@@ -394,11 +394,11 @@ async function cloudInitAuth(){ if(!sb)return; try{
 
 function _acctMsg(t,ok){ const m=document.getElementById('acctMsg'); if(m){ m.textContent=t; m.style.color=ok?'var(--green)':'var(--amber)'; } }
 async function acctSignIn(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||!p)return _acctMsg('Enter email + password.'); _acctMsg('Signing in…',true); const { error }=await sb.auth.signInWithPassword({ email:e, password:p }); if(error)return _acctMsg(error.message); _acctMsg('Signed in ✓',true); setTimeout(closeAccount,500); }
-async function acctSignUp(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||p.length<6)return _acctMsg('Email + password (min 6 chars).'); _acctMsg('Creating account…',true); const { data, error }=await sb.auth.signUp({ email:e, password:p }); if(error)return _acctMsg(error.message); if(data&&data.session){ _acctMsg('Account created ✓',true); setTimeout(closeAccount,500); } else { _acctMsg('Account created — check your email to confirm, then sign in.',true); } }
-async function acctMagic(){ const e=document.getElementById('acctEmail').value.trim(); if(!e)return _acctMsg('Enter your email first.'); _acctMsg('Sending magic link…',true); const { error }=await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin+location.pathname } }); if(error)return _acctMsg(error.message); _acctMsg('Magic link sent — check your email ✉️',true); }
+async function acctSignUp(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||p.length<6)return _acctMsg('Email + password (min 6 chars).'); _acctMsg('Creating account…',true); const { data, error }=await sb.auth.signUp({ email:e, password:p }); if(error)return _acctMsg(error.message); if(data&&data.session){ _acctMsg('Account created ✓',true); setTimeout(closeAccount,500); } else { _acctMsg('Account created - check your email to confirm, then sign in.',true); } }
+async function acctMagic(){ const e=document.getElementById('acctEmail').value.trim(); if(!e)return _acctMsg('Enter your email first.'); _acctMsg('Sending magic link…',true); const { error }=await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin+location.pathname } }); if(error)return _acctMsg(error.message); _acctMsg('Magic link sent - check your email ✉️',true); }
 async function acctSignOut(){ await sb.auth.signOut(); SB_USER=null; SB_PROFILE=null; renderSidebar(); closeAccount(); }
 function closeAccount(){ const m=document.getElementById('acctModal'); if(m)m.remove(); }
-// Robust modal close: walk up to the fixed-position overlay and remove it (quote-safe — replaces the fragile this.closest('[style*=...]') pattern).
+// Robust modal close: walk up to the fixed-position overlay and remove it (quote-safe - replaces the fragile this.closest('[style*=...]') pattern).
 function modalClose(el){ let n=el; while(n){ if(n.style && n.style.position==='fixed'){ n.remove(); return; } n=n.parentElement; } }
 function showAccount(){
   if(!cloudConfigured()){ alert('Cloud sync is not configured for this build.'); return; }
@@ -418,14 +418,14 @@ function showAccount(){
       <div class="row" style="display:block;margin-bottom:8px"><span class="lbl" style="display:block;margin-bottom:4px">Email</span><input class="keyinput" id="acctEmail" type="email" placeholder="you@example.com"></div>
       <div class="row" style="display:block;margin-bottom:10px"><span class="lbl" style="display:block;margin-bottom:4px">Password (min 6 chars)</span><input class="keyinput" id="acctPw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')acctSignIn()"></div>
       <div class="row"><button class="simbtn" onclick="acctSignIn()">Sign in</button> <button class="simbtn ghost" onclick="acctSignUp()">Create account</button></div>
-      <div style="text-align:center;color:var(--dim);font-size:11px;margin:8px 0">— or —</div>
+      <div style="text-align:center;color:var(--dim);font-size:11px;margin:8px 0">- or -</div>
       <div class="row"><button class="simbtn ghost" style="width:100%" onclick="acctMagic()">✉️ Email me a magic link (no password)</button></div>`;
   }
   modal.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:440px;width:100%;padding:20px;position:relative">
     <button onclick="closeAccount()" style="position:absolute;top:12px;right:14px;background:none;font-size:20px">×</button>
     ${body}
     <div id="acctMsg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
-    <div style="font-size:10px;color:var(--dim);margin-top:8px">Data is row-level-security protected — only you can read/write your own progress.</div>
+    <div style="font-size:10px;color:var(--dim);margin-top:8px">Data is row-level-security protected - only you can read/write your own progress.</div>
   </div>`;
   modal.addEventListener('click',e=>{ if(e.target===modal) closeAccount(); });
   document.body.appendChild(modal);
@@ -433,7 +433,7 @@ function showAccount(){
 
 async function loadLeaderboard(){ const el=document.getElementById('liveLeaderboard'); if(!el)return; if(!cloudConfigured()){ el.style.display='none'; return; }
   try{ const { data, error }=await sb.from('leaderboard').select('*').order('twin_progress_pct',{ascending:false}).order('power',{ascending:false}).limit(25);
-    if(error||!data||!data.length){ el.innerHTML=`<div style="color:var(--dim);font-size:12px;padding:6px 0">No public Twins on the board yet — be the first! Sign in (☁️ in the sidebar) and your progress appears here automatically.</div>`; return; }
+    if(error||!data||!data.length){ el.innerHTML=`<div style="color:var(--dim);font-size:12px;padding:6px 0">No public Twins on the board yet - be the first! Sign in (☁️ in the sidebar) and your progress appears here automatically.</div>`; return; }
     el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12.5px">
       <thead><tr style="color:var(--muted);text-align:left"><th style="padding:4px 6px">#</th><th style="padding:4px 6px">Twin</th><th style="padding:4px 6px">Progress</th><th style="padding:4px 6px">Stages</th><th style="padding:4px 6px">🔥</th><th style="padding:4px 6px">⚡</th></tr></thead>
       <tbody>${data.map((r,i)=>`<tr style="border-top:1px solid var(--border2)"><td style="padding:5px 6px">${i+1}</td><td style="padding:5px 6px">${r.avatar_emoji||'🧠'} ${r.twin_slug?`<a href="#twin/${encodeURIComponent(r.twin_slug)}" onclick="closeHOF&&closeHOF()" style="color:var(--cyan)">${escapeHtml(r.display_name||'Anonymous')}</a>`:escapeHtml(r.display_name||'Anonymous')}</td><td style="padding:5px 6px">${r.twin_progress_pct}%</td><td style="padding:5px 6px">${r.stages_done}/3</td><td style="padding:5px 6px">${r.streak_days||0}d</td><td style="padding:5px 6px">${r.power||0}</td></tr>`).join('')}</tbody></table>`;
@@ -451,7 +451,7 @@ async function renderPublicTwin(slug,c){
       <button class="simbtn ghost" onclick="go('home')" style="margin-bottom:14px">← Zero to AI Engineer</button>
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
         <div style="font-size:22px;font-weight:800;margin-bottom:2px">🧠 ${escapeHtml(slug)}'s LLM Twin</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:14px">A growing AI agent built level-by-level${t.mcpReady?' — now a full MCP-exposed multi-agent system':''}. Last updated ${escapeHtml((data.updated_at||'').slice(0,10))}.</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:14px">A growing AI agent built level-by-level${t.mcpReady?' - now a full MCP-exposed multi-agent system':''}. Last updated ${escapeHtml((data.updated_at||'').slice(0,10))}.</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px">
           ${[['Twin progress',(m.twin_progress_pct||0)+'%'],['Stages',(m.stages_done||0)+'/3'],['🔥 Streak',(m.streak_days||0)+'d'],['⚡ Power',(m.power||0)],['Lessons',(m.lessons_done||0)]].map(x=>`<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px"><div style="font-size:11px;color:var(--muted)">${x[0]}</div><div style="font-size:18px;font-weight:700">${x[1]}</div></div>`).join('')}
         </div>
@@ -520,11 +520,11 @@ function getTwinPower(){
   } catch(e){ return 0; }
 }
 const QUICK_CHALLENGES = [
-  {id:'qc1', t:'5-min win: One-sentence eval', desc:'Write a one-sentence eval for your current Twin stage. "It fails when..." — paste in your lesson notes.'},
+  {id:'qc1', t:'5-min win: One-sentence eval', desc:'Write a one-sentence eval for your current Twin stage. "It fails when..." - paste in your lesson notes.'},
   {id:'qc2', t:'Quick challenge: Re-run a sim', desc:'Open any simulator (e.g. temperature or chunking), change a knob, screenshot or note one surprising output.'},
   {id:'qc3', t:'Micro RAG test', desc:'In your mind or notes: give the Twin a question it must refuse from docs. Does Stage 1 retriever handle it?'},
   {id:'qc4', t:'Prompt tweak', desc:'Take one of your Twin prompts and add "Answer ONLY from provided context. Else say I do not know." Test mentally.'},
-  {id:'qc5', t:'Badge flex prep', desc:'Complete one undone micro-lesson (3–5 min marked ones) and immediately Share Twin to lock the badge in your snippet.'},
+  {id:'qc5', t:'Badge flex prep', desc:'Complete one undone micro-lesson (3-5 min marked ones) and immediately Share Twin to lock the badge in your snippet.'},
   {id:'qc6', t:'Trace a failure', desc:'Recall or invent one place your Twin would hallucinate. Add a guardrail idea in notes.'},
   {id:'qc7', t:'MCP micro: list tools', desc:'In your L5 MCP lab or notebook: mentally or actually call tools/list on your Twin MCP server. Note the exposed tools (ask_my_twin etc).'},
   {id:'qc8', t:'Multi-agent choice', desc:'Which pattern fits your Twin best today: supervisor (orchestrator), handoffs, or router? Note one reason + one failure mode it prevents.'},
@@ -578,20 +578,20 @@ function giveADHDMicroFeedback(like, ctx='general'){
   P._feedback.push({t: new Date().toISOString().slice(0,16), like:!!like, ctx});
   if(like) updateStreakOnComplete(); // positive feedback gives streak bump for dopamine
   save();
-  const el = document.createElement('span'); el.textContent = like ? '🙌 Thanks! +1 micro win' : '📝 Noted — thanks for the signal'; el.style.cssText='position:fixed;bottom:60px;right:30px;font-size:12px;background:var(--bg2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);z-index:999';
+  const el = document.createElement('span'); el.textContent = like ? '🙌 Thanks! +1 micro win' : '📝 Noted - thanks for the signal'; el.style.cssText='position:fixed;bottom:60px;right:30px;font-size:12px;background:var(--bg2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);z-index:999';
   document.body.appendChild(el); setTimeout(()=>el.remove(), 1400);
 }
-function showQuickChallenge(){ return; /* Quick Challenge removed — kept as no-op so any stray reference is harmless */
+function showQuickChallenge(){ return; /* Quick Challenge removed - kept as no-op so any stray reference is harmless */
   const dc = getDailyChallenge();
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:520px;width:100%;padding:18px">
-      <div style="display:flex;justify-content:space-between"><b>⚡ Quick Challenge — ${dc.t}</b><button onclick="modalClose(this)" style="font-size:20px;background:none">×</button></div>
+      <div style="display:flex;justify-content:space-between"><b>⚡ Quick Challenge - ${dc.t}</b><button onclick="modalClose(this)" style="font-size:20px;background:none">×</button></div>
       <div style="margin:14px 0;font-size:14.5px;color:#cfcfd6">${dc.desc}</div>
-      <div style="font-size:12px;color:var(--dim)">Stay in flow — 2–5 min. Doing it builds your streak 🔥</div>
+      <div style="font-size:12px;color:var(--dim)">Stay in flow - 2-5 min. Doing it builds your streak 🔥</div>
       <div class="row" style="margin-top:16px">
-        <button class="simbtn" onclick="completeDailyChallenge(); modalClose(this); render(); setTimeout(()=>{ const s=buildShareSnippets(); if(confirm('Quick win done — share your Twin progress (live MD from P/AGENT/gates)?')) showShareCTA(); }, 300);">✅ Mark done (+streak) + Share option</button>
+        <button class="simbtn" onclick="completeDailyChallenge(); modalClose(this); render(); setTimeout(()=>{ const s=buildShareSnippets(); if(confirm('Quick win done - share your Twin progress (live MD from P/AGENT/gates)?')) showShareCTA(); }, 300);">✅ Mark done (+streak) + Share option</button>
         <button class="simbtn ghost" onclick="modalClose(this)">Later</button>
         <button class="simbtn ghost" onclick="const s=buildShareSnippets(); copyToClipboard(s.shortMd,this); modalClose(this);">🚀 Copy short share now</button>
       </div>
@@ -601,7 +601,7 @@ function showQuickChallenge(){ return; /* Quick Challenge removed — kept as no
 }
 
 /* ================= CUSTOM (easy to fork & tweak for Discord/cohorts) =================
-   Edit these for your cohort / fork. Pure static — no server.
+   Edit these for your cohort / fork. Pure static - no server.
    discordInvite (one line) powers ALL community: floating Share Twin CTAs, modals, snippets (MD/YAML/JSON w/ badges), Discord buttons, banners, fork helper.
    Add shareHashtag/cohortTagline for instant branding in every live share snippet.
    FORK HELPER + Share modal: use in-app buttons (prominent) to copy CUSTOM-aware commands.
@@ -610,13 +610,13 @@ const CUSTOM = {
   discordInvite: 'https://discord.gg/YOUR_COHORT_HERE', // ← THE ONLY LINE most forks change (easy-to-customize Discord placeholder; powers ALL community hooks, floating CTAs (🚀 + ⚡Share+Discord), "Share your Twin", openDiscord helper, snippets (MD/YAML/JSON/Forum/Twitter/LinkedIn/Weekly/GitHub + extra image badges + MCP/Multi + streaks from live P/AGENT/gates), sidebar, home, settings, fork helper, onboarding, Hall of Fame, Discord structure modal)
   communityName: 'Zero to AI Engineer Cohort',
   githubRepo: 'https://github.com/thesrivamshi/zero-to-ai-engineer', // or your fork
-  forkNote: 'Static single-file app — just fork, edit index.html + data/*.js, push to any static host. 100% client-side (P+AGENT local only). No build ever. Pure static for trivial forking/hosting.',
-  // Easy extras for Discord / forking / community productization (no code changes needed — edit once, all flows update)
+  forkNote: 'Static single-file app - just fork, edit index.html + data/*.js, push to any static host. 100% client-side (P+AGENT local only). No build ever. Pure static for trivial forking/hosting.',
+  // Easy extras for Discord / forking / community productization (no code changes needed - edit once, all flows update)
   shareHashtag: '#ZeroToAIEngineer',
   cohortTagline: 'Building our full MCP-exposed multi-agent LLM Twins',
   discordChannel: '#progress' // used in copy hints / templates
 };
-function discordReady(){ return false; } // Discord hidden for now — community is invite-only via the form below
+function discordReady(){ return false; } // Discord hidden for now - community is invite-only via the form below
 function openDiscord(){ /* Discord disabled for now */ }
 
 /* ===== Invite-only community gate (Typeform) ===== */
@@ -633,9 +633,9 @@ function showJoinGate(force){
   m.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;max-width:460px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 24px 64px rgba(20,19,15,.22)">
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">🔒 Invite-only community</div>
     <div style="font-family:var(--serif);font-size:27px;line-height:1.12;margin-bottom:14px">Join Zero to AI Engineer</div>
-    <p style="color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:24px">We're building a private, invite-only community of people becoming AI engineers. Request an invite — it takes a minute (your LinkedIn + the role you're working toward).<br><br>Just here to learn? The full course is free — skip and start anytime.</p>
+    <p style="color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:24px">We're building a private, invite-only community of people becoming AI engineers. Request an invite - it takes a minute (your LinkedIn + the role you're working toward).<br><br>Just here to learn? The full course is free - skip and start anytime.</p>
     <button onclick="openJoinForm()" style="display:block;width:100%;background:var(--accent);color:#f7f6f3;border:none;border-radius:5px;padding:14px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:12px;cursor:pointer;margin-bottom:10px">Request an invite →</button>
-    <button onclick="dismissJoinGate()" style="display:block;width:100%;background:none;border:none;color:var(--dim);font-size:13px;padding:6px;cursor:pointer">Skip — just use the course</button>
+    <button onclick="dismissJoinGate()" style="display:block;width:100%;background:none;border:none;color:var(--dim);font-size:13px;padding:6px;cursor:pointer">Skip - just use the course</button>
   </div>`;
   document.body.appendChild(m);
 }
@@ -650,7 +650,7 @@ function getForkCommands(){
     edit: `# ONE-LINE EDIT for your cohort (Discord + all shares/CTAs + snippets + openDiscord + fork UI):\n# In index.html near top of <script>:\n#   discordInvite: '${CUSTOM.discordInvite.replace(/'/g,"\\'")}',`,
     editExtras: `# OPTIONAL easy CUSTOM fields (for hashtags, taglines in shares + branding all live MD/YAML/JSON):\n#   shareHashtag: '${CUSTOM.shareHashtag || '#ZeroToAIEngineer'}',\n#   cohortTagline: '${(CUSTOM.cohortTagline||'').replace(/'/g,"\\'")}',`,
     serve: `python3 -m http.server 8000   # or npx serve .`,
-    deploy: `# Deploy: Vercel/Netlify/GH Pages/Cloudflare — no build cmd, output dir = . (pure static single-file!)\n# Static: fork, edit 1 line, push — all "Share your Twin" (beautiful snippets from live P/AGENT/gates), CTAs, hooks auto branded.`,
+    deploy: `# Deploy: Vercel/Netlify/GH Pages/Cloudflare - no build cmd, output dir = . (pure static single-file!)\n# Static: fork, edit 1 line, push - all "Share your Twin" (beautiful snippets from live P/AGENT/gates), CTAs, hooks auto branded.`,
     staticNote: 'Pure static: index.html + data/*.js. No framework/build. Full MCP multi-agent Twin sharing works immediately after CUSTOM edit.'
   };
 }
@@ -660,13 +660,13 @@ function showForkHelper(){
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:660px;width:100%;padding:22px">
-      <div style="font-weight:800;font-size:17px;margin-bottom:8px">🚀 Fork Helper — customize in 2 min (static, no build, pure client-side) — for Discord / cohorts</div>
+      <div style="font-weight:800;font-size:17px;margin-bottom:8px">🚀 Fork Helper - customize in 2 min (static, no build, pure client-side) - for Discord / cohorts</div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Edit <b>ONE line</b> (CUSTOM.discordInvite) → all "Share your Twin" flows, floating CTAs (🚀 + ⚡Share+Discord), sidebar, openDiscord() helper, beautiful MD/YAML/JSON snippets (with image badges + MCP/multi-agent + streaks), home banners update automatically. Add shareHashtag/cohortTagline for instant branding. <b>Fully static single-file</b> (index.html + data/*.js only). No frameworks, no build step.</div>
       <div><b>1. Clone your fork</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.clone)}</pre></div>
-      <div><b>2. One-line CUSTOM edit</b> (top of &lt;script&gt; in index.html — THE key; powers EVERYTHING community)<pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.edit)}</pre></div>
-      <div><b>2b. (Optional extras — instant in all shares/CTAs)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.editExtras)}</pre></div>
+      <div><b>2. One-line CUSTOM edit</b> (top of &lt;script&gt; in index.html - THE key; powers EVERYTHING community)<pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.edit)}</pre></div>
+      <div><b>2b. (Optional extras - instant in all shares/CTAs)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.editExtras)}</pre></div>
       <div><b>3. Serve locally (no install needed)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.serve)}</pre></div>
-      <div><b>4. Deploy anywhere (Vercel/Netlify/GH Pages/Cloudflare/Pages — zero build)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.deploy)}</pre></div>
+      <div><b>4. Deploy anywhere (Vercel/Netlify/GH Pages/Cloudflare/Pages - zero build)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.deploy)}</pre></div>
       <div class="row" style="margin-top:14px;flex-wrap:wrap">
         <button class="simbtn" onclick="const ff=getForkCommands(); copyToClipboard(ff.clone+'\\n'+ff.edit+'\\n'+ff.editExtras+'\\n'+ff.serve+'\\n'+ff.deploy+'\\n'+(ff.staticNote||''), this); modalClose(this);">📋 Copy all fork commands (ready-to-run + static note)</button>
         <button class="simbtn ghost" onclick="openDiscord();">💬 Open your Discord</button>
@@ -691,14 +691,14 @@ function maybeShowOnboarding(){
     m.innerHTML = `
       <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:16px;max-width:520px;width:100%;padding:22px">
         <div style="font-size:17px;font-weight:800;margin-bottom:8px">👋 Welcome to Zero to AI Engineer</div>
-        <div style="font-size:13.5px;color:#cfcfd6;margin-bottom:12px">Build <b>one growing LLM Twin</b> that becomes a <b>full MCP-exposed multi-agent system</b> (L5 Stage 3 + gate: voice Twin core + retriever + critic under supervisor, MCP tools/list+call exposed — explicit culmination). Pure static single-file, 15-30min/day, streaks + quick wins/choice/feedback for focus.</div>
+        <div style="font-size:13.5px;color:#cfcfd6;margin-bottom:12px">Build <b>one growing LLM Twin</b> that becomes a <b>full MCP-exposed multi-agent system</b> (L5 Stage 3 + gate: voice Twin core + retriever + critic under supervisor, MCP tools/list+call exposed - explicit culmination). Pure static single-file, 15-30min/day, streaks + quick wins/choice/feedback for focus.</div>
         <div style="font-size:12.5px">• Tap lessons + sims (choice paths + instant feedback everywhere)<br>• ⚡ Quick Challenges + 🔥 streaks + Twin Power for dopamine<br>• 🚀 Share Twin after every win (floating CTAs + auto prompts)</div>
         <div style="margin:16px 0 8px" class="row">
           <button class="simbtn" onclick="modalClose(this); showQuickChallenge();">⚡ Start first 5-min Quick Win</button>
           <button class="simbtn ghost" onclick="modalClose(this); showShareCTA();">🚀 Preview Share your MCP Twin</button>
           <button class="simbtn ghost" onclick="modalClose(this)">Close</button>
         </div>
-        <div style="font-size:11px;color:var(--dim)">Edit CUSTOM.discordInvite once (in Settings) → your cohort's branded shares + CTAs. Join Discord for accountability. Your Twin culminates as full MCP multi-agent — share it!</div>
+        <div style="font-size:11px;color:var(--dim)">Edit CUSTOM.discordInvite once (in Settings) → your cohort's branded shares + CTAs. Join Discord for accountability. Your Twin culminates as full MCP multi-agent - share it!</div>
       </div>`;
     document.body.appendChild(m);
   }, 1400);
@@ -710,13 +710,13 @@ function showHallOfFame(){ return; /* leaderboard parked for now */
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:720px;width:100%;padding:20px;max-height:88vh;overflow:auto">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:17px">🏆 Cohort Hall of Fame</b><button onclick="modalClose(this)" style="background:none;font-size:20px">×</button></div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Live leaderboard of cohort Twins — signed-in builders appear automatically, ranked by Twin progress then ⚡ Power. Click a name to view their public Twin page.</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Live leaderboard of cohort Twins - signed-in builders appear automatically, ranked by Twin progress then ⚡ Power. Click a name to view their public Twin page.</div>
       <div id="liveLeaderboard" style="margin-bottom:16px">Loading live leaderboard…</div>
       <div class="row" style="margin-top:14px;border-top:1px solid var(--border2);padding-top:14px">
         ${(typeof cloudEnabled==='function'&&cloudEnabled()) ? `<button class="simbtn" onclick="cloudPush().then(()=>{modalClose(this);showHallOfFame();})">⬆ Update my standing</button>` : `<button class="simbtn" onclick="showAccount();modalClose(this)">☁️ Sign in to appear</button>`}
         <button class="simbtn ghost" onclick="showShareCTA();modalClose(this)">🚀 Share your Twin</button>
       </div>
-      <div style="font-size:11px;color:var(--dim);margin-top:10px">Sign in and your Twin appears here automatically as you complete stages — ranked by progress, then ⚡ Power. Make a lesson or stage progress to climb.</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px">Sign in and your Twin appears here automatically as you complete stages - ranked by progress, then ⚡ Power. Make a lesson or stage progress to climb.</div>
     </div>`;
   document.body.appendChild(modal);
   window.closeHOF=()=>{ try{ modal.remove(); }catch(e){} };
@@ -735,7 +735,7 @@ function showDiscordStructure(){
 
 #progress
 • Daily/weekly: EVERYONE pastes live short MD or full from app after lessons/gates
-• "Gate 5 done — full MCP-exposed multi-agent ✅" + snippet
+• "Gate 5 done - full MCP-exposed multi-agent ✅" + snippet
 
 #hall-of-fame
 • Pin top MCP Twin shares (use showHallOfFame examples + real ones)
@@ -763,7 +763,7 @@ function allLessons(){ const out=[]; LEVELS.forEach((lv,li)=>{ lv.chapters.forEa
 /* ===== Lesson time estimate = lesson body + YouTube video time + book reading (5 min/page) + 10 min buffer.
    Book pages are de-duplicated in course order: a page already covered by an earlier lesson (or twice in
    the same lesson) isn't counted again, since the reader has already read it. ===== */
-function parsePages(p){ const out=[]; if(!p) return out; String(p).split(/[,;]/).forEach(seg=>{ seg=seg.trim(); let m=/^(\d+)\s*[-–—]\s*(\d+)$/.exec(seg); if(m){ let a=+m[1],b=+m[2]; if(b<a){const t=a;a=b;b=t;} if(b-a<2000) for(let i=a;i<=b;i++) out.push(i); return; } m=/^(\d+)$/.exec(seg); if(m) out.push(+m[1]); }); return out; }
+function parsePages(p){ const out=[]; if(!p) return out; String(p).split(/[,;]/).forEach(seg=>{ seg=seg.trim(); let m=/^(\d+)\s*[---]\s*(\d+)$/.exec(seg); if(m){ let a=+m[1],b=+m[2]; if(b<a){const t=a;a=b;b=t;} if(b-a<2000) for(let i=a;i<=b;i++) out.push(i); return; } m=/^(\d+)$/.exec(seg); if(m) out.push(+m[1]); }); return out; }
 let _bookMinCache=null;
 function buildBookMinCache(){ _bookMinCache={}; const seen=new Set(), R=window.READS||{}; allLessons().forEach(l=>{ const local=new Set(); (R[l.id]||[]).forEach(r=>{ parsePages(r.p).forEach(pg=>{ const k=(r.b||'?')+'|'+pg; if(seen.has(k)||local.has(k)) return; local.add(k); }); }); local.forEach(k=>seen.add(k)); _bookMinCache[l.id]=local.size*5; }); }
 function bookMinutes(lid){ if(!_bookMinCache) buildBookMinCache(); return _bookMinCache[lid]||0; }
@@ -772,7 +772,7 @@ function lessonTimeMinutes(l){ const body=(l&&l.min)||4, vid=videoMinutes(l), bo
 let _ctbCache=null;
 function courseTimeBreakdown(){ if(_ctbCache) return _ctbCache; let body=0,vid=0,book=0,buf=0,n=0; (allLessons()||[]).forEach(l=>{ if(l._gate) return; n++; body+=(l.min||4); vid+=videoMinutes(l); book+=bookMinutes(l.id); buf+=10; }); _ctbCache={body,vid,book,buf,n}; return _ctbCache; }
 /* learning styles weight how much of the videos/books you actually consume (body + buffer always counted) */
-const PLAN_STYLES={ deep:{label:'Go deep — watch & read everything', v:1.0, b:1.0}, balanced:{label:'Balanced — skim videos, read the key books', v:0.4, b:0.55}, fast:{label:'Fast — do-first, books only when stuck', v:0.25, b:0.2} };
+const PLAN_STYLES={ deep:{label:'Go deep: watch & read everything', v:1.0, b:1.0}, balanced:{label:'Balanced: key videos + key books (recommended)', v:0.7, b:0.55}, watch:{label:'Watch-first: videos for context, light on books', v:1.0, b:0.15}, read:{label:'Read-first: books deep, minimal video', v:0.35, b:1.0} };
 let _plan={h:2, style:'balanced'};
 function planHours(){ const t=courseTimeBreakdown(); const s=PLAN_STYLES[_plan.style]; return Math.round((t.body + t.vid*s.v + t.book*s.b + t.buf)/60); }
 function setPlan(k,v){ _plan[k]=v; renderPlanner(); }
@@ -785,7 +785,7 @@ function renderPlanner(){ const el=document.getElementById('planner'); if(!el) r
     <div style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:10.5px;color:var(--accent);margin-bottom:8px">Hours per day</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${[1,2,4,6].map(hBtn).join('')}</div>
     <div style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:10.5px;color:var(--accent);margin-bottom:4px">Your style</div>
-    ${['deep','balanced','fast'].map(sBtn).join('')}
+    ${['deep','balanced','watch','read'].map(sBtn).join('')}
     <div style="margin-top:14px;padding:14px 16px;background:var(--ink);color:#f2efe9;border-radius:6px">
       <div style="font-size:13px;color:#c8c3b9">At <b style="color:#fff">${_plan.h} h/day</b>, the <b style="color:#fff">${_plan.style}</b> path is</div>
       <div style="font-family:var(--serif);font-size:30px;line-height:1.1;margin:4px 0 2px">${wkTxt}</div>
@@ -826,7 +826,7 @@ function render(){
   else renderHome(c);
   window.scrollTo(0,0);
   enhanceFloatingShare(); // dynamic prominence for "Share your Twin" + MCP culmination tie-in
-  showJoinGate(); // invite-only community gate (Typeform) — shows once, skippable
+  showJoinGate(); // invite-only community gate (Typeform) - shows once, skippable
 }
 
 /* ================= sidebar ================= */
@@ -841,7 +841,7 @@ function renderSidebar(){
   <button onclick="go('start')" class="lvlhead" style="margin:0 0 8px;border:1px solid var(--accent);background:rgba(122,31,31,.05)"><span class="dot" style="background:var(--accent);color:#f7f6f3">📌</span> Start here <span class="pc" style="color:var(--accent)">Day ${dayNumber()}</span></button>
   ${(()=>{ const st=getStreak(); return `<div style="margin:0 8px 10px;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px"><span>🔥 ${st.count}-day streak</span>${st.active?'<span style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:99px">active today</span>':'<span style="font-size:10px;color:var(--dim)">do one thing today</span>'}<span style="margin-left:auto;font-size:10px;color:var(--dim)">${consistencyPct()}% consistent</span></div>`; })()}
   <div style="margin:0 8px 10px;font-size:12px;color:var(--cyan);display:flex;align-items:center;gap:6px"><span>⚡ Twin Power: <b>${getTwinPower()}</b></span><span style="font-size:10px;background:var(--bg3);padding:1px 4px;border-radius:3px">XP</span></div>
-  ${(()=>{ const s=getTwinStatus(); return s.badges.length ? `<div style="margin:0 8px 8px;font-size:10px"><span style="color:var(--muted)">Earned badges:</span> <span style="font-size:12px">${s.badges.slice(0,6).join(' ')}${s.badges.length>6?' +'+(s.badges.length-6):''}</span> <button onclick="showShareCTA()" style="font-size:9px;margin-left:4px;padding:1px 4px;border:1px solid var(--border2);border-radius:3px;background:none">share</button></div>` : `<div style="margin:0 8px 6px;font-size:10px;color:var(--dim)">No badges yet — complete Twin stages for 🧠🎤🔌🤖 etc</div>`; })()}
+  ${(()=>{ const s=getTwinStatus(); return s.badges.length ? `<div style="margin:0 8px 8px;font-size:10px"><span style="color:var(--muted)">Earned badges:</span> <span style="font-size:12px">${s.badges.slice(0,6).join(' ')}${s.badges.length>6?' +'+(s.badges.length-6):''}</span> <button onclick="showShareCTA()" style="font-size:9px;margin-left:4px;padding:1px 4px;border:1px solid var(--border2);border-radius:3px;background:none">share</button></div>` : `<div style="margin:0 8px 6px;font-size:10px;color:var(--dim)">No badges yet - complete Twin stages for 🧠🎤🔌🤖 etc</div>`; })()}
   <input id="sbsearch" placeholder="🔍 Search lessons…" value="${searchTerm.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:13px;outline:none;margin:0 0 10px">
   <div id="searchresults" style="display:none"></div><div id="sblist">`;
   LEVELS.forEach((lv,li)=>{
@@ -858,7 +858,7 @@ function renderSidebar(){
       if(lv.project){
         const pl=lv.project;
         html+=`<div class="chap"><div class="chapname">⛩ project gate</div><button class="lessonlink gate ${isDone(pl.id)?'done':''}" onclick="go('gate','${pl.id}')"><span class="st">${isDone(pl.id)?'✓':'★'}</span><span>${pl.t}</span></button>
-        <button class="reviewbtn" onclick="go('review','${li}')">↻ Review checkpoint (Levels 1–${li+1})</button></div>`;
+        <button class="reviewbtn" onclick="go('review','${li}')">↻ Review checkpoint (Levels 1-${li+1})</button></div>`;
       }
     }
   });
@@ -868,7 +868,7 @@ function renderSidebar(){
   html+=`<button class="lvlhead" onclick="showJoinGate(true)"><span class="dot" style="background:var(--bg3);color:var(--muted)">🔒</span> Request invite <span class="pc">community</span></button>`;
   if(discordReady()) html+=`<button class="lvlhead" onclick="openDiscord()" style="margin-top:4px"><span class="dot" style="background:#5865F2;color:#fff">💬</span> ${CUSTOM.communityName} Discord</button>`;
   html+=`<button class="lvlhead" onclick="showShareCTA()" style="margin-top:2px;background:rgba(122,31,31,.06);border:1px solid var(--accent)"><span class="dot" style="background:var(--accent);color:#f7f6f3">🚀</span> Share your full MCP multi-agent Twin (live MD/YAML/JSON + badges from P/AGENT/gates)</button>
-  <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper — customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
+  <button class="lvlhead" onclick="showForkHelper()" style="margin-top:2px;border:1px dashed var(--border2)"><span class="dot" style="background:var(--bg3);color:var(--text);font-size:10px">📋</span> Fork Helper - customize (edit 1 CUSTOM line → all shares/CTAs)</button>`;
   html+='</div>';
   sb.innerHTML=html;
   if(searchTerm) renderSearchResults();
@@ -879,7 +879,7 @@ function toggleLevel(i){ openLevels.has(i)?openLevels.delete(i):openLevels.add(i
 /* ================= home ================= */
 function renderStart(c){
   const dn=dayNumber(), st=getStreak(), cons=consistencyPct();
-  const dayText=encodeURIComponent("Day 1 of Zero to AI Engineer 🚀\n\nGoing from zero to AI engineer by building — not just watching. The rule: do the work, ship something every day.\n\n#ZeroToAIEngineer");
+  const dayText=encodeURIComponent("Day 1 of Zero to AI Engineer 🚀\n\nGoing from zero to AI engineer by building - not just watching. The rule: do the work, ship something every day.\n\n#ZeroToAIEngineer");
   const liUrl=`https://www.linkedin.com/feed/?shareActive=true&text=${dayText}`;
   const twUrl=`https://twitter.com/intent/tweet?text=${dayText}`;
   c.innerHTML=`<div style="max-width:720px;margin:0 auto;padding:8px 4px 70px">
@@ -887,19 +887,19 @@ function renderStart(c){
     <h1 class="ltitle">How this cohort works</h1>
     <div class="lmeta">📌 Read this once · Day ${dn}${st.count?` · 🔥 ${st.count}-day streak`:''} · ${cons}% consistent</div>
     <div class="body">
-      <p><strong>One idea runs the whole thing: you learn by doing.</strong> This isn't a watch-and-forget course. You build one agent — your LLM Twin — and it grows every level. The more you build and ship, the more this works. Fundamentals stick because you used them, not because you watched them.</p>
+      <p><strong>One idea runs the whole thing: you learn by doing.</strong> This isn't a watch-and-forget course. You build one agent - your LLM Twin - and it grows every level. The more you build and ship, the more this works. Fundamentals stick because you used them, not because you watched them.</p>
 
       <div class="callout tip"><div class="ct">The 3-minute orientation</div>
-      <p style="margin:6px 0 0">Skim the home page once to see the six levels and the Twin you'll build — then start Level 1. Go in order; the sidebar keeps you on track.</p></div>
+      <p style="margin:6px 0 0">Skim the home page once to see the six levels and the Twin you'll build - then start Level 1. Go in order; the sidebar keeps you on track.</p></div>
 
       <h2>Will this fit your life? Plan your commitment</h2>
-      <p>Decide what you can realistically give <em>before</em> you start — then commit to it. Consistency beats intensity: even one focused hour every day finishes this. Pick your pace:</p>
+      <p>Decide what you can realistically give <em>before</em> you start - then commit to it. Consistency beats intensity: even one focused hour every day finishes this. Pick your pace:</p>
       <div id="planner" style="border:1px solid var(--border);border-radius:6px;padding:18px;background:var(--bg2);margin:6px 0 10px"></div>
-      <p style="font-size:13px;color:var(--dim)">Videos are for fast intuition — skim them. Books are optional depth, but a few topics are worth the full read for an edge: <strong>evaluation</strong> (how to actually measure quality), <strong>RAG internals</strong> (chunking/retrieval trade-offs), <strong>fine-tuning &amp; data</strong>, and the <strong>inference math</strong> (KV cache, batching, cost). Everywhere else, do the lab and move on.</p>
+      <p style="font-size:13px;color:var(--dim)">Videos give you a lot of context fast, so watch the key ones (you don't need every minute of a long one, but don't dismiss them). Books are for going deep on the topics that give you an edge: <strong>evaluation</strong> (how to actually measure quality), <strong>RAG internals</strong> (chunking/retrieval trade-offs), <strong>fine-tuning &amp; data</strong>, and the <strong>inference math</strong> (KV cache, batching, cost). Everywhere else, do the lab and move on.</p>
 
       <h2>By the end, you'll be able to</h2>
       <ul>
-        <li>Read, compare and <strong>evaluate</strong> models — and write production-grade prompts.</li>
+        <li>Read, compare and <strong>evaluate</strong> models - and write production-grade prompts.</li>
         <li>Build a <strong>"chat with your documents"</strong> app: embeddings, RAG, tool-calling agents, and guardrails.</li>
         <li><strong>Fine-tune</strong> a model on your own data and know when it's worth it.</li>
         <li><strong>Ship</strong> your LLM Twin as a deployed, MCP-exposed multi-agent system.</li>
@@ -908,14 +908,14 @@ function renderStart(c){
 
       <h2>How to actually use the material</h2>
       <ul>
-        <li><strong>Lessons are the spine — read them.</strong> Short, original, done in order. This is the part you don't skip.</li>
-        <li><strong>Videos: don't watch end-to-end.</strong> They're optional depth. Skim, jump to the part you're stuck on, or just read a summary. A 2-hour video is a reference, not homework.</li>
-        <li><strong>Books: go deep only when you want depth.</strong> The page pointers are there when a concept deserves the full treatment — not a daily requirement.</li>
+        <li><strong>Lessons are the spine - read them.</strong> Short, original, done in order. This is the part you don't skip.</li>
+        <li><strong>Videos: watch the key ones, they give context fast.</strong> You don't need every minute of a 2-hour video, but they're often the quickest way to get the intuition. Jump to what you need, and don't skip the important ones.</li>
+        <li><strong>Books: go deep only when you want depth.</strong> The page pointers are there when a concept deserves the full treatment - not a daily requirement.</li>
         <li><strong>Above all, do the labs.</strong> Run the code, break it, fix it. <em>Doing &gt; watching &gt; reading.</em> Every day you do one real thing, you move.</li>
       </ul>
 
       <h2>Consistency is the whole game</h2>
-      <p>We count from <strong>Day 1 — the day you join</strong>. Each day you complete something, your 🔥 streak grows and your standing climbs. It's not about finishing fastest — it's about showing up. Miss a day and the streak resets, so do one small thing daily.</p>
+      <p>We count from <strong>Day 1 - the day you join</strong>. Each day you complete something, your 🔥 streak grows and your standing climbs. It's not about finishing fastest - it's about showing up. Miss a day and the streak resets, so do one small thing daily.</p>
       <div class="statrow" style="margin:14px 0">
         <div class="stat"><b>${dn}</b><span>your day</span></div>
         <div class="stat" style="border-color:var(--amber)"><b>🔥${st.count}</b><span>day streak</span></div>
@@ -925,19 +925,19 @@ function renderStart(c){
 
       <h2>What the numbers mean</h2>
       <ul>
-        <li><strong>Day N</strong> — days since you joined. Your clock starts on Day 1.</li>
-        <li><strong>🔥 Streak</strong> — consecutive days you completed at least one thing. Miss a day and it resets, so do one small thing daily.</li>
-        <li><strong>Consistency %</strong> — the share of days you've actually shown up since joining. This is the number that matters most.</li>
-        <li><strong>⚡ Twin Power</strong> — your momentum score. It climbs as you complete lessons, hold your streak, and post in public. It's what ranks you in the cohort — so consistency, not speed, wins.</li>
-        <li><strong>Badges</strong> — milestone markers for the big builds: 🧠 Retriever Twin, 🎤 Voice Twin, 🔌 MCP, 🤖 Multi-Agent. They're proof of what you've actually shipped, earned by completing each Twin stage's project gate.</li>
+        <li><strong>Day N</strong> - days since you joined. Your clock starts on Day 1.</li>
+        <li><strong>🔥 Streak</strong> - consecutive days you completed at least one thing. Miss a day and it resets, so do one small thing daily.</li>
+        <li><strong>Consistency %</strong> - the share of days you've actually shown up since joining. This is the number that matters most.</li>
+        <li><strong>⚡ Twin Power</strong> - your momentum score. It climbs as you complete lessons, hold your streak, and post in public. It's what ranks you in the cohort - so consistency, not speed, wins.</li>
+        <li><strong>Badges</strong> - milestone markers for the big builds: 🧠 Retriever Twin, 🎤 Voice Twin, 🔌 MCP, 🤖 Multi-Agent. They're proof of what you've actually shipped, earned by completing each Twin stage's project gate.</li>
       </ul>
 
-      <h2>🔒 Invite-only — how you earn it</h2>
+      <h2>🔒 Invite-only - how you earn it</h2>
       <p>The community is invite-only, and the bar is simple: <strong>show that you do the work, in public.</strong></p>
       <ul>
-        <li><strong>Post your Day 1.</strong> Share that you're starting — on LinkedIn or X — and tag the cohort. That's your public commitment.</li>
+        <li><strong>Post your Day 1.</strong> Share that you're starting - on LinkedIn or X - and tag the cohort. That's your public commitment.</li>
         <li><strong>Apply for your invite.</strong> One-minute form; your LinkedIn is the proof. Optional, but it's how we know you're real.</li>
-        <li><strong>Keep posting as you build.</strong> The more consistently you ship and share, the stronger your case — public proof compounds (and bumps your Power here).</li>
+        <li><strong>Keep posting as you build.</strong> The more consistently you ship and share, the stronger your case - public proof compounds (and bumps your Power here).</li>
       </ul>
       <div class="row" style="margin:16px 0;flex-wrap:wrap;gap:10px">
         <a class="simbtn" href="${liUrl}" target="_blank" rel="noopener" onclick="logPost()" style="text-decoration:none">in · Post Day 1 on LinkedIn</a>
@@ -957,7 +957,7 @@ function renderHome(c){
   const all=allLessons(); const done=all.filter(l=>isDone(l.id)).length;
   const quizCount=all.reduce((n,l)=>n+((l.quiz&&l.quiz.length)||0),0);
   let html=`<div class="hero"><h1>Zero to AI Engineer</h1>
-  <p>An interactive course that takes you from "what is a token?" to designing inference systems at scale. Built on the ideas in <em>AI Engineering</em>, the <em>LLM Engineer's Handbook</em>, and <em>Inference Engineering</em> — with labs, projects, and quizzes. No background required. Expertise expected by the end.</p></div>
+  <p>An interactive course that takes you from "what is a token?" to designing inference systems at scale. Built on the ideas in <em>AI Engineering</em>, the <em>LLM Engineer's Handbook</em>, and <em>Inference Engineering</em> - with labs, projects, and quizzes. No background required. Expertise expected by the end.</p></div>
   <div class="statrow">
     <div class="stat"><b>${all.length}</b><span>lessons & gates</span></div>
     <div class="stat"><b>${quizCount}</b><span>quiz questions</span></div>
@@ -967,7 +967,7 @@ function renderHome(c){
     ${(()=>{const st=getStreak(); return st.count>0?`<div class="stat" style="border-color:var(--amber)"><b>🔥${st.count}</b><span>day streak</span></div>`:'';})()}
     <div class="stat" style="border-color:var(--cyan)"><b>⚡${getTwinPower()}</b><span>Twin Power</span></div>
   </div>
-  <div style="text-align:center;margin:18px 0 4px"><button class="simbtn" onclick="go('start')">📌 New here? Start here — how this cohort works</button></div>
+  <div style="text-align:center;margin:18px 0 4px"><button class="simbtn" onclick="go('start')">📌 New here? Start here - how this cohort works</button></div>
   `;
   LEVELS.forEach((lv,li)=>{
     const st=levelStats(lv,li); const col=COLORS[li%COLORS.length];
@@ -978,8 +978,8 @@ function renderHome(c){
       <div class="meta"><span>${st.t} lessons</span><div class="bar"><i style="width:${st.t?Math.round(st.d/st.t*100):0}%;background:${col}"></i></div><span>${Math.round(st.d/st.t*100)||0}%</span></div>
     </button>`;
   });
-  html+=`<div class="callout tip" style="margin-top:26px"><div class="ct">How to use this course</div>Go in order. Read each lesson, play with the interactive demos, pass the quiz, and do every lab on your own computer. Project gates at the end of each level are mandatory — they're where the real learning happens. Your progress is saved in this browser automatically. (Pure static single-file: fork + edit CUSTOM once + host anywhere.)</div>
-<div class="callout" style="margin:14px 0;font-size:12.5px"><div class="ct">Strict prerequisites</div>Every quiz (and every lesson body) only draws from concepts completed so far. If a question references a term you haven't seen, it is a bug — report the lesson id. The sidebar + review checkpoints enforce spaced repetition only over prior material.</div>`;
+  html+=`<div class="callout tip" style="margin-top:26px"><div class="ct">How to use this course</div>Go in order. Read each lesson, play with the interactive demos, pass the quiz, and do every lab on your own computer. Project gates at the end of each level are mandatory - they're where the real learning happens. Your progress is saved in this browser automatically. (Pure static single-file: fork + edit CUSTOM once + host anywhere.)</div>
+<div class="callout" style="margin:14px 0;font-size:12.5px"><div class="ct">Strict prerequisites</div>Every quiz (and every lesson body) only draws from concepts completed so far. If a question references a term you haven't seen, it is a bug - report the lesson id. The sidebar + review checkpoints enforce spaced repetition only over prior material.</div>`;
   // Prominent community share flow + fork CTA (even more visible "Share your Twin")
   const twinS = getTwinStatus();
   const st = getStreak();
@@ -1030,7 +1030,7 @@ const BOOK_NAMES={AIE:'AI Engineering',LEH:"LLM Engineer's Handbook",INF:'Infere
 function srcLabel(src){
   // "AIE ch.6 §RAG" -> "AI Engineering, Chapter 6 (RAG)"
   return String(src).split('+').map(part=>{
-    const m=part.trim().match(/^(AIE|LEH|INF)\s*ch\.?\s*([\d–\-–.]+)\s*(?:§(.*))?$/i);
+    const m=part.trim().match(/^(AIE|LEH|INF)\s*ch\.?\s*([\d-\--.]+)\s*(?:§(.*))?$/i);
     if(!m) return part.trim();
     return BOOK_NAMES[m[1].toUpperCase()]+', Chapter '+m[2]+(m[3]?' ('+m[3].trim()+')':'');
   }).join(' · ');
@@ -1137,7 +1137,7 @@ function fullscreenVideo(cid){
   if(!player.dataset.loaded) loadYouTubePlayer(cid);
   // Prominent in-app fullscreen using requestFullscreen on the .yt-player CONTAINER.
   // This keeps titles + why notes visible (in the same card) during fullscreen.
-  // Primary mechanism — no reliance on external YT links or new tabs.
+  // Primary mechanism - no reliance on external YT links or new tabs.
   const req = player.requestFullscreen || player.webkitRequestFullscreen || player.mozRequestFullScreen || player.msRequestFullscreen;
   if (req) {
     try { req.call(player); } catch(e){}
@@ -1159,9 +1159,9 @@ function renderVideos(videos){
     const p=parseYouTube(v.url);
     const isYT=!!(p.vid||p.list);
     const title=escapeHtml(v.title);
-    const why=v.why?` — <span style="color:var(--muted)">${escapeHtml(v.why)}</span>`:'';
+    const why=v.why?` - <span style="color:var(--muted)">${escapeHtml(v.why)}</span>`:'';
     if(!isYT){
-      // Non-YT case never provides playback link — purely informational. (All curated videos are YT.)
+      // Non-YT case never provides playback link - purely informational. (All curated videos are YT.)
       return `<div class="vid"><div class="vidmeta"><b>${title}</b>${why}</div><div class="vidnote">External resource (non-YouTube, not played here)</div></div>`;
     }
     const cid='yt_'+Math.random().toString(36).slice(2,10);
@@ -1189,11 +1189,11 @@ function renderVideos(videos){
 </div>
 </div>`;
   }).join('');
-  return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch — optional, but gold (100% in-app, no tabs or external links required)</div>${items}</div>`;
+  return `<div class="callout tip" style="margin-top:22px"><div class="ct">🎬 Watch - optional, but gold (100% in-app, no tabs or external links required)</div>${items}</div>`;
 }
 function renderQuestions(arr){
   const lc={easy:'var(--green)',medium:'var(--amber)',hard:'var(--red)'};
-  return `<div class="callout" style="margin-top:22px"><div class="ct">🎤 Test yourself — questions from the books</div><p style="font-size:13px;color:var(--muted);margin:2px 0 10px">Answer each one out loud (or in writing) first, then reveal. These are the deeper questions — the kind the book, or an interviewer, would press on.</p>`+
+  return `<div class="callout" style="margin-top:22px"><div class="ct">🎤 Test yourself - questions from the books</div><p style="font-size:13px;color:var(--muted);margin:2px 0 10px">Answer each one out loud (or in writing) first, then reveal. These are the deeper questions - the kind the book, or an interviewer, would press on.</p>`+
     arr.map(x=>`<details style="margin:8px 0;border:1px solid var(--border);border-radius:8px;padding:9px 12px">
       <summary style="cursor:pointer;font-weight:600;line-height:1.5">${x.level?`<span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:${lc[String(x.level).toLowerCase()]||'var(--muted)'};margin-right:7px">${escapeHtml(String(x.level))}</span>`:''}${escapeHtml(x.q)}</summary>
       <div style="margin-top:9px;font-size:14px;line-height:1.6">${escapeHtml(x.a)}</div>
@@ -1205,7 +1205,7 @@ function renderDiagrams(arr){
     <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">📐 Visual${d.term?' · '+d.term:''}</div>
     ${d.title?`<div style="font-weight:700;margin:3px 0 12px">${d.title}</div>`:''}
     <div style="overflow-x:auto;background:#fdfdfb;border:1px solid var(--border);border-radius:8px;padding:14px">${d.svg}</div>
-    ${d.caption?`<figcaption style="font-size:13px;color:var(--muted);margin-top:10px">${d.caption} <span style="opacity:.6">— original schematic (redrawn for clarity, not from the book)</span></figcaption>`:''}
+    ${d.caption?`<figcaption style="font-size:13px;color:var(--muted);margin-top:10px">${d.caption} <span style="opacity:.6">- original schematic (redrawn for clarity, not from the book)</span></figcaption>`:''}
   </figure>`).join('');
 }
 function linkify(text){
@@ -1214,9 +1214,9 @@ function linkify(text){
 }
 function renderReads(reads,lid){
   const n=reads.length, done=reads.filter((_,i)=>P['read_'+lid+'_'+i]).length;
-  return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books — ${done}/${n} marked read</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">The depth behind this lesson. Tick each one as you read it — across the whole course these references cover every chapter of all three books. Page numbers only; buy the books.</p><ul style="margin:6px 0 2px;list-style:none;padding-left:0">`+
+  return `<div class="callout" style="margin-top:22px"><div class="ct">📖 Read deeper in the books - ${done}/${n} marked read</div><p style="font-size:13px;color:var(--muted);margin:2px 0 8px">The depth behind this lesson. Tick each one as you read it - across the whole course these references cover every chapter of all three books. Page numbers only; buy the books.</p><ul style="margin:6px 0 2px;list-style:none;padding-left:0">`+
     reads.map((r,i)=>{ const k='read_'+lid+'_'+i, d=!!P[k];
-      const main = `<b>${BOOK_NAMES[r.b]||r.b}</b> — Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}`;
+      const main = `<b>${BOOK_NAMES[r.b]||r.b}</b> - Ch.${r.c}${r.p?`, <span style="color:var(--green)">pp.${r.p}</span>`:''}`;
       const noteDiv = '';  // per-reference "BOOK FOUNDATIONS vs 2025-2026 EXTENSIONS / video / docs" box removed for a cleaner reading list. Source text is still in data/reads.js (r.f) if it's ever wanted back.
       return `<li style="margin:10px 0"><div style="display:flex;gap:9px;align-items:flex-start"><button onclick="toggleRead('${lid}',${i})" title="Mark as read" style="flex:0 0 auto;cursor:pointer;background:${d?'var(--green)':'transparent'};border:1px solid ${d?'var(--green)':'var(--border)'};color:${d?'#06240f':'var(--muted)'};border-radius:5px;width:22px;height:22px;font-size:13px;line-height:20px;padding:0">${d?'✓':''}</button><span style="${d?'opacity:.55':''}">${main}</span></div>${noteDiv}</li>`;
     }).join('')+
@@ -1236,7 +1236,7 @@ function bookPct(){ const s=bookStats(),o=['AIE','LEH','INF']; const t=o.reduce(
 function renderBooks(c){
   const s=bookStats(), order=['AIE','LEH','INF'];
   let html=`<h1 class="ltitle">📚 Your reading across the three books</h1>
-  <div class="body"><p>Tick each <b>📖 Read deeper</b> reference inside its lesson as you read it. Finish them all and you've worked through every chapter of all three books — the goal you set. This tracks page references only; the books themselves you buy (nothing here reproduces their text).</p></div>`;
+  <div class="body"><p>Tick each <b>📖 Read deeper</b> reference inside its lesson as you read it. Finish them all and you've worked through every chapter of all three books - the goal you set. This tracks page references only; the books themselves you buy (nothing here reproduces their text).</p></div>`;
   order.forEach(b=>{
     const x=s[b], pct=x.t?Math.round(x.d/x.t*100):0, complete=x.t&&x.d===x.t;
     html+=`<div style="margin:18px 0;border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg3)">
@@ -1249,14 +1249,14 @@ function renderBooks(c){
     html+=`</div>`;
   });
   const t=order.reduce((a,b)=>a+s[b].t,0), d=order.reduce((a,b)=>a+s[b].d,0), tp=t?Math.round(d/t*100):0;
-  html+=`<div style="margin-top:12px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg2,var(--bg3))"><b style="font-size:15px">Overall: ${d}/${t} references read — ${tp}%</b><div class="bar" style="margin-top:8px"><i style="width:${tp}%"></i></div></div>`;
+  html+=`<div style="margin-top:12px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg2,var(--bg3))"><b style="font-size:15px">Overall: ${d}/${t} references read - ${tp}%</b><div class="bar" style="margin-top:8px"><i style="width:${tp}%"></i></div></div>`;
   c.innerHTML=html;
 }
 function hasExercise(l){ return !!(l.term||l.py||l.live||l.evalrun||l.colab||l.deploy); }
 function exDone(id){ return !!P[id+'_ex']; }
 function navBtns(prev,next){
   return `<div class="lessonnav">
-    <button class="navbtn" ${prev?`onclick="go('${prev._gate?'gate':'lesson'}','${prev.id}')"`:'disabled'}><small>← Previous</small><span>${prev?prev.t:'—'}</span></button>
+    <button class="navbtn" ${prev?`onclick="go('${prev._gate?'gate':'lesson'}','${prev.id}')"`:'disabled'}><small>← Previous</small><span>${prev?prev.t:'-'}</span></button>
     <button class="navbtn next" ${next?`onclick="go('${next._gate?'gate':'lesson'}','${next.id}')"`:'disabled'}><small>Next →</small><span>${next?next.t:'Course complete!'}</span></button>
   </div>`;
 }
@@ -1266,8 +1266,8 @@ function markDone(id){ P[id]=true; updateStreakOnComplete(); save(); render(); }
 let qSel={};
 function renderQuiz(l){
   qSel={};
-  let html=`<div class="quiz" id="quiz"><div class="qhead">✏️ Check your understanding <span style="color:var(--dim);font-weight:500;font-size:12px">— all correct to complete the lesson</span></div>`;
-  html+=`<div class="infonote" style="margin:8px 12px 0"><div class="in-h" onclick="this.parentElement.classList.toggle('open')"><span>🛡️ Quiz rules — prereqs only</span><span class="hint">hover to read</span><span class="chev">▾</span></div><div class="in-b">This quiz (and review checkpoints) test <strong>ONLY</strong> concepts explicitly introduced in <strong>this lesson's body + all prior lessons</strong>. <strong>NO forward references allowed.</strong> Forbidden in any quiz: agents/multi-agent orchestration or supervisor patterns (before L3c3+), MCP / tools/list+call / MCP servers (before L5d1+ and the quickwin), KV cache / quantization / speculative decoding / batching economics / roofline / prefill-decode (before L6a1+), FTI pipelines (before L5a1), scaling/multipliers for multi-agent (before L3f but full MCP scaling in L6), or any later material. Every explanation states <strong>Mental model</strong>, <strong>Common mistake</strong>, and ends with <strong>"Check this question: ..."</strong> If any question references un-introduced material, it's a bug — report the lesson id. Go in order; sidebar + gates enforce it.</div></div>`;
+  let html=`<div class="quiz" id="quiz"><div class="qhead">✏️ Check your understanding <span style="color:var(--dim);font-weight:500;font-size:12px">- all correct to complete the lesson</span></div>`;
+  html+=`<div class="infonote" style="margin:8px 12px 0"><div class="in-h" onclick="this.parentElement.classList.toggle('open')"><span>🛡️ Quiz rules - prereqs only</span><span class="hint">hover to read</span><span class="chev">▾</span></div><div class="in-b">This quiz (and review checkpoints) test <strong>ONLY</strong> concepts explicitly introduced in <strong>this lesson's body + all prior lessons</strong>. <strong>NO forward references allowed.</strong> Forbidden in any quiz: agents/multi-agent orchestration or supervisor patterns (before L3c3+), MCP / tools/list+call / MCP servers (before L5d1+ and the quickwin), KV cache / quantization / speculative decoding / batching economics / roofline / prefill-decode (before L6a1+), FTI pipelines (before L5a1), scaling/multipliers for multi-agent (before L3f but full MCP scaling in L6), or any later material. Every explanation states <strong>Mental model</strong>, <strong>Common mistake</strong>, and ends with <strong>"Check this question: ..."</strong> If any question references un-introduced material, it's a bug - report the lesson id. Go in order; sidebar + gates enforce it.</div></div>`;
   l.quiz.forEach((q,qi)=>{
     html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q}</div>`;
     q.o.forEach((o,oi)=>{
@@ -1298,10 +1298,10 @@ function grade(id){
   });
   const msg=document.getElementById('qmsg');
   if(allRight){
-    if(hasExercise(l)&&!exDone(id)){ msg.textContent='Quiz correct — now finish the hands-on exercise above to complete the lesson'; msg.className='qmsg no'; P[id+'_quiz']=true; save(); return; }
-    msg.textContent='✓ Passed — lesson complete'; msg.className='qmsg ok'; P[id]=true; save(); renderSidebar();
+    if(hasExercise(l)&&!exDone(id)){ msg.textContent='Quiz correct - now finish the hands-on exercise above to complete the lesson'; msg.className='qmsg no'; P[id+'_quiz']=true; save(); return; }
+    msg.textContent='✓ Passed - lesson complete'; msg.className='qmsg ok'; P[id]=true; save(); renderSidebar();
   }
-  else { msg.textContent='Not quite — review the explanations and try again'; msg.className='qmsg no'; }
+  else { msg.textContent='Not quite - review the explanations and try again'; msg.className='qmsg no'; }
 }
 function maybeComplete(l){
   // called when an exercise finishes: complete lesson if quiz also passed (or no quiz)
@@ -1316,9 +1316,9 @@ function renderGate(id,c){
   const prev=all[i-1],next=all[i+1];
   const ck=P[id+'_ck']||[];
   let html=`<div class="crumb"><b>Level ${g._lv+1} Project Gate</b></div>
-  <h1 class="ltitle">⛩ ${g.t}</h1><div class="lmeta">Mandatory project — build it for real before moving on ${isDone(id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
+  <h1 class="ltitle">⛩ ${g.t}</h1><div class="lmeta">Mandatory project - build it for real before moving on ${isDone(id)?' · <span style="color:var(--green)">✓ completed</span>':''}</div>
   <div class="body">${gloss(g.body)}</div>
-  <div class="gatecard"><div style="font-weight:700;margin-bottom:10px">✅ Completion checklist — check each item only when it's true</div>`;
+  <div class="gatecard"><div style="font-weight:700;margin-bottom:10px">✅ Completion checklist - check each item only when it's true</div>`;
   g.checklist.forEach((item,ci)=>{
     const on=ck.includes(ci);
     html+=`<div class="check ${on?'on':''}" onclick="toggleCheck('${id}',${ci})"><span class="cb">${on?'✓':''}</span><span>${item}</span></div>`;
@@ -1330,7 +1330,7 @@ function renderGate(id,c){
   c.innerHTML=html;
 }
 function renderEvidence(g){
-  let html=`<div class="gatecard" style="border-color:var(--border2);background:var(--bg2)"><div style="font-weight:700;margin-bottom:6px">📋 Evidence log — record your real numbers (saved in this browser)</div>
+  let html=`<div class="gatecard" style="border-color:var(--border2);background:var(--bg2)"><div style="font-weight:700;margin-bottom:6px">📋 Evidence log - record your real numbers (saved in this browser)</div>
   <div style="font-size:13px;color:var(--muted);margin-bottom:10px">A defense is only as good as its evidence. Fill these from your actual measurements; they persist with your progress and export.</div>`;
   g.evidence.forEach(f=>{
     const v=P[g.id+'_ev_'+f.key]||'';
@@ -1345,7 +1345,7 @@ let curCapstone=null;
 function renderCapstoneVerify(g){
   curCapstone=g;
   const proof=P[g.id+'_proof'];
-  return `<div class="gatecard"><div style="font-weight:700;margin-bottom:6px">🌐 Live verification — point this at your deployed capstone endpoint</div>
+  return `<div class="gatecard"><div style="font-weight:700;margin-bottom:6px">🌐 Live verification - point this at your deployed capstone endpoint</div>
   <div style="font-size:13px;color:var(--muted);margin-bottom:10px">The same checks a monitor would run: a health probe, a live question, and a mini-eval of ${(g.verify.cases||[]).length} cases against your real service. ${proof?`<span style="color:var(--green)">last verified: ${escapeHtml(String(proof.summary))} (${proof.at})</span>`:''}</div>
   <input class="keyinput" id="capurl" placeholder="https://your-capstone.onrender.com" value="${escapeHtml((proof&&proof.summary)||'')}">
   <div class="row" style="margin-top:8px"><button class="simbtn" id="capbtn" onclick="runCapstone()">Verify deployment + run mini-eval</button></div>
@@ -1358,7 +1358,7 @@ async function runCapstone(){
   if(!base){ out.textContent='Paste your deployed capstone URL first.'; return; }
   btn.disabled=true;
   try{
-    out.innerHTML='1 — GET <code>'+escapeHtml(base)+'/health</code> …';
+    out.innerHTML='1 - GET <code>'+escapeHtml(base)+'/health</code> …';
     const hr=await fetch(base+'/health'); const hj=await hr.json().catch(()=>null);
     if(!hr.ok||!deployCheckHealth(hj)){ out.innerHTML='<span style="color:var(--red)">✗ /health did not return {"status":"ok"} (HTTP '+hr.status+'). Wake the service / check CORS, then retry.</span>'; btn.disabled=false; return; }
     let lines=['<span style="color:var(--green)">✓ /health ok</span>'];
@@ -1380,7 +1380,7 @@ async function runCapstone(){
       out.innerHTML+='<br><span style="color:var(--green)">✓ Your capstone is live and answering correctly. Evidence captured.</span>';
       P[g.id+'_proof']={summary:base,at:new Date().toISOString().slice(0,10),acc:Math.round(acc*100)};
       save();
-    } else out.innerHTML+='<br><span style="color:var(--amber)">Service is live but the mini-eval is below threshold — inspect the answers above and improve retrieval/generation.</span>';
+    } else out.innerHTML+='<br><span style="color:var(--amber)">Service is live but the mini-eval is below threshold - inspect the answers above and improve retrieval/generation.</span>';
   }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber)">Common causes: service asleep (open the URL first), missing CORS, or /ask not implemented. </span>'; }
   btn.disabled=false;
 }
@@ -1404,7 +1404,7 @@ function renderReview(maxLv,c){
   LEVELS.slice(0,maxLv+1).forEach((lv,li)=>lv.chapters.forEach(ch=>ch.lessons.forEach(l=>(l.quiz||[]).forEach(q=>pool.push({...q,from:l.t})))));
   const pick=[...pool].sort(()=>Math.random()-.5).slice(0,8);
   window._review=pick; qSel={};
-  let html=`<h1 class="ltitle">↻ Review checkpoint</h1><div class="lmeta">8 random questions from Levels 1–${maxLv+1}. Spaced repetition: if you miss any, revisit that lesson.</div><div class="quiz" id="quiz"><div class="qhead">Mixed review</div>`;
+  let html=`<h1 class="ltitle">↻ Review checkpoint</h1><div class="lmeta">8 random questions from Levels 1-${maxLv+1}. Spaced repetition: if you miss any, revisit that lesson.</div><div class="quiz" id="quiz"><div class="qhead">Mixed review</div>`;
   pick.forEach((q,qi)=>{
     html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q} <span style="color:var(--dim);font-weight:400;font-size:12px">(${q.from})</span></div>`;
     q.o.forEach((o,oi)=>{html+=`<div class="opt" data-o="${oi}" onclick="pick(${qi},${oi},this)"><span class="ob"></span><span>${o}</span></div>`;});
@@ -1433,7 +1433,7 @@ function gradeReview(){
 /* ================= glossary page ================= */
 function renderGlossary(c){
   const terms=Object.keys(GLOSSARY).sort();
-  let html=`<h1 class="ltitle">📖 Glossary</h1><div class="lmeta">${terms.length} terms — every piece of jargon in the course, in plain language</div>
+  let html=`<h1 class="ltitle">📖 Glossary</h1><div class="lmeta">${terms.length} terms - every piece of jargon in the course, in plain language</div>
   <input class="glsearch" placeholder="Search terms…" oninput="filterGl(this.value)"><div id="gllist">`;
   terms.forEach(t=>{html+=`<div class="glitem" data-t="${t}"><b>${t}</b><p>${GLOSSARY[t]}</p></div>`;});
   c.innerHTML=html+'</div>';
@@ -1447,7 +1447,7 @@ function filterGl(v){
 
 /* ================= simulations ================= */
 function renderSim(name){
-  const titles={playground:'LIVE LAB: real API call — your key, your tokens',ragreal:'LIVE LAB: real embeddings — a mini-RAG retriever',opsbyte:'Interactive: ops:byte — compute- or memory-bound?',percentiles:'Interactive: latency percentiles (p50/p95/p99)',parallelism:'Interactive: splitting a model across GPUs',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching — throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights',multiagent:'GAME SIM: Multi-agent flows — pick arch, watch success score',dragorchestrate:'DRAG-DROP: Build your agent team',scalecost:'GAME CALC: Real-time scaling cost explorer (find cheap configs)',multiscale:'SCALE SIM: Multi-agent scaling choices — pick strategy, tune load, see live success/cost/latency'};
+  const titles={playground:'LIVE LAB: real API call - your key, your tokens',ragreal:'LIVE LAB: real embeddings - a mini-RAG retriever',opsbyte:'Interactive: ops:byte - compute- or memory-bound?',percentiles:'Interactive: latency percentiles (p50/p95/p99)',parallelism:'Interactive: splitting a model across GPUs',tokenizer:'Interactive: tokenizer playground',temperature:'Interactive: temperature & sampling',samplers:'Interactive: temperature vs top-k vs top-p',embedding:'Interactive: embedding similarity',chunking:'Interactive: chunk size explorer',rag:'Interactive: mini retrieval engine',costcalc:'Interactive: token cost calculator',context:'Interactive: context window',quant:'Interactive: quantization trade-off',batching:'Interactive: batching - throughput vs latency',kvcache:'Interactive: KV cache savings',speculative:'Interactive: speculative decoding',attention:'Interactive: attention weights',multiagent:'GAME SIM: Multi-agent flows - pick arch, watch success score',dragorchestrate:'DRAG-DROP: Build your agent team',scalecost:'GAME CALC: Real-time scaling cost explorer (find cheap configs)',multiscale:'SCALE SIM: Multi-agent scaling choices - pick strategy, tune load, see live success/cost/latency'};
   return `<div class="sim" id="sim-${name}"><div class="simtitle">⚡ ${titles[name]||name}</div><div id="simbody-${name}"></div></div>`;
 }
 function initSim(name){
@@ -1512,7 +1512,7 @@ SIMS.dragorchestrate=function(b){
     else if(roles.includes('crit')) base += 8;
     const bal = (roles.includes('supervisor')?1:0.6) * (roles.length<2?0.7:1) * (roles.includes('router')?0.9:1);
     const score = Math.round(base * bal);
-    const fb = score>85 ? '✅ Excellent for Twin multi-agent (supervisor + specialists + critic = contained blast radius)' : (score>70?'⚡ Good start — add critic for validation' : '⚠️ Unbalanced; supervisor alone or missing retriever/critic compounds errors');
+    const fb = score>85 ? '✅ Excellent for Twin multi-agent (supervisor + specialists + critic = contained blast radius)' : (score>70?'⚡ Good start - add critic for validation' : '⚠️ Unbalanced; supervisor alone or missing retriever/critic compounds errors');
     document.getElementById('do_out').innerHTML = `<b>Team size:</b> ${n} · <b>Score:</b> <span style="color:${score>85?'var(--green)':score>70?'var(--amber)':'var(--red)'}">${score}</span><br>${fb}<br><span style="font-size:10px;color:var(--dim)">MCP multi-agent payoff: explicit handoff validation between roles.</span>`;
   };
   SIMS._doCalc();
@@ -1608,7 +1608,7 @@ SIMS.tokenizer=function(b){
 
 /* temperature sampling over toy distribution */
 SIMS.temperature=function(b){
-  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Prompt: <i>“The capital of France is”</i> — the model's raw preferences for the next token:</p>
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Prompt: <i>“The capital of France is”</i> - the model's raw preferences for the next token:</p>
   <div class="row"><span class="lbl">Temperature</span><input type="range" id="tmp" min="0" max="200" value="70" oninput="SIMS._temp()"><span class="val" id="tmpv">0.7</span></div>
   <div id="tmpbars"></div>
   <div class="row" style="margin-top:12px"><button class="simbtn" onclick="SIMS._tsample()">Sample next token 20×</button><span id="tsout" style="font-family:var(--mono);font-size:12.5px;color:var(--muted)"></span></div>`;
@@ -1671,7 +1671,7 @@ SIMS.samplers=function(b){
       return `<div class="barrow"><span class="bl" style="color:${alive?'var(--text)':'var(--dim)'}">${d.w}</span><div class="bv" style="width:${Math.max((alive?shown:d.p)*360,2)}px;background:${alive?'var(--accent)':'var(--bg3)'};opacity:${alive?1:.5}"></div><span class="bn">${alive?(shown*100).toFixed(1)+'%':'cut'}</span></div>`;
     }).join('');
     const n=kept.size;
-    document.getElementById('sm_out').innerHTML=`<b style="color:var(--accent2)">${n}</b> of ${dist.length} tokens can be chosen. Temperature reshapes the odds; top-k caps the count; top-p caps the cumulative mass. They stack — most apps tune temperature + one of top-k/top-p.`;
+    document.getElementById('sm_out').innerHTML=`<b style="color:var(--accent2)">${n}</b> of ${dist.length} tokens can be chosen. Temperature reshapes the odds; top-k caps the count; top-p caps the cumulative mass. They stack - most apps tune temperature + one of top-k/top-p.`;
   };
   SIMS._sm();
 };
@@ -1682,7 +1682,7 @@ SIMS.embedding=function(b){
   b.innerHTML=`<div class="row"><span class="lbl">Word A</span><select id="ea" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">${Object.keys(words).map(w=>`<option>${w}</option>`).join('')}</select>
   <span class="lbl" style="min-width:60px">Word B</span><select id="eb" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">${Object.keys(words).map((w,i)=>`<option ${i===1?'selected':''}>${w}</option>`).join('')}</select></div>
   <div class="simout" id="eout"></div>
-  <p style="font-size:12px;color:var(--dim);margin-top:8px">Real embeddings have 1,000+ dimensions, not 2 — but the principle is identical: similar meaning ⇒ vectors point the same way ⇒ high cosine similarity.</p>`;
+  <p style="font-size:12px;color:var(--dim);margin-top:8px">Real embeddings have 1,000+ dimensions, not 2 - but the principle is identical: similar meaning ⇒ vectors point the same way ⇒ high cosine similarity.</p>`;
   const upd=()=>{
     const a=words[document.getElementById('ea').value], c=words[document.getElementById('eb').value];
     const dot=a[0]*c[0]+a[1]*c[1];
@@ -1725,7 +1725,7 @@ SIMS.rag=function(b){
   ];
   b.innerHTML=`<input type="text" id="rq" value="how long do I have to return something?" oninput="SIMS._rag()">
   <div class="simout" id="rout"></div>
-  <p style="font-size:12px;color:var(--dim);margin-top:8px">This demo scores by word overlap. Real RAG uses embedding similarity — same idea, much smarter matching.</p>`;
+  <p style="font-size:12px;color:var(--dim);margin-top:8px">This demo scores by word overlap. Real RAG uses embedding similarity - same idea, much smarter matching.</p>`;
   SIMS._rag=function(){
     const q=document.getElementById('rq').value.toLowerCase().split(/\W+/).filter(w=>w.length>2);
     const scored=docs.map(d=>{
@@ -1734,7 +1734,7 @@ SIMS.rag=function(b){
       return {d,score};
     }).sort((a,b)=>b.score-a.score);
     const max=Math.max(scored[0].score,1);
-    document.getElementById('rout').innerHTML=scored.map((s,i)=>`<div class="barrow" style="align-items:flex-start"><div class="bv" style="width:${Math.max(s.score/max*90,3)}px;background:${i===0&&s.score>0?'var(--green)':'var(--accent)'}"></div><span style="font-size:12.5px;color:${i===0&&s.score>0?'var(--text)':'var(--dim)'}">${s.d} <b style="color:var(--accent2)">(score ${s.score})</b></span></div>`).join('')+`<div style="margin-top:8px;font-size:12.5px;color:var(--green)">${scored[0].score>0?'→ Top chunk gets pasted into the prompt as context.':'No match — the model would have to answer without grounding (risky!).'}</div>`;
+    document.getElementById('rout').innerHTML=scored.map((s,i)=>`<div class="barrow" style="align-items:flex-start"><div class="bv" style="width:${Math.max(s.score/max*90,3)}px;background:${i===0&&s.score>0?'var(--green)':'var(--accent)'}"></div><span style="font-size:12.5px;color:${i===0&&s.score>0?'var(--text)':'var(--dim)'}">${s.d} <b style="color:var(--accent2)">(score ${s.score})</b></span></div>`).join('')+`<div style="margin-top:8px;font-size:12.5px;color:var(--green)">${scored[0].score>0?'→ Top chunk gets pasted into the prompt as context.':'No match - the model would have to answer without grounding (risky!).'}</div>`;
   };
   SIMS._rag();
 };
@@ -1765,7 +1765,7 @@ SIMS.context=function(b){
     const tokens=n*350, win=8000;
     const over=tokens>win;
     let html=`<div style="font-size:13px">≈ ${tokens.toLocaleString()} tokens of history · window = ${win.toLocaleString()} tokens</div><div class="bar" style="margin-top:8px;height:14px"><i style="width:${Math.min(tokens/win*100,100)}%;background:${over?'var(--red)':'var(--accent)'}"></i></div>`;
-    html+=`<div style="margin-top:8px;font-size:12.5px;color:${over?'var(--red)':'var(--dim)'}">${over?`Overflow! The oldest ${Math.ceil((tokens-win)/350)} messages get cut off — the model literally cannot see them anymore. This is why chatbots "forget".`:'Everything still fits — the model can see the whole conversation.'}</div>`;
+    html+=`<div style="margin-top:8px;font-size:12.5px;color:${over?'var(--red)':'var(--dim)'}">${over?`Overflow! The oldest ${Math.ceil((tokens-win)/350)} messages get cut off - the model literally cannot see them anymore. This is why chatbots "forget".`:'Everything still fits - the model can see the whole conversation.'}</div>`;
     document.getElementById('cwout').innerHTML=html;
   };
   SIMS._cw();
@@ -1774,13 +1774,13 @@ SIMS.context=function(b){
 /* quantization */
 SIMS.quant=function(b){
   b.innerHTML=`<div class="row"><span class="lbl">Precision</span><select id="qp" onchange="SIMS._q()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px">
-  <option value="16">FP16 — 16 bits/weight</option><option value="8">INT8 — 8 bits/weight</option><option value="4" selected>INT4 — 4 bits/weight</option><option value="2">2-bit (extreme)</option></select>
+  <option value="16">FP16 - 16 bits/weight</option><option value="8">INT8 - 8 bits/weight</option><option value="4" selected>INT4 - 4 bits/weight</option><option value="2">2-bit (extreme)</option></select>
   <span class="lbl" style="min-width:80px">Model size</span><select id="qm" onchange="SIMS._q()" style="background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:7px;padding:7px"><option value="7">7B params</option><option value="70">70B params</option><option value="405">405B params</option></select></div>
   <div class="simout" id="qout"></div>`;
   SIMS._q=function(){
     const bits=+document.getElementById('qp').value, p=+document.getElementById('qm').value;
     const gb=p*bits/8;
-    const qual={16:'~100% (reference quality)',8:'~99% — nearly free win',4:'~97-98% — the sweet spot for most uses',2:'~80-90% — noticeable damage, niche only'}[bits];
+    const qual={16:'~100% (reference quality)',8:'~99% - nearly free win',4:'~97-98% - the sweet spot for most uses',2:'~80-90% - noticeable damage, niche only'}[bits];
     const fits=gb<=24?'fits on one consumer GPU (24 GB)':gb<=80?'needs one datacenter GPU (80 GB)':`needs ${Math.ceil(gb/80)} × 80 GB GPUs`;
     document.getElementById('qout').innerHTML=`Memory for weights: <b style="color:var(--accent2)">${gb.toFixed(1)} GB</b> → ${fits}<br>Typical quality retained: <b style="color:${bits>=4?'var(--green)':'var(--red)'}">${qual}</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">Lower precision also means fewer bytes to move from memory → faster decoding, since LLM decoding is memory-bandwidth-bound.</div>`;
   };
@@ -1798,7 +1798,7 @@ SIMS.batching=function(b){
     document.getElementById('bout').innerHTML=
     `<div class="barrow"><span class="bl">Throughput</span><div class="bv" style="width:${thr/2200*420}px;background:var(--green)"></div><span class="bn">${thr.toLocaleString()} tok/s total</span></div>
     <div class="barrow"><span class="bl">Per-token latency</span><div class="bv" style="width:${lat*4}px;background:var(--amber)"></div><span class="bn">${lat} ms/token per user</span></div>
-    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Batching reuses one weight-load from memory across many users — throughput scales almost linearly while each user's latency degrades only slightly. This is THE core economics of inference serving.</div>`;
+    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Batching reuses one weight-load from memory across many users - throughput scales almost linearly while each user's latency degrades only slightly. This is THE core economics of inference serving.</div>`;
   };
   SIMS._b();
 };
@@ -1813,7 +1813,7 @@ SIMS.kvcache=function(b){
     document.getElementById('kvout').innerHTML=
     `<div class="barrow"><span class="bl">Without KV cache</span><div class="bv" style="width:${Math.min(naive/2001000*420,420)}px;background:var(--red)"></div><span class="bn">${naive.toLocaleString()} token-computations</span></div>
     <div class="barrow"><span class="bl">With KV cache</span><div class="bv" style="width:${Math.max(cached/2001000*420,2)}px;background:var(--green)"></div><span class="bn">${cached.toLocaleString()}</span></div>
-    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Without caching, every new token would recompute attention over ALL previous tokens from scratch (quadratic). The KV cache stores past keys/values so each new token costs one step. Price: the cache eats GPU memory — and managing that memory is half of inference engineering.</div>`;
+    <div style="margin-top:8px;font-size:12.5px;color:var(--dim)">Without caching, every new token would recompute attention over ALL previous tokens from scratch (quadratic). The KV cache stores past keys/values so each new token costs one step. Price: the cache eats GPU memory - and managing that memory is half of inference engineering.</div>`;
   };
   SIMS._kv();
 };
@@ -1827,7 +1827,7 @@ SIMS.speculative=function(b){
     const k=4;
     const accepted=(1-Math.pow(a,k+1))/(1-a);
     const speed=accepted/(1+k*0.15);
-    document.getElementById('spout').innerHTML=`Drafting ${k} tokens per round with a small model, verifying with the big one:<br>Expected tokens accepted per big-model pass: <b style="color:var(--accent2)">${accepted.toFixed(2)}</b><br>Effective speedup: <b style="color:${speed>1.3?'var(--green)':'var(--amber)'}">${speed.toFixed(2)}×</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">When the draft model guesses well (predictable text, code), speculation flies. When acceptance drops, you pay for drafting and get nothing — speculation can even slow you down.</div>`;
+    document.getElementById('spout').innerHTML=`Drafting ${k} tokens per round with a small model, verifying with the big one:<br>Expected tokens accepted per big-model pass: <b style="color:var(--accent2)">${accepted.toFixed(2)}</b><br>Effective speedup: <b style="color:${speed>1.3?'var(--green)':'var(--amber)'}">${speed.toFixed(2)}×</b><div style="font-size:12.5px;color:var(--dim);margin-top:6px">When the draft model guesses well (predictable text, code), speculation flies. When acceptance drops, you pay for drafting and get nothing - speculation can even slow you down.</div>`;
   };
   SIMS._sp();
 };
@@ -1836,7 +1836,7 @@ SIMS.speculative=function(b){
 SIMS.attention=function(b){
   const sent=['The','cat','sat','on','the','mat','because','it','was','soft'];
   const att={7:[[1,0.62],[5,0.23],[9,0.08]],9:[[5,0.55],[1,0.2],[8,0.1]],2:[[1,0.7],[0,0.15]]};
-  b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Click a word to see what it "attends to" (toy weights):</p><div id="atw" style="line-height:2.4"></div><div class="simout" id="atout">Click <b>it</b> — what does the model think "it" refers to?</div>`;
+  b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Click a word to see what it "attends to" (toy weights):</p><div id="atw" style="line-height:2.4"></div><div class="simout" id="atout">Click <b>it</b> - what does the model think "it" refers to?</div>`;
   const draw=(sel)=>{
     document.getElementById('atw').innerHTML=sent.map((w,i)=>{
       let bg='var(--bg3)',col='var(--muted)';
@@ -1848,7 +1848,7 @@ SIMS.attention=function(b){
   SIMS._at=function(i){
     draw(i);
     const a=att[i];
-    document.getElementById('atout').innerHTML=a?`<b>"${sent[i]}"</b> attends most to: ${a.map(([j,w])=>`<b style="color:var(--cyan)">${sent[j]}</b> (${Math.round(w*100)}%)`).join(', ')} — attention is how the model resolves references and relationships between tokens.`:`<b>"${sent[i]}"</b> — this toy demo only has interesting weights for <b>it</b>, <b>sat</b> and <b>soft</b>. Try those!`;
+    document.getElementById('atout').innerHTML=a?`<b>"${sent[i]}"</b> attends most to: ${a.map(([j,w])=>`<b style="color:var(--cyan)">${sent[j]}</b> (${Math.round(w*100)}%)`).join(', ')} - attention is how the model resolves references and relationships between tokens.`:`<b>"${sent[i]}"</b> - this toy demo only has interesting weights for <b>it</b>, <b>sat</b> and <b>soft</b>. Try those!`;
   };
   draw();
 };
@@ -1861,24 +1861,24 @@ function getEmbedModel(){ return localStorage.getItem('z2ai_embedmodel')||'text-
 function providerHost(){ try{ return new URL(getBase()).host; }catch(e){ return getBase(); } }
 function renderSettings(c){
   const k=getKey();
-  c.innerHTML=`<h1 class="ltitle">🔑 API key — optional, and here's why</h1>
+  c.innerHTML=`<h1 class="ltitle">🔑 API key - optional, and here's why</h1>
   <div class="lmeta">Needed only for the handful of live labs · the other ~90% of the course works with no key</div>
   <div class="body">
   <div class="callout"><div class="ct">You do NOT need this to learn most of the course</div>Every lesson, quiz, 📖 book reference, 🎬 video, 📐 diagram, the terminal &amp; SQL labs, the in-browser Python labs (they run locally), and all the interactive sims (tokenizer, temperature, chunking, KV cache, cost calculator…) work with <strong>no key at all</strong>. Connect one only when you want the live labs to actually call a model.</div>
   <h2 style="font-size:18px;margin:22px 0 6px">What the key is actually used for</h2>
   <p>The app makes exactly two kinds of real call, and only inside these labs:</p>
   <ul>
-  <li><strong>Chat completions</strong> (<code>POST /chat/completions</code>) — the "first real API call" lab, structured-outputs lab, the live eval harness (l2d7), the streaming/TTFT playground, and the fine-tune/deploy verification checks. This is where you feel real model behavior, latency, and cost instead of a simulation.</li>
-  <li><strong>Embeddings</strong> (<code>POST /embeddings</code>) — the real-embeddings mini-RAG (l3a5) and the Twin retrieval labs, where your query and documents become real vectors.</li>
+  <li><strong>Chat completions</strong> (<code>POST /chat/completions</code>) - the "first real API call" lab, structured-outputs lab, the live eval harness (l2d7), the streaming/TTFT playground, and the fine-tune/deploy verification checks. This is where you feel real model behavior, latency, and cost instead of a simulation.</li>
+  <li><strong>Embeddings</strong> (<code>POST /embeddings</code>) - the real-embeddings mini-RAG (l3a5) and the Twin retrieval labs, where your query and documents become real vectors.</li>
   </ul>
-  <p>That's it. No call happens unless you open one of those labs and run it. Your key is stored <strong>only in this browser</strong> (localStorage) and sent <strong>only to the provider URL below</strong> — there is no server behind this app.</p>
+  <p>That's it. No call happens unless you open one of those labs and run it. Your key is stored <strong>only in this browser</strong> (localStorage) and sent <strong>only to the provider URL below</strong> - there is no server behind this app.</p>
 
-  <h2 style="font-size:18px;margin:26px 0 6px">Provider — use OpenAI, a local model, or any compatible endpoint</h2>
+  <h2 style="font-size:18px;margin:26px 0 6px">Provider - use OpenAI, a local model, or any compatible endpoint</h2>
   <p>The labs speak the standard OpenAI <em>format</em>, so they work with anything that exposes that format. Pick what suits you:</p>
   <ul style="font-size:13.5px;color:var(--muted)">
-  <li><strong>OpenAI</strong> (default) — base URL <code>https://api.openai.com/v1</code>, key from platform.openai.com. <code>gpt-4o-mini</code> costs cents.</li>
-  <li><strong>Local &amp; free</strong> — run Ollama or LM Studio and set the base URL to its server (e.g. <code>http://localhost:11434/v1</code> for Ollama, <code>http://localhost:1234/v1</code> for LM Studio). Key can be anything. No cost, runs on your machine.</li>
-  <li><strong>Gateways</strong> — OpenRouter (<code>https://openrouter.ai/api/v1</code>) or similar let you point the chat model at Claude, Llama, etc. (Embeddings labs need an endpoint that serves <code>/embeddings</code> — most local servers and OpenAI do; pure-chat gateways may not.)</li>
+  <li><strong>OpenAI</strong> (default) - base URL <code>https://api.openai.com/v1</code>, key from platform.openai.com. <code>gpt-4o-mini</code> costs cents.</li>
+  <li><strong>Local &amp; free</strong> - run Ollama or LM Studio and set the base URL to its server (e.g. <code>http://localhost:11434/v1</code> for Ollama, <code>http://localhost:1234/v1</code> for LM Studio). Key can be anything. No cost, runs on your machine.</li>
+  <li><strong>Gateways</strong> - OpenRouter (<code>https://openrouter.ai/api/v1</code>) or similar let you point the chat model at Claude, Llama, etc. (Embeddings labs need an endpoint that serves <code>/embeddings</code> - most local servers and OpenAI do; pure-chat gateways may not.)</li>
   </ul>
   <div class="row" style="margin-top:8px"><span class="lbl">Base URL</span></div>
   <input class="keyinput" id="baseinput" placeholder="https://api.openai.com/v1" value="${escapeHtml(getBase())}">
@@ -1892,10 +1892,10 @@ function renderSettings(c){
     <button class="simbtn" onclick="saveKey()">Save &amp; test</button>
     <button class="simbtn ghost" onclick="['z2ai_key','z2ai_base','z2ai_chatmodel','z2ai_embedmodel'].forEach(x=>localStorage.removeItem(x));renderSettings(document.getElementById('content'))">Reset to defaults</button>
   </div>
-  <div class="simout" id="keyout" style="margin-top:14px">${k?'Saved. Click "Save & test" to verify a live call works.':'No key yet — fine for ~90% of the course. Add one when you reach a live lab (the Level 2 lab walks you through getting an OpenAI key).'}</div>
-  <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>If you use a paid provider, set a monthly spending cap in its billing settings. Course labs use a mini model and cost cents — caps protect you from mistakes. That's an engineering habit, not paranoia.</div>
+  <div class="simout" id="keyout" style="margin-top:14px">${k?'Saved. Click "Save & test" to verify a live call works.':'No key yet - fine for ~90% of the course. Add one when you reach a live lab (the Level 2 lab walks you through getting an OpenAI key).'}</div>
+  <div class="callout warn" style="margin-top:18px"><div class="ct">Safety</div>If you use a paid provider, set a monthly spending cap in its billing settings. Course labs use a mini model and cost cents - caps protect you from mistakes. That's an engineering habit, not paranoia.</div>
   <h2 style="font-size:20px;margin:34px 0 10px">💾 Backup your progress</h2>
-  <p>Progress (including your notes) lives only in this browser. A cleared cache wipes months of work — export a backup regularly.</p>
+  <p>Progress (including your notes) lives only in this browser. A cleared cache wipes months of work - export a backup regularly.</p>
   <div class="row" style="display:flex;gap:10px">
     <button class="simbtn" onclick="exportProgress()">Export progress (.json)</button>
     <button class="simbtn ghost" onclick="document.getElementById('impfile').click()">Import progress…</button>
@@ -1904,8 +1904,8 @@ function renderSettings(c){
   <div class="simout" id="impout" style="margin-top:12px">Export downloads a file; import restores from one (it replaces current progress).</div>
   <div style="margin-top:10px"><button class="simbtn ghost" style="font-size:12px" onclick="if(confirm('Reset streak only?')){resetStreak(); renderSettings(document.getElementById('content'));}">Reset streak (dev/ADHD fresh start)</button> <span style="font-size:11px;color:var(--dim)">Streaks auto-update on completes. Export keeps your _streak data.</span></div>
 
-  <h2 style="font-size:20px;margin:34px 0 10px">🌐 Community & Forking (static, zero friction) — Share your MCP Twin flows</h2>
-  <div class="callout tip"><div class="ct">Fully static — the easiest course to fork/customize/host for Discord cohorts (reinforced everywhere)</div>This is <strong>one index.html + data/*.js only</strong>. No build, no server, pure client. Edit <b>one CUSTOM.discordInvite</b> (plus optional shareHashtag/cohortTagline) → EVERY floating CTA (🚀 Share, ⚡Share+Discord), Share modal (MD/YAML/JSON/Forum/GitHub w/ image badges + live P/AGENT/gates + MCP/multi + new QCs), sidebar, home banner, openDiscord helper, fork UI updates instantly. Perfect for your cohort's full MCP-exposed multi-agent Twin sharing ritual + accountability. Deploy with empty build cmd + output dir=.</div>
+  <h2 style="font-size:20px;margin:34px 0 10px">🌐 Community & Forking (static, zero friction) - Share your MCP Twin flows</h2>
+  <div class="callout tip"><div class="ct">Fully static - the easiest course to fork/customize/host for Discord cohorts (reinforced everywhere)</div>This is <strong>one index.html + data/*.js only</strong>. No build, no server, pure client. Edit <b>one CUSTOM.discordInvite</b> (plus optional shareHashtag/cohortTagline) → EVERY floating CTA (🚀 Share, ⚡Share+Discord), Share modal (MD/YAML/JSON/Forum/GitHub w/ image badges + live P/AGENT/gates + MCP/multi + new QCs), sidebar, home banner, openDiscord helper, fork UI updates instantly. Perfect for your cohort's full MCP-exposed multi-agent Twin sharing ritual + accountability. Deploy with empty build cmd + output dir=.</div>
   <div style="margin:12px 0">
     <button class="simbtn" onclick="openDiscord()">💬 Open ${CUSTOM.communityName} Discord</button>
     <button class="simbtn ghost" onclick="showForkHelper()">📋 Fork Helper UI (CUSTOM-aware + static deploy)</button>
@@ -1933,12 +1933,12 @@ async function saveKey(){
   out.textContent='Testing a live call against '+providerHost()+' …';
   try{
     const r=await llm([{role:'user',content:'Reply with exactly: OK'}],{max_tokens:5});
-    out.innerHTML='<span style="color:var(--green)">✓ Works! '+escapeHtml(getChatModel())+' replied: "'+escapeHtml(r.text.trim())+'" — live labs unlocked via '+escapeHtml(providerHost())+'.</span>';
-  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber);font-size:12px">If using a local server, check the server is running and the base URL ends in /v1. Browser CORS may also block it — some local servers need a flag to allow browser requests.</span>'; }
+    out.innerHTML='<span style="color:var(--green)">✓ Works! '+escapeHtml(getChatModel())+' replied: "'+escapeHtml(r.text.trim())+'" - live labs unlocked via '+escapeHtml(providerHost())+'.</span>';
+  }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber);font-size:12px">If using a local server, check the server is running and the base URL ends in /v1. Browser CORS may also block it - some local servers need a flag to allow browser requests.</span>'; }
   renderSidebar();
 }
 async function llm(messages,opts={}){
-  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const k=getKey(); if(!k) throw new Error('No API key set - add one under 🔑 API key in the sidebar.');
   const body={model:opts.model||getChatModel(),messages,temperature:opts.temperature??0.7};
   if(opts.max_tokens)body.max_tokens=opts.max_tokens;
   if(opts.response_format)body.response_format=opts.response_format;
@@ -1954,7 +1954,7 @@ function costOf(usage,model){
   return (usage.prompt_tokens*p[0]+usage.completion_tokens*p[1])/1e6;
 }
 async function embedText(texts,opts={}){
-  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const k=getKey(); if(!k) throw new Error('No API key set - add one under 🔑 API key in the sidebar.');
   const res=await fetch(getBase()+'/embeddings',{
     method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
     body:JSON.stringify({model:opts.model||getEmbedModel(),input:texts})});
@@ -2053,7 +2053,7 @@ function loadPyodide_(){
     const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
     s.onload=async()=>{try{resolve(await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}));}catch(e){reject(e);}};
-    s.onerror=()=>reject(new Error('Could not load Python runtime — check your internet connection.'));
+    s.onerror=()=>reject(new Error('Could not load Python runtime - check your internet connection.'));
     document.head.appendChild(s);
   });
   return pyodideReady;
@@ -2063,7 +2063,7 @@ function renderPyEx(l){
   return `<div class="exo"><div class="exhead ${done?'done':''}" id="pyhead">${done?'✓ exercise complete':'🐍 hands-on: write & run real Python'}</div>
   <div class="tasklist" style="font-size:13.5px;color:var(--muted)">${l.py.task}</div>
   <textarea class="pyed" id="pyed" spellcheck="false">${escapeHtml(l.py.starter||'')}</textarea>
-  <div class="pybar"><button class="simbtn" id="pyrun" onclick="runPy()">▶ Run</button><span style="font-size:12px;color:var(--dim)" id="pystat">Python runs right here in your browser — first run downloads the runtime (~10s)</span></div>
+  <div class="pybar"><button class="simbtn" id="pyrun" onclick="runPy()">▶ Run</button><span style="font-size:12px;color:var(--dim)" id="pystat">Python runs right here in your browser - first run downloads the runtime (~10s)</span></div>
   <div class="pyout" id="pyout"></div></div>`;
 }
 let curPyLesson=null;
@@ -2086,10 +2086,10 @@ async function runPy(){
   py.setStderr({batched:s=>{stdout+=s+'\n';}});
   try{
     await py.runPythonAsync(code);
-    out.textContent=stdout||'(no output — did you forget print()?)';
+    out.textContent=stdout||'(no output - did you forget print()?)';
     const {ok,why}=pyCheck(l.py.check,stdout,code);
     if(ok){
-      out.innerHTML+= '\n<span class="pok">✓ Check passed — exercise complete!</span>';
+      out.innerHTML+= '\n<span class="pok">✓ Check passed - exercise complete!</span>';
       P[l.id+'_ex']=true;maybeComplete(l);
       document.getElementById('pyhead').className='exhead done';
       document.getElementById('pyhead').textContent='✓ exercise complete';
@@ -2097,7 +2097,7 @@ async function runPy(){
       out.innerHTML+='\n<span class="perr">✗ Not yet: '+escapeHtml(why)+'</span>'+(l.py.hint?'\n<span style="color:var(--amber)">hint: '+escapeHtml(l.py.hint)+'</span>':'');
     }
   }catch(e){
-    out.innerHTML='<span class="perr">'+escapeHtml(String(e).split('\n').slice(-3).join('\n'))+'</span>\n<span style="color:var(--amber)">Errors are information — read the last line: it names the problem and the line number.</span>';
+    out.innerHTML='<span class="perr">'+escapeHtml(String(e).split('\n').slice(-3).join('\n'))+'</span>\n<span style="color:var(--amber)">Errors are information - read the last line: it names the problem and the line number.</span>';
   }
   stat.textContent='';
 }
@@ -2105,7 +2105,7 @@ async function runPy(){
 /* ================= live playground sim ================= */
 SIMS.playground=function(b){
   if(!getKey()){
-    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab — it calls the real OpenAI API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab - it calls the real OpenAI API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
     return;
   }
   b.innerHTML=`<div class="row"><span class="lbl">System prompt</span></div>
@@ -2122,8 +2122,8 @@ SIMS.playground=function(b){
       const t0=performance.now(); let t1=null;
       const r=await llmStream([{role:'system',content:document.getElementById('pgsys').value},{role:'user',content:document.getElementById('pgusr').value}],{temperature:+document.getElementById('pgtemp').value/100},(d,full)=>{ if(t1===null)t1=performance.now(); out.textContent=full+'▌'; });
       out.textContent=r.text;
-      const ttft=t1?Math.round(t1-t0):'—';
-      meta.textContent=`${r.usage?r.usage.prompt_tokens+' in + '+r.usage.completion_tokens+' out tokens · ~$'+costOf(r.usage).toFixed(6):''} · time-to-first-token ${ttft}ms · total ${Math.round(performance.now()-t0)}ms — streamed live, token by token, exactly like ChatGPT does it.`;
+      const ttft=t1?Math.round(t1-t0):'-';
+      meta.textContent=`${r.usage?r.usage.prompt_tokens+' in + '+r.usage.completion_tokens+' out tokens · ~$'+costOf(r.usage).toFixed(6):''} · time-to-first-token ${ttft}ms · total ${Math.round(performance.now()-t0)}ms - streamed live, token by token, exactly like ChatGPT does it.`;
     }catch(e){out.innerHTML='<span style="color:var(--red)">'+escapeHtml(e.message)+'</span>';}
     btn.disabled=false;
   };
@@ -2141,7 +2141,7 @@ function parseSSE(buf){
   return {events, rest};
 }
 async function llmStream(messages,opts={},onToken){
-  const k=getKey(); if(!k) throw new Error('No API key set — add one under 🔑 API key in the sidebar.');
+  const k=getKey(); if(!k) throw new Error('No API key set - add one under 🔑 API key in the sidebar.');
   const body={model:opts.model||getChatModel(),messages,temperature:opts.temperature??0.7,stream:true,stream_options:{include_usage:true}};
   if(opts.max_tokens)body.max_tokens=opts.max_tokens;
   const res=await fetch(getBase()+'/chat/completions',{
@@ -2215,7 +2215,7 @@ function colabParseScores(text,spec){
   let j;
   try{ j=JSON.parse(extractJson(text)); }
   catch(e){ return {ok:false,why:'That is not valid JSON. Copy the eval cell output exactly.',scores:null}; }
-  for(const key of (spec.jsonKeys||[])){ if(!(key in j)) return {ok:false,why:'Missing key "'+key+'" — paste the full eval output.',scores:j}; }
+  for(const key of (spec.jsonKeys||[])){ if(!(key in j)) return {ok:false,why:'Missing key "'+key+'" - paste the full eval output.',scores:j}; }
   for(const key in (spec.plausible||{})){
     const v=Number(j[key]), [lo,hi]=spec.plausible[key];
     if(!(v>=lo&&v<=hi)) return {ok:false,why:'Value for "'+key+'" ('+j[key]+') is outside the plausible range ['+lo+', '+hi+']. Re-run the eval cell and paste its real output.',scores:j};
@@ -2231,7 +2231,7 @@ function exComplete(l,headId,label){
   if(h){ h.className='exhead done'; h.textContent='✓ '+(label||'exercise complete'); }
 }
 function keyGate(kind){
-  return `<div class="keywarn">🔑 This is a <b>live</b> ${kind} — it calls the real OpenAI API with your key. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+  return `<div class="keywarn">🔑 This is a <b>live</b> ${kind} - it calls the real OpenAI API with your key. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
 }
 
 /* ================= live: exercise ================= */
@@ -2298,7 +2298,7 @@ function initEvalEx(l){ curEval=l; }
 async function runEval(){
   const l=curEval, ev=l.evalrun, btn=document.getElementById('evbtn'), casesEl=document.getElementById('evcases'), sum=document.getElementById('evsum'), meta=document.getElementById('evmeta');
   const tpl=document.getElementById('evtpl').value;
-  if(!/\{\{\s*input\s*\}\}/.test(tpl)){ sum.style.display='block'; sum.innerHTML='<span style="color:var(--red)">Your template must contain {{input}} — that is where each test case gets inserted.</span>'; return; }
+  if(!/\{\{\s*input\s*\}\}/.test(tpl)){ sum.style.display='block'; sum.innerHTML='<span style="color:var(--red)">Your template must contain {{input}} - that is where each test case gets inserted.</span>'; return; }
   btn.disabled=true; sum.style.display='none'; casesEl.innerHTML='';
   let right=0, cost=0;
   const rows=[];
@@ -2321,10 +2321,10 @@ async function runEval(){
   meta.textContent=`total cost ~$${cost.toFixed(5)}`;
   sum.style.display='block';
   if(acc>=ev.threshold){
-    sum.innerHTML=`<span style="color:var(--green)">✓ Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% — threshold beaten!</span>`;
+    sum.innerHTML=`<span style="color:var(--green)">✓ Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% - threshold beaten!</span>`;
     exComplete(l,'evalhead');
   }else{
-    sum.innerHTML=`<span style="color:var(--red)">Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% — below the ${Math.round(ev.threshold*100)}% bar.</span> <span style="color:var(--amber)">Improve the prompt template and run again — that loop IS prompt engineering.</span>`;
+    sum.innerHTML=`<span style="color:var(--red)">Accuracy ${right}/${ev.cases.length} = ${(acc*100).toFixed(0)}% - below the ${Math.round(ev.threshold*100)}% bar.</span> <span style="color:var(--amber)">Improve the prompt template and run again - that loop IS prompt engineering.</span>`;
   }
   btn.disabled=false;
 }
@@ -2353,7 +2353,7 @@ async function runColab(){
   btn.disabled=true;
   try{
     if(cb.verify==='model'){
-      if(!looksLikeFinetuneId(input)){ out.innerHTML='<span style="color:var(--red)">That does not look like a fine-tuned model ID — it should start with <code>ft:</code>. Find it on the fine-tuning job page.</span>'; btn.disabled=false; return; }
+      if(!looksLikeFinetuneId(input)){ out.innerHTML='<span style="color:var(--red)">That does not look like a fine-tuned model ID - it should start with <code>ft:</code>. Find it on the fine-tuning job page.</span>'; btn.disabled=false; return; }
       if(!getKey()){ out.innerHTML=keyGate('verification'); btn.disabled=false; return; }
       let allOk=true, lines=[];
       for(const t of cb.tests){
@@ -2365,7 +2365,7 @@ async function runColab(){
       }
       out.innerHTML=lines.join('<br>');
       if(allOk){
-        out.innerHTML+='<br><span style="color:var(--green)">✓ Your fine-tuned model passes the behavior check — verified!</span>';
+        out.innerHTML+='<br><span style="color:var(--green)">✓ Your fine-tuned model passes the behavior check - verified!</span>';
         P[l.id+'_proof']={summary:input,at:new Date().toISOString().slice(0,10)};
         exComplete(l,'cbhead','verified');
       }else out.innerHTML+='<br><span style="color:var(--amber)">The model answered, but not with the trained behavior. Check the right model ID, or train longer / check your dataset.</span>';
@@ -2403,25 +2403,25 @@ async function runDeploy(){
   if(!base){ out.textContent='Paste your deployed URL first.'; return; }
   btn.disabled=true;
   try{
-    out.innerHTML='1/2 — GET <code>'+escapeHtml(base)+'/health</code> …';
+    out.innerHTML='1/2 - GET <code>'+escapeHtml(base)+'/health</code> …';
     const hr=await fetch(base+'/health');
     const hj=await hr.json().catch(()=>null);
     if(!hr.ok||!deployCheckHealth(hj)){
-      out.innerHTML='<span style="color:var(--red)">✗ /health did not return {"status":"ok"} — got HTTP '+hr.status+': <code>'+escapeHtml(JSON.stringify(hj).slice(0,200))+'</code></span><br><span style="color:var(--amber)">Is the service awake? Free tiers sleep — open the URL in a tab first. And check CORS: the browser blocks responses without the right headers (that is the CORS lesson in action).</span>';
+      out.innerHTML='<span style="color:var(--red)">✗ /health did not return {"status":"ok"} - got HTTP '+hr.status+': <code>'+escapeHtml(JSON.stringify(hj).slice(0,200))+'</code></span><br><span style="color:var(--amber)">Is the service awake? Free tiers sleep - open the URL in a tab first. And check CORS: the browser blocks responses without the right headers (that is the CORS lesson in action).</span>';
       btn.disabled=false; return;
     }
-    out.innerHTML='<span style="color:var(--green)">✓ /health ok</span><br>2/2 — POST <code>'+escapeHtml(base)+'/ask</code> …';
+    out.innerHTML='<span style="color:var(--green)">✓ /health ok</span><br>2/2 - POST <code>'+escapeHtml(base)+'/ask</code> …';
     const ar=await fetch(base+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:l.deploy.askQuestion||'What is this service?'})});
     const aj=await ar.json().catch(()=>null);
     if(!ar.ok||!deployCheckAsk(aj)){
-      out.innerHTML+='<br><span style="color:var(--red)">✗ /ask must return JSON with a non-empty "answer" and a "sources" field — got HTTP '+ar.status+': <code>'+escapeHtml(JSON.stringify(aj).slice(0,300))+'</code></span>';
+      out.innerHTML+='<br><span style="color:var(--red)">✗ /ask must return JSON with a non-empty "answer" and a "sources" field - got HTTP '+ar.status+': <code>'+escapeHtml(JSON.stringify(aj).slice(0,300))+'</code></span>';
       btn.disabled=false; return;
     }
     out.innerHTML='<span style="color:var(--green)">✓ /health ok</span><br><span style="color:var(--green)">✓ /ask ok</span><br><b>answer:</b> '+escapeHtml(String(aj.answer).slice(0,300))+'<br><b>sources:</b> <code>'+escapeHtml(JSON.stringify(aj.sources).slice(0,200))+'</code><br><span style="color:var(--green)">✓ Your API is live on the public internet. That is a real deployed AI service.</span>';
     P[l.id+'_proof']={summary:base,at:new Date().toISOString().slice(0,10)};
     exComplete(l,'dphead','deployment verified live');
   }catch(e){
-    out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber)">Common causes: service asleep (open it in a tab, wait, retry), wrong URL, or missing CORS middleware — the browser refuses to read responses without <code>Access-Control-Allow-Origin</code>.</span>';
+    out.innerHTML='<span style="color:var(--red)">✗ '+escapeHtml(e.message)+'</span><br><span style="color:var(--amber)">Common causes: service asleep (open it in a tab, wait, retry), wrong URL, or missing CORS middleware - the browser refuses to read responses without <code>Access-Control-Allow-Origin</code>.</span>';
   }
   btn.disabled=false;
 }
@@ -2430,7 +2430,7 @@ async function runDeploy(){
 function renderNotes(l){
   const note=P[l.id+'_note']||'';
   return `<div class="sim" style="margin-top:26px"><div class="simtitle" style="color:var(--accent2)">📌 Pin a note to this lesson</div>
-  <textarea id="notebox" placeholder="A note that stays attached to THIS lesson (e.g. what confused you here). For free-floating notes, use the 📝 pad in the corner — open from any page." style="min-height:64px;resize:vertical" oninput="saveNote('${l.id}',this.value)">${escapeHtml(note)}</textarea></div>`;
+  <textarea id="notebox" placeholder="A note that stays attached to THIS lesson (e.g. what confused you here). For free-floating notes, use the 📝 pad in the corner - open from any page." style="min-height:64px;resize:vertical" oninput="saveNote('${l.id}',this.value)">${escapeHtml(note)}</textarea></div>`;
 }
 function saveNote(id,v){ if(v)P[id+'_note']=v; else delete P[id+'_note']; save(); }
 
@@ -2457,18 +2457,18 @@ function importProgress(file){
       const v=importValidate(data);
       if(!v.ok){ out.innerHTML='<span style="color:var(--red)">✗ '+v.why+'</span>'; return; }
       P=data.progress; save(); renderSidebar();
-      out.innerHTML='<span style="color:var(--green)">✓ Progress imported — '+Object.keys(P).filter(k=>P[k]===true).length+' completed items restored.</span>';
+      out.innerHTML='<span style="color:var(--green)">✓ Progress imported - '+Object.keys(P).filter(k=>P[k]===true).length+' completed items restored.</span>';
     }catch(e){ out.innerHTML='<span style="color:var(--red)">✗ Could not read that file: '+escapeHtml(e.message)+'</span>'; }
   };
   rd.readAsText(file);
 }
 
-/* ================= Share your Twin — beautiful snippets from live P state ================= */
+/* ================= Share your Twin - beautiful snippets from live P state ================= */
 function getTwinStatus(){
   const stages = {
-    'Stage 1 — Retriever Twin (RAG over your writing)': isDone('l3twin1') && isDone('l3gate'),
-    'Stage 2 — Voice Twin (fine-tuned on your corpus)': isDone('l4twin2') && isDone('l4gate'),
-    'Stage 3 — full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core — explicit course culmination)': isDone('l5twin3') && isDone('l5gate')
+    'Stage 1 - Retriever Twin (RAG over your writing)': isDone('l3twin1') && isDone('l3gate'),
+    'Stage 2 - Voice Twin (fine-tuned on your corpus)': isDone('l4twin2') && isDone('l4gate'),
+    'Stage 3 - full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core - explicit course culmination)': isDone('l5twin3') && isDone('l5gate')
   };
   const doneStages = Object.keys(stages).filter(k=>stages[k]);
   const gates = ['l1gate','l2gate','l3gate','l4gate','l5gate','l6gate'].filter(g=>isDone(g));
@@ -2492,11 +2492,11 @@ function getTwinStatus(){
     const evs = Object.keys(P).filter(k=>k.startsWith(gid+'_ev_'));
     if(evs.length) evidence[gid] = evs.reduce((o,k)=>{ o[k.split('_ev_')[1]] = P[k]; return o; },{});
   });
-  // MCP/multi-agent + live AGENT state highlights (from P + AGENT + gates) — strengthened detection for shares/gates
+  // MCP/multi-agent + live AGENT state highlights (from P + AGENT + gates) - strengthened detection for shares/gates
   const mcpReady = isDone('l5twin3') && isDone('l5gate');
   const multiAgent = mcpReady && (isDone('l5gate') || !!AGENT.supervisor || (AGENT.tools||[]).length > 1);
   const mcpMultiAgent = mcpReady && multiAgent; // explicit for gates/shares detection
-  const agentState = { ...AGENT, mcpExposed: mcpReady, multiAgentOrchestrated: multiAgent, mcpMultiAgent: mcpMultiAgent, twinStages: doneStages.length, culminatesAs: mcpReady ? 'full MCP-exposed multi-agent system (MCP tools/list+call + supervisor w/ voice Twin + retriever + critic — the explicit LLM Twin culmination at L5)' : 'in progress toward L5 MCP multi-agent' };
+  const agentState = { ...AGENT, mcpExposed: mcpReady, multiAgentOrchestrated: multiAgent, mcpMultiAgent: mcpMultiAgent, twinStages: doneStages.length, culminatesAs: mcpReady ? 'full MCP-exposed multi-agent system (MCP tools/list+call + supervisor w/ voice Twin + retriever + critic - the explicit LLM Twin culmination at L5)' : 'in progress toward L5 MCP multi-agent' };
   // compute power locally (no getTwinPower call to avoid cycle)
   const doneCountForPower = (typeof allLessons === 'function') ? allLessons().filter(l=>!l._gate).filter(l=>isDone(l.id)).length : 0;
   const stForPower = getStreak().count;
@@ -2543,14 +2543,14 @@ function buildShareSnippets(){
     culminates_as_full_mcp_multiagent: s.mcpReady,
     static_client_only: true
   };
-  // MARKDOWN for Discord / forums / GitHub — enhanced with MORE image badges + prettier + MCP/multi highlights + streaks + full culmination + live P/AGENT
-  const md = `## 🚀 My LLM Twin Progress — Zero to AI Engineer
+  // MARKDOWN for Discord / forums / GitHub - enhanced with MORE image badges + prettier + MCP/multi highlights + streaks + full culmination + live P/AGENT
+  const md = `## 🚀 My LLM Twin Progress - Zero to AI Engineer
 
 ${badgeImgs}
 
 **${pct}% of Twin complete** (${s.doneStages.length}/3 stages) · ${s.gates.length} gates shipped${streak?` · 🔥 ${streak}-day streak`:''} · ⚡ ${power} Twin Power · ${qcCount} Quick Wins
 
-**Badges:** ${s.badges.join(' ') || 'Just starting — watch this space!'}
+**Badges:** ${s.badges.join(' ') || 'Just starting - watch this space!'}
 
 ### Twin Stages
 ${Object.keys(s.stages).map(st => `- ${s.stages[st] ? '✅' : '⬜'} ${st}`).join('\n')}
@@ -2562,14 +2562,14 @@ ${s.mcpReady ? `**✅ FULL MCP-EXPOSED MULTI-AGENT TWIN CULMINATION (Stage 3):**
 
 ${s.evidence.l5gate ? `**L5 Evidence snapshot:** \`\`\`json\n${JSON.stringify(s.evidence.l5gate, null, 2).slice(0,420)}\n\`\`\`` : ''}
 
-**Live Twin Config (P + AGENT state — from browser):** \`\`\`json\n${JSON.stringify(liveConfigFromP, null, 2).slice(0,380)}\n\`\`\`
+**Live Twin Config (P + AGENT state - from browser):** \`\`\`json\n${JSON.stringify(liveConfigFromP, null, 2).slice(0,380)}\n\`\`\`
 
-Built with the one growing agent — **now the full MCP multi-agent Twin**.
+Built with the one growing agent - **now the full MCP multi-agent Twin**.
 
 Join: ${CUSTOM.discordInvite} ${hashtag}
 Fork & customize: ${CUSTOM.githubRepo}
 
-*Live export ${now} (pure static single-file — fork, set CUSTOM.discordInvite + extras, host anywhere). ${tagline}*`;
+*Live export ${now} (pure static single-file - fork, set CUSTOM.discordInvite + extras, host anywhere). ${tagline}*`;
 
   // Forum / GitHub flavored MD (beautiful ready-to-paste, extra structure)
   const forumMd = `**🚀 LLM Twin Update** (${pct}% | ${s.doneStages.length}/3 stages | ${s.gates.length}/6 gates${streak?` | 🔥${streak}d` : ''})
@@ -2584,7 +2584,7 @@ Discussion: What MCP tool or handoff improved your Twin most?
 ${CUSTOM.discordInvite} ${hashtag} | Fork: ${CUSTOM.githubRepo}`;
 
   // Short beautiful version (even better for quick Discord posts, MCP highlight)
-  const shortMd = `**My LLM Twin** — ${pct}% (${s.doneStages.length}/3) ${s.badges.join(' ')}${streak?` 🔥${streak}d` : ''}${s.mcpReady ? ' 🔌MCP 🤖MultiAgent ✅' : ''}\n✅ ${Object.keys(s.stages).filter(k=>s.stages[k]).map(k=>k.split(' — ')[0]).join(' · ') || 'Building…'}\nMCP tools: ${mcpToolsStr} · QCs:${qcCount} · ${hashtag} · Join: ${CUSTOM.discordInvite}\n(live P/AGENT/gates · full MCP multi-agent at L5)`;
+  const shortMd = `**My LLM Twin** - ${pct}% (${s.doneStages.length}/3) ${s.badges.join(' ')}${streak?` 🔥${streak}d` : ''}${s.mcpReady ? ' 🔌MCP 🤖MultiAgent ✅' : ''}\n✅ ${Object.keys(s.stages).filter(k=>s.stages[k]).map(k=>k.split(' - ')[0]).join(' · ') || 'Building…'}\nMCP tools: ${mcpToolsStr} · QCs:${qcCount} · ${hashtag} · Join: ${CUSTOM.discordInvite}\n(live P/AGENT/gates · full MCP multi-agent at L5)`;
 
   // GitHub/Forum ready variant (enhanced beautiful for issues/discussions, full live state)
   const githubMd = `## My LLM Twin Progress (${pct}% | ${s.doneStages.length}/3 stages | MCP:${s.mcpReady?'✅ full exposed multi-agent': 'in progress'})
@@ -2599,18 +2599,18 @@ ${badgeImgs}
 - **Config snapshot:** static, client-only from P/AGENT/gates
 
 ${CUSTOM.discordInvite} ${hashtag}
-*Generated live in-app — fork & set CUSTOM.discordInvite (pure static, no build)*`;
+*Generated live in-app - fork & set CUSTOM.discordInvite (pure static, no build)*`;
 
-  // YAML for configs / GitHub issues / docs — even richer with MCP/multi/streaks/CUSTOM + live P/AGENT
+  // YAML for configs / GitHub issues / docs - even richer with MCP/multi/streaks/CUSTOM + live P/AGENT
   const yaml = `twin:
   owner: "your-name-here"
   date: "${now}"
   progress: ${pct}
   streak_days: ${streak}
   stages:
-    1_retriever: ${s.stages['Stage 1 — Retriever Twin (RAG over your writing)']}
-    2_voice: ${s.stages['Stage 2 — Voice Twin (fine-tuned on your corpus)']}
-    3_mcp_multiagent: ${s.stages['Stage 3 — full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core)']}
+    1_retriever: ${s.stages['Stage 1 - Retriever Twin (RAG over your writing)']}
+    2_voice: ${s.stages['Stage 2 - Voice Twin (fine-tuned on your corpus)']}
+    3_mcp_multiagent: ${s.stages['Stage 3 - full MCP-exposed multi-agent system (served + MCP tools/list+call + supervisor orchestration w/ voice Twin core)']}
   mcp_exposed: ${s.mcpReady}
   multi_agent_orchestrated: ${s.multiAgent}
   mcp_tools: [${mcpTools.map(t=>`"${t}"`).join(', ')}]
@@ -2627,7 +2627,7 @@ ${CUSTOM.discordInvite} ${hashtag}
   # Ready-to-paste for forums/gists: use the in-app 🚀 Share your Twin (live from P/AGENT/gates)
 `;
 
-  // JSON for bots, forums, structured shares — richer MCP/multi + P/AGENT + streak + culmination + choice for Discord/GitHub
+  // JSON for bots, forums, structured shares - richer MCP/multi + P/AGENT + streak + culmination + choice for Discord/GitHub
   const json = JSON.stringify({
     app: "zero-to-ai-engineer",
     twin: {
@@ -2667,7 +2667,7 @@ Live snippet + badges generated in-app. Join: ${CUSTOM.discordInvite}
 function copyToClipboard(text, btn){
   navigator.clipboard.writeText(text).then(()=>{
     if(btn){ const orig=btn.textContent; btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent=orig,1400); }
-  }).catch(()=> alert('Copy failed — select & copy manually:\n\n'+text));
+  }).catch(()=> alert('Copy failed - select & copy manually:\n\n'+text));
 }
 function renderShareModal(){
   const snippets = buildShareSnippets();
@@ -2678,14 +2678,14 @@ function renderShareModal(){
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:860px;width:100%;max-height:92vh;overflow:auto;padding:20px 22px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-weight:800;font-size:18px">🚀 Share your full MCP-exposed multi-agent Twin — live MD/YAML/JSON + image badges + streaks</div>
+        <div style="font-weight:800;font-size:18px">🚀 Share your full MCP-exposed multi-agent Twin - live MD/YAML/JSON + image badges + streaks</div>
         <button onclick="modalClose(this)" style="background:none;font-size:22px;opacity:.7">×</button>
       </div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:14px">Live from P + AGENT + gates (full state + badges + MCP tools). Shields.io badges render inline in Discord/forums/GitHub. Ties directly to the L5 culmination: full MCP-exposed multi-agent system (MCP tools/list+call + supervisor + voice Twin core). Edit CUSTOM once for branded everything. 8+ ready-to-paste formats (MD/YAML/JSON + GitHub/Forum extras).</div>
       
       <!-- In-app beautiful visual preview card (styled share snippet) -->
       <div style="margin:10px 0 14px;padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:linear-gradient(135deg,var(--bg3),var(--bg2));">
-        <div style="font-size:11px;letter-spacing:.06em;color:var(--accent2);margin-bottom:4px">PREVIEW — paste MD for real image badges + MCP/MA highlights + streak</div>
+        <div style="font-size:11px;letter-spacing:.06em;color:var(--accent2);margin-bottom:4px">PREVIEW - paste MD for real image badges + MCP/MA highlights + streak</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <div style="font-weight:700;font-size:15px">My LLM Twin • ${snippets.pct}% complete</div>
           <span style="background:var(--accent);color:#fff;border-radius:99px;padding:2px 9px;font-size:11px;font-weight:700">${snippets.pct>66?'🏆':'⚙️'} Twin</span>
@@ -2698,15 +2698,15 @@ function renderShareModal(){
         <div style="font-size:10px;opacity:.7">All formats live-updated from browser state. Use short MD for daily, full for gates. ${hashtag}</div>
       </div>
 
-      <div style="margin:10px 0 6px;font-weight:700">Badges earned: <span style="font-size:14px">${snippets.badges.join(' ') || '— start building!'}</span></div>
+      <div style="margin:10px 0 6px;font-weight:700">Badges earned: <span style="font-size:14px">${snippets.badges.join(' ') || '- start building!'}</span></div>
       
-      <div style="margin:12px 0"><b>Markdown (Discord / GitHub / Forums) — with image badges ✨</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-md').textContent,this)">Copy MD</button></div>
+      <div style="margin:12px 0"><b>Markdown (Discord / GitHub / Forums) - with image badges ✨</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-md').textContent,this)">Copy MD</button></div>
       <pre id="sh-md" style="background:#0d0d11;border:1px solid var(--border);padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:180px;overflow:auto">${escapeHtml(snippets.md)}</pre>
       
       <div style="margin:10px 0"><b>Short beautiful version</b> (quick paste for daily accountability) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-short').textContent,this)">Copy short</button></div>
       <pre id="sh-short" style="background:#0d0d11;border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:70px;overflow:auto">${escapeHtml(snippets.shortMd||'')}</pre>
       
-      <div style="margin:12px 0"><b>Forum / GitHub flavored MD</b> (ready-to-paste for threads, issues — MCP focus) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-forum').textContent,this)">Copy forum MD</button></div>
+      <div style="margin:12px 0"><b>Forum / GitHub flavored MD</b> (ready-to-paste for threads, issues - MCP focus) <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-forum').textContent,this)">Copy forum MD</button></div>
       <pre id="sh-forum" style="background:#0d0d11;border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:100px;overflow:auto">${escapeHtml(snippets.forumMd||snippets.md||'')}</pre>
       
       <div style="margin:12px 0"><b>YAML (config, GitHub gist, docs, bots)</b> <button class="simbtn ghost" style="padding:2px 8px;font-size:11px" onclick="copyToClipboard(document.getElementById('sh-yaml').textContent,this)">Copy YAML</button></div>
@@ -2736,7 +2736,7 @@ function renderShareModal(){
         <button class="simbtn ghost" onclick="showDiscordStructure(); modalClose(this);">💬 Discord ex</button>
       </div>
       <div style="margin:12px 0 4px;font-size:12px;color:var(--muted)">Quick feedback (ADHD micro + instant dopamine): <button onclick="giveADHDMicroFeedback(true,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👍 Great for sharing</button> <button onclick="giveADHDMicroFeedback(false,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👎 Could improve</button></div>
-      <div style="font-size:11px;color:var(--dim);margin-top:8px">Shields.io badges auto-render as images in Discord/GH/forums. All tied to full MCP-exposed multi-agent Twin culmination (L5 Stage 3). Live from P + AGENT + gates. One-line CUSTOM.discordInvite + shareHashtag powers every share/CTA/floating button/fork. Pure static single-file — fork/customize/host anywhere (output dir=., no build).</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:8px">Shields.io badges auto-render as images in Discord/GH/forums. All tied to full MCP-exposed multi-agent Twin culmination (L5 Stage 3). Live from P + AGENT + gates. One-line CUSTOM.discordInvite + shareHashtag powers every share/CTA/floating button/fork. Pure static single-file - fork/customize/host anywhere (output dir=., no build).</div>
     </div>`;
   document.body.appendChild(modal);
 }
@@ -2777,7 +2777,7 @@ function renderSearchResults(){
   box.innerHTML=hits.length?hits.map(l=>`<button class="lessonlink ${isDone(l.id)?'done':''}" onclick="openLevels.add(${l._lv});go('${l._gate?'gate':'lesson'}','${l.id}')"><span class="st">${isDone(l.id)?'✓':''}</span><span>${l.t} <span style="color:var(--dim);font-size:11px">· L${l._lv+1}</span></span></button>`).join(''):'<div style="padding:8px;font-size:12.5px;color:var(--dim)">No lessons match.</div>';
 }
 
-/* ops:byte — arithmetic intensity vs hardware roofline */
+/* ops:byte - arithmetic intensity vs hardware roofline */
 SIMS.opsbyte=function(b){
   const gpus={'A100 (312 TFLOP/s bf16, 2.0 TB/s)':[312,2039],'H100 (990 TFLOP/s bf16, 3.35 TB/s)':[990,3350],'L4 (121 TFLOP/s bf16, 0.3 TB/s)':[121,300],'consumer 4090 (165 TFLOP/s, 1.0 TB/s)':[165,1008]};
   b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">LLM decode reuses one weight-load across the whole batch, so its <b>arithmetic intensity ≈ batch size</b>. The GPU has its own ops:byte ratio (peak FLOPs ÷ memory bandwidth). Below the ratio you're <b>memory-bound</b> (starved waiting for weights); above it, <b>compute-bound</b>.</p>
@@ -2793,7 +2793,7 @@ SIMS.opsbyte=function(b){
     const util=Math.min(batch/ratio,1);
     document.getElementById('ob_out').innerHTML=`Hardware ops:byte ratio = <b style="color:var(--accent2)">${ratio.toFixed(0)}</b> FLOP/byte · your intensity ≈ batch = <b style="color:var(--accent2)">${batch}</b>
     <div class="bar" style="margin-top:8px;height:14px"><i style="width:${util*100}%;background:${memBound?'var(--amber)':'var(--green)'}"></i></div>
-    <div style="margin-top:8px;font-size:13px;color:${memBound?'var(--amber)':'var(--green)'}"><b>${memBound?'MEMORY-BOUND':'COMPUTE-BOUND'}</b> — ${memBound?`the GPU's compute sits ~${Math.round((1-util)*100)}% idle, waiting on weights from memory. Raising the batch packs more work per weight-load and lifts throughput almost for free — until you reach the ratio.`:`you've saturated the math units. Bigger batches no longer help throughput much; now latency per user starts to climb. This is the roofline.`}</div>
+    <div style="margin-top:8px;font-size:13px;color:${memBound?'var(--amber)':'var(--green)'}"><b>${memBound?'MEMORY-BOUND':'COMPUTE-BOUND'}</b> - ${memBound?`the GPU's compute sits ~${Math.round((1-util)*100)}% idle, waiting on weights from memory. Raising the batch packs more work per weight-load and lifts throughput almost for free - until you reach the ratio.`:`you've saturated the math units. Bigger batches no longer help throughput much; now latency per user starts to climb. This is the roofline.`}</div>
     <div style="margin-top:6px;font-size:12px;color:var(--dim)">This is why LLM decode at batch=1 wastes the GPU, and why serving is all about safely raising the batch. Toy numbers, real formula (Horace He's "ops:byte").</div>`;
   };
   SIMS._ob();
@@ -2801,7 +2801,7 @@ SIMS.opsbyte=function(b){
 
 /* latency percentiles */
 SIMS.percentiles=function(b){
-  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Latency isn't one number — it's a distribution with a tail. Drag the <b>tail heaviness</b>: the average barely moves, but p95/p99 (what your unluckiest users feel) explode. Averages lie; percentiles don't.</p>
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">Latency isn't one number - it's a distribution with a tail. Drag the <b>tail heaviness</b>: the average barely moves, but p95/p99 (what your unluckiest users feel) explode. Averages lie; percentiles don't.</p>
   <div class="row"><span class="lbl">Tail heaviness</span><input type="range" id="pc_s" min="5" max="120" value="35" oninput="SIMS._pc()"><span class="val" id="pc_sv"></span></div>
   <div id="pc_bars"></div><div class="simout" id="pc_out" style="font-size:12.5px"></div>`;
   SIMS._pc=function(){
@@ -2822,7 +2822,7 @@ SIMS.percentiles=function(b){
     const row=(lbl,v,col)=>`<div class="barrow"><span class="bl">${lbl}</span><div class="bv" style="width:${Math.max(v/max*360,2)}px;background:${col}"></div><span class="bn">${Math.round(v)} ms</span></div>`;
     document.getElementById('pc_bars').innerHTML=
       row('mean',mean,'var(--dim)')+row('p50 (median)',p50,'var(--green)')+row('p95',p95,'var(--amber)')+row('p99',p99,'var(--red)')+row('p99.9',p999,'#b91c1c');
-    document.getElementById('pc_out').innerHTML=`p99/p50 ratio = <b style="color:var(--accent2)">${(p99/p50).toFixed(1)}×</b>. At scale, p99 isn't rare: 1 in 100 requests, and a page making 10 model calls hits it most of the time. SLOs are written on p95/p99, never the mean — design for the tail.`;
+    document.getElementById('pc_out').innerHTML=`p99/p50 ratio = <b style="color:var(--accent2)">${(p99/p50).toFixed(1)}×</b>. At scale, p99 isn't rare: 1 in 100 requests, and a page making 10 model calls hits it most of the time. SLOs are written on p95/p99, never the mean - design for the tail.`;
   };
   function invErf(x){ // Winitzki approximation
     const a=0.147, ln=Math.log(1-x*x);
@@ -2846,16 +2846,16 @@ SIMS.parallelism=function(b){
     let grid='', out='';
     if(s==='tp'){
       grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>slice of every layer</b></div>`).join('');
-      out=`<b>Tensor parallel:</b> every layer's matrices are sliced across all ${n} GPUs, which compute one layer together then sync. Cuts per-GPU memory AND speeds each layer — but needs very fast interconnect (NVLink), so it's used <em>within</em> one machine. Communication every layer is the cost.`;
+      out=`<b>Tensor parallel:</b> every layer's matrices are sliced across all ${n} GPUs, which compute one layer together then sync. Cuts per-GPU memory AND speeds each layer - but needs very fast interconnect (NVLink), so it's used <em>within</em> one machine. Communication every layer is the cost.`;
     } else if(s==='pp'){
-      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>layers ${Math.floor(i*32/n)+1}–${Math.floor((i+1)*32/n)}</b></div>`).join('');
-      out=`<b>Pipeline parallel:</b> the model's layers are split into ${n} consecutive stages, one per GPU; a request flows through them like an assembly line. Low communication (only between stages), so it spans machines — but a single request idles GPUs not currently working ("bubbles"); you fill them by pipelining many requests.`;
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>layers ${Math.floor(i*32/n)+1}-${Math.floor((i+1)*32/n)}</b></div>`).join('');
+      out=`<b>Pipeline parallel:</b> the model's layers are split into ${n} consecutive stages, one per GPU; a request flows through them like an assembly line. Low communication (only between stages), so it spans machines - but a single request idles GPUs not currently working ("bubbles"); you fill them by pipelining many requests.`;
     } else if(s==='dp'){
       grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>full model copy</b></div>`).join('');
-      out=`<b>Replication:</b> each GPU holds a <em>complete</em> copy of the model and serves its own requests independently. Dead simple, scales throughput linearly — but only works if the model fits on one GPU. This is horizontal scaling for serving, not a way to fit a bigger model.`;
+      out=`<b>Replication:</b> each GPU holds a <em>complete</em> copy of the model and serves its own requests independently. Dead simple, scales throughput linearly - but only works if the model fits on one GPU. This is horizontal scaling for serving, not a way to fit a bigger model.`;
     } else {
-      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>experts ${i*2+1}–${i*2+2}</b></div>`).join('');
-      out=`<b>Expert parallel:</b> for [[mixture of experts|MoE]] models, the many experts are spread across ${n} GPUs; each token is routed to the GPUs holding its chosen experts. Fits huge expert counts — but routing can imbalance load (some experts get more traffic), the central serving challenge for MoE.`;
+      grid=Array.from({length:n},(_,i)=>`<div style="flex:1;min-width:60px;text-align:center;padding:14px 6px;border-radius:8px;background:${cols[i%cols.length]}22;border:1px solid ${cols[i%cols.length]}66;font-size:12px">GPU ${i+1}<br><b>experts ${i*2+1}-${i*2+2}</b></div>`).join('');
+      out=`<b>Expert parallel:</b> for [[mixture of experts|MoE]] models, the many experts are spread across ${n} GPUs; each token is routed to the GPUs holding its chosen experts. Fits huge expert counts - but routing can imbalance load (some experts get more traffic), the central serving challenge for MoE.`;
     }
     document.getElementById('pl_grid').innerHTML=grid;
     document.getElementById('pl_out').innerHTML=out.replace(/\[\[[^\]|]+\|([^\]]+)\]\]/g,'$1').replace(/\[\[([^\]]+)\]\]/g,'$1');
@@ -2866,7 +2866,7 @@ SIMS.parallelism=function(b){
 /* real embeddings mini-RAG */
 SIMS.ragreal=function(b){
   if(!getKey()){
-    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab — it calls the real embeddings API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
+    b.innerHTML=`<div class="keywarn">🔑 This is a <b>live</b> lab - it calls the real embeddings API. <button class="simbtn" style="margin-left:8px" onclick="go('settings')">Connect your API key</button></div>`;
     return;
   }
   const corpus=[
@@ -2878,7 +2878,7 @@ SIMS.ragreal=function(b){
     "We accept Visa, Mastercard, and PayPal; we do not accept cryptocurrency.",
     "Gift cards never expire and can be reloaded at any store location."
   ];
-  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">A real retriever. Your query and these 7 documents get embedded by the live API, then ranked by <b>cosine similarity</b> — exactly how RAG finds context. Notice it matches <em>meaning</em>, not shared words.</p>
+  b.innerHTML=`<p style="font-size:13.5px;color:var(--muted)">A real retriever. Your query and these 7 documents get embedded by the live API, then ranked by <b>cosine similarity</b> - exactly how RAG finds context. Notice it matches <em>meaning</em>, not shared words.</p>
   <div style="font-size:12px;color:var(--dim);margin:8px 0">Corpus: ${corpus.length} docs about a store's policies.</div>
   <input type="text" id="rr_q" value="how long do I have to send something back?" style="margin-bottom:8px">
   <div class="row"><button class="simbtn" id="rr_btn" onclick="SIMS._rr()">Embed & retrieve</button><span class="pgmeta" id="rr_meta"></span></div>
