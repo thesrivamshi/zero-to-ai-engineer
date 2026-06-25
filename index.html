@@ -308,6 +308,7 @@ h1.ltitle{font-family:var(--serif);font-weight:400;font-size:38px;letter-spacing
 <script src="data/level6.js"></script>
 <script src="data/reads.js"></script>
 <script src="data/videos.js"></script>
+<script src="data/durations.js"></script>
 <script src="data/diagrams.js"></script>
 <script src="data/questions.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -738,6 +739,16 @@ Use in-app floating ⚡Share+Discord + auto gate prompts to drive posts. Leader 
   document.body.appendChild(modal);
 }
 function allLessons(){ const out=[]; LEVELS.forEach((lv,li)=>{ lv.chapters.forEach(ch=>ch.lessons.forEach(l=>out.push({...l,_lv:li,_ch:ch.title}))); if(lv.project) out.push({...lv.project,_lv:li,_gate:true,_ch:'Project Gate'}); }); return out; }
+
+/* ===== Lesson time estimate = lesson body + YouTube video time + book reading (5 min/page) + 10 min buffer.
+   Book pages are de-duplicated in course order: a page already covered by an earlier lesson (or twice in
+   the same lesson) isn't counted again, since the reader has already read it. ===== */
+function parsePages(p){ const out=[]; if(!p) return out; String(p).split(/[,;]/).forEach(seg=>{ seg=seg.trim(); let m=/^(\d+)\s*[-–—]\s*(\d+)$/.exec(seg); if(m){ let a=+m[1],b=+m[2]; if(b<a){const t=a;a=b;b=t;} if(b-a<2000) for(let i=a;i<=b;i++) out.push(i); return; } m=/^(\d+)$/.exec(seg); if(m) out.push(+m[1]); }); return out; }
+let _bookMinCache=null;
+function buildBookMinCache(){ _bookMinCache={}; const seen=new Set(), R=window.READS||{}; allLessons().forEach(l=>{ const local=new Set(); (R[l.id]||[]).forEach(r=>{ parsePages(r.p).forEach(pg=>{ const k=(r.b||'?')+'|'+pg; if(seen.has(k)||local.has(k)) return; local.add(k); }); }); local.forEach(k=>seen.add(k)); _bookMinCache[l.id]=local.size*5; }); }
+function bookMinutes(lid){ if(!_bookMinCache) buildBookMinCache(); return _bookMinCache[lid]||0; }
+function videoMinutes(l){ const vids=((l&&l.videos)||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); const D=window.VID_DUR||{}; let s=0; vids.forEach(v=>{ const m=/(?:v=|youtu\.be\/|embed\/|v\/)([A-Za-z0-9_-]{11})/.exec(v.url||''); if(m&&D[m[1]]) s+=D[m[1]]; }); return Math.round(s/60); }
+function lessonTimeMinutes(l){ const body=(l&&l.min)||4, vid=videoMinutes(l), book=bookMinutes(l.id); return {total:body+vid+book+10, body, vid, book, buffer:10}; }
 function levelStats(lv,li){ let t=0,d=0; lv.chapters.forEach(ch=>ch.lessons.forEach(l=>{t++; if(isDone(l.id))d++;})); if(lv.project){t++; if(isDone(lv.project.id))d++;} return {t,d}; }
 
 /* ================= glossary inline ================= */
@@ -863,7 +874,7 @@ function renderLesson(id,c){
   if(l._gate){renderGate(id,c);return;}
   const lv=LEVELS[l._lv];
   let html=`<div class="crumb"><b>Level ${l._lv+1}: ${lv.title}</b> · ${l._ch}</div>
-  <h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · ~${l.min||4} min ${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>
+  ${(()=>{const tm=lessonTimeMinutes(l);const bits=[`lesson ${tm.body}m`];if(tm.vid)bits.push(`videos ${tm.vid}m`);if(tm.book)bits.push(`reading ${tm.book}m`);bits.push(`+${tm.buffer}m buffer`);return `<h1 class="ltitle">${l.t}</h1><div class="lmeta">${l.lab?'🧪 Hands-on lab':'📘 Lesson'} · <span title="${bits.join(' · ')} (book = 5 min/page, new pages only)">~${tm.total} min total</span>${isDone(l.id)?' · <span style="color:var(--green)">✓ completed</span>':''}${l.src?` · <span title="Source coverage">📚 Goes deeper: ${srcLabel(l.src)}</span>`:''}</div>`;})()}
   <div class="body">${gloss(l.body)}</div>`;
   if(window.DIAGRAMS&&DIAGRAMS[l.id]&&DIAGRAMS[l.id].length) html+=renderDiagrams(DIAGRAMS[l.id]);
   {const _vids=(l.videos||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); if(_vids.length) html+=renderVideos(_vids);}
