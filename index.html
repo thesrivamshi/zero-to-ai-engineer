@@ -96,6 +96,16 @@ h1.ltitle{font-family:var(--serif);font-weight:400;font-size:38px;letter-spacing
 .callout.tip{border-left-color:var(--green)}
 .callout .ct{font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.18em;margin-bottom:7px;color:var(--accent);font-family:var(--mono)}
 .callout.warn .ct{color:var(--amber)}.callout.fail .ct{color:var(--red)}.callout.tip .ct{color:var(--green)}
+/* collapsible repeated info note — collapsed to one line; expands on hover, click pins open (touch-friendly) */
+.infonote{border:1px solid var(--border);border-left:2px solid var(--green);background:var(--bg2);border-radius:0 5px 5px 0;margin:18px 0;overflow:hidden}
+.infonote .in-h{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 14px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:10.5px;color:var(--green);user-select:none}
+.infonote .in-h .chev{margin-left:auto;transition:transform .3s ease;font-size:11px}
+.infonote .in-h .hint{color:var(--dim);letter-spacing:.06em;text-transform:none;font-size:10px}
+.infonote .in-b{max-height:0;opacity:0;overflow:hidden;transition:max-height .4s ease,opacity .3s ease,padding .3s ease;padding:0 14px;font-size:13px;line-height:1.6;color:var(--muted)}
+.infonote:hover .in-b,.infonote.open .in-b{max-height:1000px;opacity:1;padding:2px 14px 13px}
+.infonote:hover .chev,.infonote.open .chev{transform:rotate(180deg)}
+.infonote .in-b strong{color:var(--ink);font-weight:600}
+@media(prefers-reduced-motion:reduce){.infonote .in-b{transition:none}}
 .gl{border-bottom:1px dashed var(--accent);cursor:help;position:relative;color:var(--accent)}
 .gl:hover::after{content:attr(data-def);position:absolute;left:0;bottom:calc(100% + 6px);z-index:50;background:var(--ink);border:1px solid var(--ink);color:#f2efe9;font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:6px;width:280px;box-shadow:0 8px 24px rgba(20,19,15,.25)}
 
@@ -383,6 +393,8 @@ async function acctSignUp(){ const e=document.getElementById('acctEmail').value.
 async function acctMagic(){ const e=document.getElementById('acctEmail').value.trim(); if(!e)return _acctMsg('Enter your email first.'); _acctMsg('Sending magic link…',true); const { error }=await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin+location.pathname } }); if(error)return _acctMsg(error.message); _acctMsg('Magic link sent — check your email ✉️',true); }
 async function acctSignOut(){ await sb.auth.signOut(); SB_USER=null; SB_PROFILE=null; renderSidebar(); closeAccount(); }
 function closeAccount(){ const m=document.getElementById('acctModal'); if(m)m.remove(); }
+// Robust modal close: walk up to the fixed-position overlay and remove it (quote-safe — replaces the fragile this.closest('[style*=...]') pattern).
+function modalClose(el){ let n=el; while(n){ if(n.style && n.style.position==='fixed'){ n.remove(); return; } n=n.parentElement; } }
 function showAccount(){
   if(!cloudConfigured()){ alert('Cloud sync is not configured for this build.'); return; }
   closeAccount();
@@ -536,7 +548,7 @@ function completeDailyChallenge(){
   setTimeout(()=>{ 
     const toast = document.createElement('div'); 
     toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--bg2);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;font-size:12px;display:flex;gap:8px;align-items:center';
-    toast.innerHTML = `⚡ Quick win done! <button class="simbtn" style="padding:3px 8px;font-size:11px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);document.body.removeChild(this.closest('div[style*=\'position:fixed\']'));">🚀 Share short + lock streak</button> <button class="simbtn ghost" style="padding:3px 6px;font-size:10px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);document.body.removeChild(this.closest('div[style*=\'position:fixed\']'));setTimeout(()=>openDiscord(),400)">⚡+Discord</button> <button onclick="document.body.removeChild(this.closest('div[style*=\'position:fixed\']'))" style="background:none;font-size:12px">✕</button>`;
+    toast.innerHTML = `⚡ Quick win done! <button class="simbtn" style="padding:3px 8px;font-size:11px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);modalClose(this);">🚀 Share short + lock streak</button> <button class="simbtn ghost" style="padding:3px 6px;font-size:10px" onclick="const s=buildShareSnippets();copyToClipboard(s.shortMd,this);modalClose(this);setTimeout(()=>openDiscord(),400)">⚡+Discord</button> <button onclick="modalClose(this)" style="background:none;font-size:12px">✕</button>`;
     document.body.appendChild(toast); 
   }, 300);
 }
@@ -555,13 +567,13 @@ function showQuickChallenge(){
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:520px;width:100%;padding:18px">
-      <div style="display:flex;justify-content:space-between"><b>⚡ Quick Challenge — ${dc.t}</b><button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="font-size:20px;background:none">×</button></div>
+      <div style="display:flex;justify-content:space-between"><b>⚡ Quick Challenge — ${dc.t}</b><button onclick="modalClose(this)" style="font-size:20px;background:none">×</button></div>
       <div style="margin:14px 0;font-size:14.5px;color:#cfcfd6">${dc.desc}</div>
       <div style="font-size:12px;color:var(--dim)">Stay in flow — 2–5 min. Doing it builds your streak 🔥</div>
       <div class="row" style="margin-top:16px">
-        <button class="simbtn" onclick="completeDailyChallenge(); this.closest('[style*=\'position:fixed\']').remove(); render(); setTimeout(()=>{ const s=buildShareSnippets(); if(confirm('Quick win done — share your Twin progress (live MD from P/AGENT/gates)?')) showShareCTA(); }, 300);">✅ Mark done (+streak) + Share option</button>
-        <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Later</button>
-        <button class="simbtn ghost" onclick="const s=buildShareSnippets(); copyToClipboard(s.shortMd,this); this.closest('[style*=\'position:fixed\']').remove();">🚀 Copy short share now</button>
+        <button class="simbtn" onclick="completeDailyChallenge(); modalClose(this); render(); setTimeout(()=>{ const s=buildShareSnippets(); if(confirm('Quick win done — share your Twin progress (live MD from P/AGENT/gates)?')) showShareCTA(); }, 300);">✅ Mark done (+streak) + Share option</button>
+        <button class="simbtn ghost" onclick="modalClose(this)">Later</button>
+        <button class="simbtn ghost" onclick="const s=buildShareSnippets(); copyToClipboard(s.shortMd,this); modalClose(this);">🚀 Copy short share now</button>
       </div>
       <div style="margin-top:8px;font-size:11px;color:var(--muted)">Daily challenge resets midnight. Streaks count consecutive days you complete lessons or challenges.</div>
     </div>`;
@@ -611,12 +623,12 @@ function showForkHelper(){
       <div><b>3. Serve locally (no install needed)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.serve)}</pre></div>
       <div><b>4. Deploy anywhere (Vercel/Netlify/GH Pages/Cloudflare/Pages — zero build)</b><pre style="font-size:12px;background:#0d0d11;padding:8px;border-radius:6px;margin:4px 0">${escapeHtml(f.deploy)}</pre></div>
       <div class="row" style="margin-top:14px;flex-wrap:wrap">
-        <button class="simbtn" onclick="const ff=getForkCommands(); copyToClipboard(ff.clone+'\\n'+ff.edit+'\\n'+ff.editExtras+'\\n'+ff.serve+'\\n'+ff.deploy+'\\n'+(ff.staticNote||''), this); this.closest('[style*=\'position:fixed\']').remove();">📋 Copy all fork commands (ready-to-run + static note)</button>
+        <button class="simbtn" onclick="const ff=getForkCommands(); copyToClipboard(ff.clone+'\\n'+ff.edit+'\\n'+ff.editExtras+'\\n'+ff.serve+'\\n'+ff.deploy+'\\n'+(ff.staticNote||''), this); modalClose(this);">📋 Copy all fork commands (ready-to-run + static note)</button>
         <button class="simbtn ghost" onclick="openDiscord();">💬 Open your Discord</button>
-        <button class="simbtn ghost" onclick="showShareCTA(); this.closest('[style*=\'position:fixed\']').remove();">🚀 Preview live Share snippets (MCP multi-agent)</button>
-        <button class="simbtn ghost" onclick="showHallOfFame(); this.closest('[style*=\'position:fixed\']').remove();">🏆 Hall of Fame</button>
-        <button class="simbtn ghost" onclick="showDiscordStructure(); this.closest('[style*=\'position:fixed\']').remove();">💬 Discord structure ex</button>
-        <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button>
+        <button class="simbtn ghost" onclick="showShareCTA(); modalClose(this);">🚀 Preview live Share snippets (MCP multi-agent)</button>
+        <button class="simbtn ghost" onclick="showHallOfFame(); modalClose(this);">🏆 Hall of Fame</button>
+        <button class="simbtn ghost" onclick="showDiscordStructure(); modalClose(this);">💬 Discord structure ex</button>
+        <button class="simbtn ghost" onclick="modalClose(this)">Close</button>
       </div>
       <div style="font-size:11px;color:var(--dim);margin-top:10px"><b>Static by design (reinforced):</b> fork → ONE CUSTOM edit (discordInvite + hashtag) → your branded full MCP-exposed multi-agent Twin sharing + floating CTAs (🚀 + ⚡) + snippets (MD/YAML/JSON + GitHub w/ live P/AGENT/gates + badges + mcp_tools) + openDiscord + fork UI live. Pure static single-file (index.html + data/*.js only). No build ever. Deploy Vercel etc with output dir=. Perfect for private Discord cohorts / ADHD 2-min setup. Add your cohort examples to Hall by forking.</div>
     </div>`;
@@ -637,9 +649,9 @@ function maybeShowOnboarding(){
         <div style="font-size:13.5px;color:#cfcfd6;margin-bottom:12px">Build <b>one growing LLM Twin</b> that becomes a <b>full MCP-exposed multi-agent system</b> (L5 Stage 3 + gate: voice Twin core + retriever + critic under supervisor, MCP tools/list+call exposed — explicit culmination). Pure static single-file, 15-30min/day, streaks + quick wins/choice/feedback for focus.</div>
         <div style="font-size:12.5px">• Tap lessons + sims (choice paths + instant feedback everywhere)<br>• ⚡ Quick Challenges + 🔥 streaks + Twin Power for dopamine<br>• 🚀 Share Twin after every win (floating CTAs + auto prompts)</div>
         <div style="margin:16px 0 8px" class="row">
-          <button class="simbtn" onclick="this.closest('[style*=\'position:fixed\']').remove(); showQuickChallenge();">⚡ Start first 5-min Quick Win</button>
-          <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove(); showShareCTA();">🚀 Preview Share your MCP Twin</button>
-          <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button>
+          <button class="simbtn" onclick="modalClose(this); showQuickChallenge();">⚡ Start first 5-min Quick Win</button>
+          <button class="simbtn ghost" onclick="modalClose(this); showShareCTA();">🚀 Preview Share your MCP Twin</button>
+          <button class="simbtn ghost" onclick="modalClose(this)">Close</button>
         </div>
         <div style="font-size:11px;color:var(--dim)">Edit CUSTOM.discordInvite once (in Settings) → your cohort's branded shares + CTAs. Join Discord for accountability. Your Twin culminates as full MCP multi-agent — share it!</div>
       </div>`;
@@ -651,16 +663,16 @@ function showHallOfFame(){
   modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:720px;width:100%;padding:20px;max-height:88vh;overflow:auto">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:17px">🏆 Cohort Hall of Fame</b><button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="background:none;font-size:20px">×</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:17px">🏆 Cohort Hall of Fame</b><button onclick="modalClose(this)" style="background:none;font-size:20px">×</button></div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Live leaderboard of cohort Twins — signed-in builders appear automatically, ranked by Twin progress then ⚡ Power. Click a name to view their public Twin page.</div>
       <div id="liveLeaderboard" style="margin-bottom:16px">Loading live leaderboard…</div>
       <div style="color:var(--muted);font-size:12px;margin-bottom:8px;border-top:1px solid var(--border2);padding-top:10px">Examples (and a place to brag — use 🚀 Share to post yours to Discord):</div>
       <div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:10px 0">
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥14d · @alex</b><br>100% (3/3) 🧠🎤🔌🤖MultiAgent<br>✅ full MCP-exposed multi-agent (supervisor + voice writer)<br><button onclick="copyToClipboard('## My Twin 100% MCP+Multi 🔥\\nTools: ask_my_twin, supervisor_handoff\\n' + (typeof CUSTOM!=='undefined'?CUSTOM.discordInvite:''),this)" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Copy example share</button></div>
-        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥9d · @sam</b><br>Stage3 ✅ L5gate · MCP tools verified<br>Supervisor handoff fixed 4 faithfulness fails<br><button onclick="showShareCTA();this.closest('[style*=\'position:fixed\']').remove()" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Your turn: Share Twin</button></div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>🔥9d · @sam</b><br>Stage3 ✅ L5gate · MCP tools verified<br>Supervisor handoff fixed 4 faithfulness fails<br><button onclick="showShareCTA();modalClose(this)" style="font-size:10px;padding:2px 5px;margin-top:4px;border:1px solid var(--border);border-radius:4px">Your turn: Share Twin</button></div>
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:12.5px"><b>Scale Master · @jordan</b><br>🏆 L6 + 3 MCP agents<br>Cost &lt;$0.002/query @ batch=32<br><span style="color:var(--dim);font-size:10px">Add yours via 🚀 floating CTA → paste to Discord</span></div>
       </div>
-      <div class="row" style="margin-top:12px"><button class="simbtn" onclick="showShareCTA();this.closest('[style*=\'position:fixed\']').remove()">🚀 Generate your live MCP Twin snippet + badges</button> <button class="simbtn ghost" onclick="openDiscord();">💬 Post to #hall-of-fame on Discord</button> <button class="simbtn ghost" onclick="showForkHelper();this.closest('[style*=\'position:fixed\']').remove()">📋 Customize for your cohort</button></div>
+      <div class="row" style="margin-top:12px"><button class="simbtn" onclick="showShareCTA();modalClose(this)">🚀 Generate your live MCP Twin snippet + badges</button> <button class="simbtn ghost" onclick="openDiscord();">💬 Post to #hall-of-fame on Discord</button> <button class="simbtn ghost" onclick="showForkHelper();modalClose(this)">📋 Customize for your cohort</button></div>
       <div style="font-size:10px;color:var(--dim);margin-top:8px">Hall of Fame = accountability + celebration. All snippets auto-include "full MCP-exposed multi-agent system" + live state. Perfect launch ritual.</div>
     </div>`;
   document.body.appendChild(modal);
@@ -698,7 +710,7 @@ function showDiscordStructure(){
 • Streak celebrations
 
 Use in-app floating ⚡Share+Discord + auto gate prompts to drive posts. Leader pins CUSTOM.md templates + discussion prompts from README.</pre>
-      <div style="margin-top:10px"><button class="simbtn" onclick="copyToClipboard(this.previousElementSibling.textContent,this);openDiscord();">📋 Copy structure + open Discord</button> <button class="simbtn ghost" onclick="showForkHelper();this.closest('[style*=\'position:fixed\']').remove()">📋 Fork Helper (set invite)</button> <button class="simbtn ghost" onclick="this.closest('[style*=\'position:fixed\']').remove()">Close</button></div>
+      <div style="margin-top:10px"><button class="simbtn" onclick="copyToClipboard(this.previousElementSibling.textContent,this);openDiscord();">📋 Copy structure + open Discord</button> <button class="simbtn ghost" onclick="showForkHelper();modalClose(this)">📋 Fork Helper (set invite)</button> <button class="simbtn ghost" onclick="modalClose(this)">Close</button></div>
       <div style="font-size:11px;margin-top:8px;color:var(--dim)">Onboarding prompt + Hall of Fame + this modal are in-app. Add #onboarding-pings thread for first-time users.</div>
     </div>`;
   document.body.appendChild(modal);
@@ -1097,7 +1109,7 @@ let qSel={};
 function renderQuiz(l){
   qSel={};
   let html=`<div class="quiz" id="quiz"><div class="qhead">✏️ Check your understanding <span style="color:var(--dim);font-weight:500;font-size:12px">— all correct to complete the lesson</span></div>`;
-  html+=`<div class="callout tip" style="margin:8px 12px 0;font-size:12.5px;border-left-color:var(--green);padding:12px 14px;font-weight:500;border:2px solid var(--green);background:rgba(16,185,129,.06)"><strong>🛡️ STRICT SEQUENCING ENFORCED — PREREQS ONLY</strong><br>This quiz (and review checkpoints) test <strong>ONLY</strong> concepts explicitly introduced in <strong>this lesson's body + all prior lessons</strong>. <strong>NO forward references allowed.</strong> Forbidden in any quiz: agents/multi-agent orchestration or supervisor patterns (before L3c3+), MCP / tools/list+call / MCP servers (before L5d1+ and the quickwin), KV cache / quantization / speculative decoding / batching economics / roofline / prefill-decode (before L6a1+), FTI pipelines (before L5a1), scaling/multipliers for multi-agent (before L3f but full MCP scaling in L6), or any later material. Lesson bodies lightly updated only to front-load needed defs. Every explanation MUST state <strong>Mental model</strong>, <strong>Common mistake</strong>, and end with <strong>"Check this question: ..."</strong> for immediate diagnostic feedback. Per-question "Check this question" is the feedback anchor. If any question references un-introduced material, it is a bug — report the lesson id and go back. Go in order; sidebar + gates enforce it.</div>`;
+  html+=`<div class="infonote" style="margin:8px 12px 0"><div class="in-h" onclick="this.parentElement.classList.toggle('open')"><span>🛡️ Quiz rules — prereqs only</span><span class="hint">hover to read</span><span class="chev">▾</span></div><div class="in-b">This quiz (and review checkpoints) test <strong>ONLY</strong> concepts explicitly introduced in <strong>this lesson's body + all prior lessons</strong>. <strong>NO forward references allowed.</strong> Forbidden in any quiz: agents/multi-agent orchestration or supervisor patterns (before L3c3+), MCP / tools/list+call / MCP servers (before L5d1+ and the quickwin), KV cache / quantization / speculative decoding / batching economics / roofline / prefill-decode (before L6a1+), FTI pipelines (before L5a1), scaling/multipliers for multi-agent (before L3f but full MCP scaling in L6), or any later material. Every explanation states <strong>Mental model</strong>, <strong>Common mistake</strong>, and ends with <strong>"Check this question: ..."</strong> If any question references un-introduced material, it's a bug — report the lesson id. Go in order; sidebar + gates enforce it.</div></div>`;
   l.quiz.forEach((q,qi)=>{
     html+=`<div class="qq" data-q="${qi}"><div class="qt">${qi+1}. ${q.q}</div>`;
     q.o.forEach((o,oi)=>{
@@ -2509,7 +2521,7 @@ function renderShareModal(){
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:860px;width:100%;max-height:92vh;overflow:auto;padding:20px 22px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-weight:800;font-size:18px">🚀 Share your full MCP-exposed multi-agent Twin — live MD/YAML/JSON + image badges + streaks</div>
-        <button onclick="this.closest('[style*=\"position:fixed\"]').remove()" style="background:none;font-size:22px;opacity:.7">×</button>
+        <button onclick="modalClose(this)" style="background:none;font-size:22px;opacity:.7">×</button>
       </div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:14px">Live from P + AGENT + gates (full state + badges + MCP tools). Shields.io badges render inline in Discord/forums/GitHub. Ties directly to the L5 culmination: full MCP-exposed multi-agent system (MCP tools/list+call + supervisor + voice Twin core). Edit CUSTOM once for branded everything. 8+ ready-to-paste formats (MD/YAML/JSON + GitHub/Forum extras).</div>
       
@@ -2522,7 +2534,7 @@ function renderShareModal(){
           ${snippets.badges.map(b=>`<span style="border:1px solid var(--border2);border-radius:99px;padding:1px 8px;font-size:11px">${b}</span>`).join('')}
           ${st.count?`<span style="color:#f59e0b">🔥${st.count}d</span>`:''}
           ${snippets.mcpReady?`<span style="background:#22c55e;color:#052e1d;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700">🔌MCP+🤖MA CULMINATION</span>`:''}
-          <span style="color:var(--cyan);font-size:11px">⚡${power} Power</span>
+          <span style="color:var(--cyan);font-size:11px">⚡${(typeof getTwinPower==='function'?getTwinPower():0)} Power</span>
         </div>
         <div style="margin:8px 0 4px;font-size:12.5px;color:var(--dim)">Stages: ${snippets.pct/33|0}/3 • Gates: ${getTwinStatus().gates.length}/6 • ${snippets.mcpReady ? '✅ FULL MCP-exposed multi-agent system (the course culmination)' : 'Culminates in MCP multi-agent (L5 gate)'}</div>
         <div style="font-size:10px;opacity:.7">All formats live-updated from browser state. Use short MD for daily, full for gates. ${hashtag}</div>
@@ -2556,14 +2568,14 @@ function renderShareModal(){
         <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-md').textContent,this); openDiscord();">📋 Copy full MD + Discord</button>
         <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-forum').textContent,this); setTimeout(()=>openDiscord(),500);">📋 Copy forum MD + Discord</button>
         <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-gh').textContent,this); setTimeout(()=>openDiscord(),300);">📋 Copy GitHub/Forum MD + Discord</button>
-        <button class="simbtn ghost" onclick="go('settings');this.closest('[style*=\"position:fixed\"]').remove()">⚙️ Customize Discord (CUSTOM)</button>
-        <button class="simbtn ghost" onclick="showForkHelper(); this.closest('[style*=\"position:fixed\"]').remove();">📋 Fork Helper (CUSTOM-aware)</button>
+        <button class="simbtn ghost" onclick="go('settings');modalClose(this)">⚙️ Customize Discord (CUSTOM)</button>
+        <button class="simbtn ghost" onclick="showForkHelper(); modalClose(this);">📋 Fork Helper (CUSTOM-aware)</button>
       </div>
       <div class="row" style="margin-top:6px">
         <button class="simbtn ghost" onclick="const f=getForkCommands(); copyToClipboard(f.clone+'\\n'+f.edit+'\\n'+f.editExtras+'\\n'+f.serve+'\\n'+f.deploy ,this)">📋 Copy full CUSTOM fork cmds</button>
         <button class="simbtn ghost" onclick="copyToClipboard(document.getElementById('sh-json').textContent,this)">Copy JSON for cohort tracking</button>
-        <button class="simbtn ghost" onclick="showHallOfFame(); this.closest('[style*=\"position:fixed\"]').remove();">🏆 Hall of Fame</button>
-        <button class="simbtn ghost" onclick="showDiscordStructure(); this.closest('[style*=\"position:fixed\"]').remove();">💬 Discord ex</button>
+        <button class="simbtn ghost" onclick="showHallOfFame(); modalClose(this);">🏆 Hall of Fame</button>
+        <button class="simbtn ghost" onclick="showDiscordStructure(); modalClose(this);">💬 Discord ex</button>
       </div>
       <div style="margin:12px 0 4px;font-size:12px;color:var(--muted)">Quick feedback (ADHD micro + instant dopamine): <button onclick="giveADHDMicroFeedback(true,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👍 Great for sharing</button> <button onclick="giveADHDMicroFeedback(false,'share');" style="font-size:11px;padding:2px 8px;border:1px solid var(--border2);border-radius:4px;background:none">👎 Could improve</button></div>
       <div style="font-size:11px;color:var(--dim);margin-top:8px">Shields.io badges auto-render as images in Discord/GH/forums. All tied to full MCP-exposed multi-agent Twin culmination (L5 Stage 3). Live from P + AGENT + gates. One-line CUSTOM.discordInvite + shareHashtag powers every share/CTA/floating button/fork. Pure static single-file — fork/customize/host anywhere (output dir=., no build).</div>
