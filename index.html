@@ -769,6 +769,30 @@ function buildBookMinCache(){ _bookMinCache={}; const seen=new Set(), R=window.R
 function bookMinutes(lid){ if(!_bookMinCache) buildBookMinCache(); return _bookMinCache[lid]||0; }
 function videoMinutes(l){ const vids=((l&&l.videos)||[]).concat((window.VIDEOS&&VIDEOS[l.id])||[]); const D=window.VID_DUR||{}; let s=0; vids.forEach(v=>{ const m=/(?:v=|youtu\.be\/|embed\/|v\/)([A-Za-z0-9_-]{11})/.exec(v.url||''); if(m&&D[m[1]]) s+=D[m[1]]; }); return Math.round(s/60); }
 function lessonTimeMinutes(l){ const body=(l&&l.min)||4, vid=videoMinutes(l), book=bookMinutes(l.id); return {total:body+vid+book+10, body, vid, book, buffer:10}; }
+let _ctbCache=null;
+function courseTimeBreakdown(){ if(_ctbCache) return _ctbCache; let body=0,vid=0,book=0,buf=0,n=0; (allLessons()||[]).forEach(l=>{ if(l._gate) return; n++; body+=(l.min||4); vid+=videoMinutes(l); book+=bookMinutes(l.id); buf+=10; }); _ctbCache={body,vid,book,buf,n}; return _ctbCache; }
+/* learning styles weight how much of the videos/books you actually consume (body + buffer always counted) */
+const PLAN_STYLES={ deep:{label:'Go deep — watch & read everything', v:1.0, b:1.0}, balanced:{label:'Balanced — skim videos, read the key books', v:0.4, b:0.55}, fast:{label:'Fast — do-first, books only when stuck', v:0.25, b:0.2} };
+let _plan={h:2, style:'balanced'};
+function planHours(){ const t=courseTimeBreakdown(); const s=PLAN_STYLES[_plan.style]; return Math.round((t.body + t.vid*s.v + t.book*s.b + t.buf)/60); }
+function setPlan(k,v){ _plan[k]=v; renderPlanner(); }
+function renderPlanner(){ const el=document.getElementById('planner'); if(!el) return;
+  const hrsByStyle=k=>{const s=PLAN_STYLES[k],t=courseTimeBreakdown();return Math.round((t.body+t.vid*s.v+t.book*s.b+t.buf)/60);};
+  const hrs=planHours(); const days=Math.max(1,Math.ceil(hrs/_plan.h)); const wks=days/7; const wkTxt=wks<1?`${days} days`:`~${wks<3?wks.toFixed(1):Math.round(wks)} weeks`;
+  const hBtn=h=>`<button onclick="setPlan('h',${h})" style="padding:7px 13px;border-radius:5px;border:1px solid ${_plan.h===h?'var(--accent)':'var(--border2)'};background:${_plan.h===h?'var(--accent)':'transparent'};color:${_plan.h===h?'#f7f6f3':'var(--text)'};font-family:var(--mono);font-size:12px;cursor:pointer">${h} h</button>`;
+  const sBtn=k=>`<button onclick="setPlan('style','${k}')" style="display:block;width:100%;text-align:left;padding:9px 12px;margin:5px 0;border-radius:5px;border:1px solid ${_plan.style===k?'var(--accent)':'var(--border2)'};background:${_plan.style===k?'rgba(122,31,31,.06)':'transparent'};color:var(--text);font-size:13px;cursor:pointer">${PLAN_STYLES[k].label} <span style="float:right;color:var(--dim);font-family:var(--mono);font-size:11px">~${hrsByStyle(k)}h</span></button>`;
+  el.innerHTML=`
+    <div style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:10.5px;color:var(--accent);margin-bottom:8px">Hours per day</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${[1,2,4,6].map(hBtn).join('')}</div>
+    <div style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:10.5px;color:var(--accent);margin-bottom:4px">Your style</div>
+    ${['deep','balanced','fast'].map(sBtn).join('')}
+    <div style="margin-top:14px;padding:14px 16px;background:var(--ink);color:#f2efe9;border-radius:6px">
+      <div style="font-size:13px;color:#c8c3b9">At <b style="color:#fff">${_plan.h} h/day</b>, the <b style="color:#fff">${_plan.style}</b> path is</div>
+      <div style="font-family:var(--serif);font-size:30px;line-height:1.1;margin:4px 0 2px">${wkTxt}</div>
+      <div style="font-size:12px;color:#9b958a">~${hrs} hours total · finish around <b style="color:#fff">${planFinishDate(days)}</b> if you keep your streak</div>
+    </div>`;
+}
+function planFinishDate(days){ try{ const d=new Date(); d.setDate(d.getDate()+days); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}); }catch(e){ return days+' days out'; } }
 function levelStats(lv,li){ let t=0,d=0; lv.chapters.forEach(ch=>ch.lessons.forEach(l=>{t++; if(isDone(l.id))d++;})); if(lv.project){t++; if(isDone(lv.project.id))d++;} return {t,d}; }
 
 /* ================= glossary inline ================= */
@@ -868,6 +892,20 @@ function renderStart(c){
       <div class="callout tip"><div class="ct">The 3-minute orientation</div>
       <p style="margin:6px 0 0">Skim the home page once to see the six levels and the Twin you'll build — then start Level 1. Go in order; the sidebar keeps you on track.</p></div>
 
+      <h2>Will this fit your life? Plan your commitment</h2>
+      <p>Decide what you can realistically give <em>before</em> you start — then commit to it. Consistency beats intensity: even one focused hour every day finishes this. Pick your pace:</p>
+      <div id="planner" style="border:1px solid var(--border);border-radius:6px;padding:18px;background:var(--bg2);margin:6px 0 10px"></div>
+      <p style="font-size:13px;color:var(--dim)">Videos are for fast intuition — skim them. Books are optional depth, but a few topics are worth the full read for an edge: <strong>evaluation</strong> (how to actually measure quality), <strong>RAG internals</strong> (chunking/retrieval trade-offs), <strong>fine-tuning &amp; data</strong>, and the <strong>inference math</strong> (KV cache, batching, cost). Everywhere else, do the lab and move on.</p>
+
+      <h2>By the end, you'll be able to</h2>
+      <ul>
+        <li>Read, compare and <strong>evaluate</strong> models — and write production-grade prompts.</li>
+        <li>Build a <strong>"chat with your documents"</strong> app: embeddings, RAG, tool-calling agents, and guardrails.</li>
+        <li><strong>Fine-tune</strong> a model on your own data and know when it's worth it.</li>
+        <li><strong>Ship</strong> your LLM Twin as a deployed, MCP-exposed multi-agent system.</li>
+        <li><strong>Optimize</strong> it for cost and latency at scale (KV cache, batching, quantization).</li>
+      </ul>
+
       <h2>How to actually use the material</h2>
       <ul>
         <li><strong>Lessons are the spine — read them.</strong> Short, original, done in order. This is the part you don't skip.</li>
@@ -913,6 +951,7 @@ function renderStart(c){
       </div>
     </div>
   </div>`;
+  renderPlanner(); // fill the interactive commitment planner
 }
 function renderHome(c){
   const all=allLessons(); const done=all.filter(l=>isDone(l.id)).length;
