@@ -338,6 +338,9 @@ let sb=null, SB_USER=null, SB_PROFILE=null;
 try{ if(window.supabase&&window.supabase.createClient) sb=window.supabase.createClient(SB_URL, SB_ANON); }catch(e){ sb=null; }
 function cloudConfigured(){ return !!sb; }
 function cloudEnabled(){ return !!(sb&&SB_USER); }
+let SB_STATS=null; // server-computed {join_date,day_number,active_days,active_today,streak,consistency}
+async function refreshStats(){ if(!cloudEnabled())return; try{ const {data}=await sb.rpc('my_stats'); if(data){ SB_STATS=data; if(typeof renderSidebar==='function') renderSidebar(); } }catch(e){} }
+function markActiveCloud(){ if(!cloudEnabled())return; try{ sb.rpc('mark_active').then(()=>refreshStats()); }catch(e){} } // server stamps current_date — can't be faked client-side
 function accountChipHTML(){
   if(!cloudConfigured()) return '';
   if(cloudEnabled()){
@@ -379,12 +382,13 @@ async function cloudPull(){ if(!cloudEnabled())return; try{
     localStorage.setItem(LKEY, JSON.stringify(P)); localStorage.setItem('z2ai_agent', JSON.stringify(AGENT));
   }
   await cloudPush();   // write the merged state straight back so cloud is current
+  refreshStats();      // pull server-authoritative streak/day/consistency
   render();
 }catch(e){ console.warn('cloud pull failed',e); } }
 
 async function cloudInitAuth(){ if(!sb)return; try{
   const { data } = await sb.auth.getSession(); SB_USER = data&&data.session ? data.session.user : null;
-  sb.auth.onAuthStateChange((_e, session)=>{ const was=SB_USER&&SB_USER.id; SB_USER = session?session.user:null; renderSidebar(); if(SB_USER && SB_USER.id!==was) cloudPull(); if(!SB_USER) SB_PROFILE=null; });
+  sb.auth.onAuthStateChange((_e, session)=>{ const was=SB_USER&&SB_USER.id; SB_USER = session?session.user:null; renderSidebar(); if(SB_USER && SB_USER.id!==was) cloudPull(); if(!SB_USER){ SB_PROFILE=null; SB_STATS=null; } });
   if(SB_USER) cloudPull(); else renderSidebar();
 }catch(e){ console.warn('auth init failed',e); } }
 
@@ -462,6 +466,7 @@ async function renderPublicTwin(slug,c){
 /* ================= ADHD: progress streaks + quick challenges (all in-app, localStorage) ================= */
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function getStreak(){
+  if(typeof SB_STATS!=='undefined' && SB_STATS) return {count:SB_STATS.streak||0, active:!!SB_STATS.active_today, last:null};
   const streak = P._streak || {count:0, last:null};
   const today = todayStr();
   if(!streak.last) return {count:0, active:false, last: null};
@@ -488,12 +493,13 @@ function updateStreakOnComplete(){
   P._activeDates = P._activeDates || [];
   if(P._activeDates.indexOf(t) < 0) P._activeDates.push(t);
   save();
+  if(typeof markActiveCloud==='function') markActiveCloud();   // record today's activity server-side (authoritative)
 }
 /* ===== Consistency: count from join day; reward showing up + doing every day ===== */
 function joinDay(){ if(!P._joined){ P._joined = todayStr(); save(); } return P._joined; }
-function dayNumber(){ const j=P._joined||todayStr(); return Math.max(1, Math.floor((new Date(todayStr())-new Date(j))/86400000)+1); }
-function activeDayCount(){ return (P._activeDates||[]).length; }
-function consistencyPct(){ return Math.min(100, Math.round(activeDayCount()/Math.max(1,dayNumber())*100)); }
+function dayNumber(){ if(SB_STATS) return SB_STATS.day_number||1; const j=P._joined||todayStr(); return Math.max(1, Math.floor((new Date(todayStr())-new Date(j))/86400000)+1); }
+function activeDayCount(){ if(SB_STATS) return SB_STATS.active_days||0; return (P._activeDates||[]).length; }
+function consistencyPct(){ if(SB_STATS) return (SB_STATS.consistency||0); return Math.min(100, Math.round(activeDayCount()/Math.max(1,dayNumber())*100)); }
 function postsCount(){ return (P._posts||0); }
 function logPost(){ const t=todayStr(); if(P._lastPost===t) return false; P._lastPost=t; P._posts=(P._posts||0)+1; P._activeDates=P._activeDates||[]; if(P._activeDates.indexOf(t)<0)P._activeDates.push(t); save(); if(typeof renderSidebar==='function')renderSidebar(); return true; }
 function resetStreak(){ delete P._streak; save(); }
