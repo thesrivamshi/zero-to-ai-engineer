@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script defer src="/_vercel/insights/script.js"></script>
+<!-- PostHog product analytics (posthog-js, no build). Region: US — change api_host to https://eu.i.posthog.com if your project is on EU cloud. -->
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_ptgHTsvhiSn2MHjtUrcR3R36xD8eVguAJAuE8jFtwx4C',{api_host:'https://us.i.posthog.com', person_profiles:'identified_only', capture_pageview:false});
+</script>
 <style>
 :root{
   --bg:#ffffff; --bg2:#f7f6f3; --bg3:#efece5; --border:#e6e3db; --border2:#dad5ca;
@@ -321,6 +326,8 @@ const LKEY='z2ai_progress_v1';
 let P = {}; try{ P = JSON.parse(localStorage.getItem(LKEY)||'{}'); }catch(e){ P={}; }
 function save(){ localStorage.setItem(LKEY, JSON.stringify(P)); if(typeof cloudQueuePush==='function') cloudQueuePush(); }
 function isDone(id){ return !!P[id]; }
+function ph(ev,props){ try{ if(window.posthog && posthog.capture) posthog.capture(ev, props||{}); }catch(e){} } // PostHog event helper (no-op if blocked/unloaded)
+function phIdentify(){ try{ if(window.posthog && SB_USER) posthog.identify(SB_USER.id, {email:SB_USER.email}); }catch(e){} }
 // Lightweight live AGENT state (for rich share snippets + twin config; persisted via P; fully client/static)
 let AGENT = {}; try{ AGENT = JSON.parse(localStorage.getItem('z2ai_agent')||'{}'); }catch(e){ AGENT = {}; }
 function saveAgent(){ localStorage.setItem('z2ai_agent', JSON.stringify(AGENT)); if(typeof cloudQueuePush==='function') cloudQueuePush(); }
@@ -407,13 +414,13 @@ async function cloudPull(){ if(!cloudEnabled())return; try{
 
 async function cloudInitAuth(){ if(!sb)return; try{
   const { data } = await sb.auth.getSession(); SB_USER = data&&data.session ? data.session.user : null;
-  sb.auth.onAuthStateChange((_e, session)=>{ const was=SB_USER&&SB_USER.id; SB_USER = session?session.user:null; renderSidebar(); if(SB_USER && SB_USER.id!==was) cloudPull(); if(!SB_USER){ SB_PROFILE=null; SB_STATS=null; } });
-  if(SB_USER) cloudPull(); else renderSidebar();
+  sb.auth.onAuthStateChange((_e, session)=>{ const was=SB_USER&&SB_USER.id; SB_USER = session?session.user:null; renderSidebar(); if(SB_USER){ phIdentify(); if(SB_USER.id!==was) cloudPull(); } else { SB_PROFILE=null; SB_STATS=null; } });
+  if(SB_USER){ phIdentify(); cloudPull(); } else renderSidebar();
 }catch(e){ console.warn('auth init failed',e); } }
 
 function _acctMsg(t,ok){ const m=document.getElementById('acctMsg'); if(m){ m.textContent=t; m.style.color=ok?'var(--green)':'var(--amber)'; } }
 async function acctSignIn(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||!p)return _acctMsg('Enter email + password.'); _acctMsg('Signing in…',true); const { error }=await sb.auth.signInWithPassword({ email:e, password:p }); if(error)return _acctMsg(error.message); _acctMsg('Signed in ✓',true); setTimeout(closeAccount,500); }
-async function acctSignUp(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||p.length<6)return _acctMsg('Email + password (min 6 chars).'); _acctMsg('Creating account…',true); const { data, error }=await sb.auth.signUp({ email:e, password:p }); if(error)return _acctMsg(error.message); if(data&&data.session){ _acctMsg('Account created ✓',true); setTimeout(closeAccount,500); } else { _acctMsg('Account created - check your email to confirm, then sign in.',true); } }
+async function acctSignUp(){ const e=document.getElementById('acctEmail').value.trim(), p=document.getElementById('acctPw').value; if(!e||p.length<6)return _acctMsg('Email + password (min 6 chars).'); _acctMsg('Creating account…',true); const { data, error }=await sb.auth.signUp({ email:e, password:p }); if(error)return _acctMsg(error.message); ph('signed_up'); if(data&&data.session){ _acctMsg('Account created ✓',true); setTimeout(closeAccount,500); } else { _acctMsg('Account created - check your email to confirm, then sign in.',true); } }
 async function acctMagic(){ const e=document.getElementById('acctEmail').value.trim(); if(!e)return _acctMsg('Enter your email first.'); _acctMsg('Sending magic link…',true); const { error }=await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin+location.pathname } }); if(error)return _acctMsg(error.message); _acctMsg('Magic link sent - check your email ✉️',true); }
 async function acctSignOut(){ await sb.auth.signOut(); SB_USER=null; SB_PROFILE=null; renderSidebar(); closeAccount(); }
 function closeAccount(){ const m=document.getElementById('acctModal'); if(m)m.remove(); }
@@ -520,7 +527,7 @@ function dayNumber(){ if(SB_STATS) return SB_STATS.day_number||1; const j=P._joi
 function activeDayCount(){ if(SB_STATS) return SB_STATS.active_days||0; return (P._activeDates||[]).length; }
 function consistencyPct(){ if(SB_STATS) return (SB_STATS.consistency||0); return Math.min(100, Math.round(activeDayCount()/Math.max(1,dayNumber())*100)); }
 function postsCount(){ return (P._posts||0); }
-function logPost(){ const t=todayStr(); if(P._lastPost===t) return false; P._lastPost=t; P._posts=(P._posts||0)+1; P._activeDates=P._activeDates||[]; if(P._activeDates.indexOf(t)<0)P._activeDates.push(t); save(); if(typeof renderSidebar==='function')renderSidebar(); return true; }
+function logPost(){ const t=todayStr(); if(P._lastPost===t) return false; P._lastPost=t; P._posts=(P._posts||0)+1; P._activeDates=P._activeDates||[]; if(P._activeDates.indexOf(t)<0)P._activeDates.push(t); save(); ph('post_logged',{total:P._posts}); if(typeof renderSidebar==='function')renderSidebar(); return true; }
 function resetStreak(){ delete P._streak; save(); }
 function getTwinPower(){
   // Pure local computation; never calls getTwinStatus or allLessons (prevents any cycle in test/jsdom load)
@@ -642,7 +649,7 @@ function openDiscord(){ /* Discord disabled for now */ }
 const JOIN_FORM_URL = 'https://form.typeform.com/to/dLHCfwiH';
 function joinGateSeen(){ try{ return localStorage.getItem('z2ai_join_seen')==='1'; }catch(e){ return false; } }
 function _afterGate(){ try{ if(!localStorage.getItem('z2ai_start_seen')){ localStorage.setItem('z2ai_start_seen','1'); go('start'); } }catch(e){} }
-function openJoinForm(){ try{ localStorage.setItem('z2ai_join_seen','1'); }catch(e){} window.open(JOIN_FORM_URL,'_blank'); const m=document.getElementById('joinGate'); if(m)m.remove(); _afterGate(); }
+function openJoinForm(){ try{ localStorage.setItem('z2ai_join_seen','1'); }catch(e){} ph('invite_form_opened'); window.open(JOIN_FORM_URL,'_blank'); const m=document.getElementById('joinGate'); if(m)m.remove(); _afterGate(); }
 function dismissJoinGate(){ try{ localStorage.setItem('z2ai_join_seen','1'); }catch(e){} const m=document.getElementById('joinGate'); if(m)m.remove(); _afterGate(); }
 function showJoinGate(force){
   if(!force && joinGateSeen()) return;
@@ -794,7 +801,7 @@ function courseTimeBreakdown(){ if(_ctbCache) return _ctbCache; let body=0,vid=0
 const PLAN_STYLES={ deep:{label:'Go deep: watch & read everything', v:1.0, b:1.0}, balanced:{label:'Balanced: key videos + key books (recommended)', v:0.7, b:0.55}, watch:{label:'Watch-first: videos for context, light on books', v:1.0, b:0.15}, read:{label:'Read-first: books deep, minimal video', v:0.35, b:1.0} };
 let _plan={h:2, style:'balanced'};
 function planHours(){ const t=courseTimeBreakdown(); const s=PLAN_STYLES[_plan.style]; return Math.round((t.body + t.vid*s.v + t.book*s.b + t.buf)/60); }
-function setPlan(k,v){ _plan[k]=v; renderPlanner(); }
+function setPlan(k,v){ _plan[k]=v; ph('plan_selected',{hours:_plan.h, style:_plan.style}); renderPlanner(); }
 function renderPlanner(){ const el=document.getElementById('planner'); if(!el) return;
   const hrsByStyle=k=>{const s=PLAN_STYLES[k],t=courseTimeBreakdown();return Math.round((t.body+t.vid*s.v+t.book*s.b+t.buf)/60);};
   const hrs=planHours(); const days=Math.max(1,Math.ceil(hrs/_plan.h)); const wks=days/7; const wkTxt=wks<1?`${days} days`:`~${wks<3?wks.toFixed(1):Math.round(wks)} weeks`;
@@ -831,6 +838,7 @@ function render(){
   const h=location.hash.replace('#','');
   const [view,arg]=h.split('/');
   joinDay(); // stamp Day 1 on first ever visit
+  ph('$pageview',{view:view||'home', path:location.hash||'#home'});
   document.getElementById('sidebar').classList.remove('open');
   renderSidebar();
   const c=document.getElementById('content');
@@ -1281,7 +1289,7 @@ function navBtns(prev,next){
     <button class="navbtn next" ${next?`onclick="go('${next._gate?'gate':'lesson'}','${next.id}')"`:'disabled'}><small>Next →</small><span>${next?next.t:'Course complete!'}</span></button>
   </div>`;
 }
-function markDone(id){ P[id]=true; updateStreakOnComplete(); save(); render(); }
+function markDone(id){ const was=P[id]; P[id]=true; updateStreakOnComplete(); save(); if(!was) ph('lesson_completed',{lesson:id}); render(); }
 
 /* ================= quiz ================= */
 let qSel={};
